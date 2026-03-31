@@ -16,13 +16,7 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <Nav />
-        <main
-          style={{
-            maxWidth: "var(--page-max)",
-            margin: "0 auto",
-            paddingBottom: "48px",
-          }}
-        >
+        <main style={{ maxWidth: "960px", margin: "0 auto", paddingBottom: "48px" }}>
           {children}
         </main>
       </body>
