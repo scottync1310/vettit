@@ -20,6 +20,7 @@ export default function Nav() {
             <div style={{ display: "flex", border: "1px solid #d0d0d0", borderRadius: "2px", overflow: "hidden" }}>
               <a href="/" style={{ fontSize: "12px", padding: "6px 14px", color: pathname === "/" ? "#fff" : "#888", background: pathname === "/" ? "#111" : "#fff", textDecoration: "none", fontWeight: pathname === "/" ? 500 : 400, borderRight: "1px solid #d0d0d0" }}>Dashboard</a>
               <a href="/sites" style={{ fontSize: "12px", padding: "6px 14px", color: pathname === "/sites" ? "#fff" : "#888", background: pathname === "/sites" ? "#111" : "#fff", textDecoration: "none", fontWeight: pathname === "/sites" ? 500 : 400, borderRight: "1px solid #d0d0d0" }}>Sites</a>
+              <a href="/calendar" style={{ fontSize: "12px", padding: "6px 14px", color: pathname === "/calendar" ? "#fff" : "#888", background: pathname === "/calendar" ? "#111" : "#fff", textDecoration: "none", fontWeight: pathname === "/calendar" ? 500 : 400, borderRight: "1px solid #d0d0d0" }}>Calendar</a>
               <a href="/vault" style={{ fontSize: "12px", padding: "6px 14px", color: pathname === "/vault" ? "#fff" : "#888", background: pathname === "/vault" ? "#111" : "#fff", textDecoration: "none", fontWeight: pathname === "/vault" ? 500 : 400 }}>Vault</a>
             </div>
           </div>
