@@ -19,6 +19,14 @@ const roleLabel: Record<string, string> = {
   supervisor: "Supervisor / Manager",
 };
 
+const teamMembers = [
+  "Mila Hartley",
+  "James Foreman",
+  "Sarah Admin",
+  "Chris Site Manager",
+  "Unassigned",
+];
+
 type Worker = {
   id: number;
   firstName: string;
@@ -41,48 +49,13 @@ type Subcontractor = {
 };
 
 const initialWorkers: Worker[] = [
-  {
-    id: 1,
-    firstName: "Tom",
-    lastName: "Richards",
-    role: "supervisor",
-    citizen: true,
-    heights: false,
-    selectedLicences: [],
-    whiteCard: true,
-    isContact: true,
-  },
-  {
-    id: 2,
-    firstName: "James",
-    lastName: "Hartley",
-    role: "demolition",
-    citizen: true,
-    heights: true,
-    selectedLicences: ["Demolition Licence"],
-    whiteCard: true,
-  },
-  {
-    id: 3,
-    firstName: "Miguel",
-    lastName: "Santos",
-    role: "crane",
-    citizen: false,
-    heights: false,
-    selectedLicences: ["Slewing Mobile Crane C6 (up to 60t)"],
-    whiteCard: true,
-  },
+  { id: 1, firstName: "Tom", lastName: "Richards", role: "supervisor", citizen: true, heights: false, selectedLicences: [], whiteCard: true, isContact: true },
+  { id: 2, firstName: "James", lastName: "Hartley", role: "demolition", citizen: true, heights: true, selectedLicences: ["Demolition Licence"], whiteCard: true },
+  { id: 3, firstName: "Miguel", lastName: "Santos", role: "crane", citizen: false, heights: false, selectedLicences: ["Slewing Mobile Crane C6 (up to 60t)"], whiteCard: true },
 ];
 
 const initialSubcontractors: Subcontractor[] = [
-  {
-    id: 1,
-    name: "QLD Pipe Specialists",
-    trade: "Plumbing",
-    contact: "Steve Moore",
-    email: "steve@qldpipe.com.au",
-    status: "pending",
-  },
+  { id: 1, name: "QLD Pipe Specialists", trade: "Plumbing", contact: "Steve Moore", email: "steve@qldpipe.com.au", status: "pending" },
 ];
 
 const contractor = {
@@ -136,6 +109,10 @@ export default function ContractorDetail() {
   const [showAddSub, setShowAddSub] = useState(false);
   const [newWorker, setNewWorker] = useState(emptyWorker);
   const [newSub, setNewSub] = useState({ name: "", trade: "", contact: "", email: "" });
+  const [assignedTo, setAssignedTo] = useState("Mila Hartley");
+  const [showAssignDropdown, setShowAssignDropdown] = useState(false);
+  const [notes, setNotes] = useState("");
+  const [showNotes, setShowNotes] = useState(false);
 
   const toggleLicence = (lic: string) => {
     setNewWorker((prev) => ({
@@ -162,9 +139,14 @@ export default function ContractorDetail() {
 
   const workerCleared = (w: Worker) => w.whiteCard && w.citizen;
 
-  const sectionHead = (text: string) => (
-    <div style={{ fontSize: "10px", fontWeight: 500, color: "#999", textTransform: "uppercase" as const, letterSpacing: ".08em", marginBottom: "10px" }}>{text}</div>
+  const sectionHead = (text: string, sub?: string) => (
+    <div style={{ marginBottom: "10px" }}>
+      <div style={{ fontSize: "10px", fontWeight: 500, color: "#999", textTransform: "uppercase" as const, letterSpacing: ".08em" }}>{text}</div>
+      {sub && <div style={{ fontSize: "11px", color: "#aaa", marginTop: "2px" }}>{sub}</div>}
+    </div>
   );
+
+  const inputStyle: React.CSSProperties = { width: "100%", padding: "8px 10px", border: "1px solid #d0d0d0", fontSize: "13px", color: "#111", borderRadius: "2px", fontFamily: "Roboto, sans-serif" };
 
   return (
     <div>
@@ -184,36 +166,74 @@ export default function ContractorDetail() {
       </div>
 
       {/* META */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", borderBottom: "1px solid #d0d0d0" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr 1fr", borderBottom: "1px solid #d0d0d0" }}>
         <div style={{ padding: "14px 32px", borderRight: "1px solid #d0d0d0" }}>
           <div style={{ fontSize: "10px", color: "#999", textTransform: "uppercase", letterSpacing: ".07em", marginBottom: "3px" }}>Contact</div>
           <div style={{ fontSize: "13px", color: "#111", fontWeight: 500 }}>{contractor.contactName}</div>
           <div style={{ fontSize: "11px", color: "#888", marginTop: "1px" }}>{contractor.email}</div>
         </div>
-        <div style={{ padding: "14px 32px", borderRight: "1px solid #d0d0d0" }}>
+        <div style={{ padding: "14px 20px", borderRight: "1px solid #d0d0d0" }}>
           <div style={{ fontSize: "10px", color: "#999", textTransform: "uppercase", letterSpacing: ".07em", marginBottom: "3px" }}>Invited</div>
           <div style={{ fontSize: "13px", color: "#111" }}>{contractor.invited}</div>
         </div>
-        <div style={{ padding: "14px 32px", borderRight: "1px solid #d0d0d0" }}>
+        <div style={{ padding: "14px 20px", borderRight: "1px solid #d0d0d0" }}>
           <div style={{ fontSize: "10px", color: "#999", textTransform: "uppercase", letterSpacing: ".07em", marginBottom: "3px" }}>Active sites</div>
           <div style={{ fontSize: "13px", color: "#111" }}>{contractor.sites} sites</div>
         </div>
-        <div style={{ padding: "14px 32px" }}>
+        <div style={{ padding: "14px 20px", borderRight: "1px solid #d0d0d0" }}>
           <div style={{ fontSize: "10px", color: "#999", textTransform: "uppercase", letterSpacing: ".07em", marginBottom: "3px" }}>Workers on site</div>
           <div style={{ fontSize: "13px", color: "#111" }}>{workers.length} workers</div>
         </div>
+        <div style={{ padding: "14px 20px", position: "relative" }}>
+          <div style={{ fontSize: "10px", color: "#999", textTransform: "uppercase", letterSpacing: ".07em", marginBottom: "3px" }}>Assigned to</div>
+          <div
+            onClick={() => setShowAssignDropdown(!showAssignDropdown)}
+            style={{ fontSize: "13px", color: "#111", cursor: "pointer", display: "flex", alignItems: "center", gap: "6px" }}
+          >
+            <div style={{ width: "20px", height: "20px", borderRadius: "50%", background: "#111", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "9px", fontWeight: 500, flexShrink: 0 }}>
+              {assignedTo.split(" ").map((n) => n[0]).join("").slice(0, 2)}
+            </div>
+            {assignedTo}
+            <span style={{ fontSize: "10px", color: "#aaa" }}>▼</span>
+          </div>
+          {showAssignDropdown && (
+            <div style={{ position: "absolute", top: "100%", left: "20px", background: "#fff", border: "1px solid #d0d0d0", borderRadius: "2px", zIndex: 10, minWidth: "180px", boxShadow: "0 4px 12px rgba(0,0,0,0.08)" }}>
+              {teamMembers.map((member) => (
+                <div
+                  key={member}
+                  onClick={() => { setAssignedTo(member); setShowAssignDropdown(false); }}
+                  style={{ padding: "9px 14px", fontSize: "13px", color: member === assignedTo ? "#111" : "#555", fontWeight: member === assignedTo ? 500 : 400, cursor: "pointer", background: member === assignedTo ? "#f5f5f5" : "#fff", borderBottom: "1px solid #f0f0f0" }}
+                >
+                  {member}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
+
+      {/* ASSIGNED TO ALERT */}
+      {contractor.status === "non-compliant" && (
+        <div style={{ padding: "10px 32px", background: "#fff8f8", borderBottom: "1px solid #ebebeb", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <div style={{ fontSize: "12px", color: "#b71c1c" }}>
+            Autopilot has failed — contractor unresponsive after 3 reminders. <strong>{assignedTo}</strong> is responsible for follow-up.
+          </div>
+          <button style={{ padding: "5px 12px", border: "1px solid #b71c1c", background: "#fff", color: "#b71c1c", fontSize: "11px", borderRadius: "2px", cursor: "pointer", fontFamily: "Roboto, sans-serif" }}>
+            Send manual reminder
+          </button>
+        </div>
+      )}
 
       {/* COMPANY DOCS */}
       <div style={{ padding: "16px 32px", borderBottom: "1px solid #d0d0d0" }}>
-        {sectionHead("Company documents — verified once")}
+        {sectionHead("Company documents", "Verified once — applies across all sites")}
         <table style={{ width: "100%", borderCollapse: "collapse", tableLayout: "fixed" }}>
           <thead>
             <tr style={{ background: "#fafafa" }}>
-              <th style={{ width: "40%", fontSize: "11px", fontWeight: 500, color: "#888", textAlign: "left", padding: "8px 12px", borderBottom: "1px solid #d0d0d0" }}>Document</th>
-              <th style={{ width: "25%", fontSize: "11px", fontWeight: 500, color: "#888", textAlign: "left", padding: "8px 12px", borderBottom: "1px solid #d0d0d0" }}>Expiry</th>
-              <th style={{ width: "20%", fontSize: "11px", fontWeight: 500, color: "#888", textAlign: "left", padding: "8px 12px", borderBottom: "1px solid #d0d0d0" }}>Status</th>
-              <th style={{ width: "15%", fontSize: "11px", fontWeight: 500, color: "#888", textAlign: "left", padding: "8px 12px", borderBottom: "1px solid #d0d0d0" }}></th>
+              <th style={{ width: "38%", fontSize: "11px", fontWeight: 500, color: "#888", textAlign: "left", padding: "8px 12px", borderBottom: "1px solid #d0d0d0" }}>Document</th>
+              <th style={{ width: "22%", fontSize: "11px", fontWeight: 500, color: "#888", textAlign: "left", padding: "8px 12px", borderBottom: "1px solid #d0d0d0" }}>Expiry</th>
+              <th style={{ width: "18%", fontSize: "11px", fontWeight: 500, color: "#888", textAlign: "left", padding: "8px 12px", borderBottom: "1px solid #d0d0d0" }}>Status</th>
+              <th style={{ width: "22%", fontSize: "11px", fontWeight: 500, color: "#888", textAlign: "left", padding: "8px 12px", borderBottom: "1px solid #d0d0d0" }}>Ownership</th>
             </tr>
           </thead>
           <tbody>
@@ -222,7 +242,15 @@ export default function ContractorDetail() {
                 <td style={{ padding: "10px 12px", fontSize: "13px" }}>{doc.name}</td>
                 <td style={{ padding: "10px 12px", fontSize: "12px", color: "#888" }}>{doc.expiry}</td>
                 <td style={{ padding: "10px 12px" }}><StatusBadge status={doc.status} /></td>
-                <td style={{ padding: "10px 12px", fontSize: "11px", color: "#aaa", cursor: "pointer" }}>Override</td>
+                <td style={{ padding: "10px 12px" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                    <div style={{ width: "18px", height: "18px", borderRadius: "50%", background: "#111", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "8px", fontWeight: 500, flexShrink: 0 }}>
+                      {assignedTo.split(" ").map((n) => n[0]).join("").slice(0, 2)}
+                    </div>
+                    <span style={{ fontSize: "11px", color: "#555" }}>{assignedTo}</span>
+                    <span style={{ fontSize: "11px", color: "#aaa", cursor: "pointer" }}>Override</span>
+                  </div>
+                </td>
               </tr>
             ))}
           </tbody>
@@ -231,7 +259,7 @@ export default function ContractorDetail() {
 
       {/* SITE DOCS */}
       <div style={{ padding: "16px 32px", borderBottom: "1px solid #d0d0d0" }}>
-        {sectionHead("Site documents — per engagement")}
+        {sectionHead("Site documents", "Required per site — per engagement")}
         {contractor.siteDocs.map((site) => (
           <div key={site.site} style={{ border: "1px solid #d0d0d0", borderRadius: "2px", overflow: "hidden", marginBottom: "10px" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 14px", background: "#fafafa", borderBottom: "1px solid #d0d0d0" }}>
@@ -245,12 +273,19 @@ export default function ContractorDetail() {
               <tbody>
                 {site.docs.map((doc) => (
                   <tr key={doc.name} style={{ borderBottom: "1px solid #ebebeb" }}>
-                    <td style={{ width: "40%", padding: "10px 14px", fontSize: "13px" }}>{doc.name}</td>
-                    <td style={{ width: "30%", padding: "10px 14px", fontSize: "12px", color: doc.status === "non-compliant" ? "#b71c1c" : "#888" }}>{doc.expiry}</td>
-                    <td style={{ width: "20%", padding: "10px 14px" }}><StatusBadge status={doc.status} /></td>
-                    <td style={{ width: "10%", padding: "10px 14px" }}>
-                      {doc.status === "non-compliant" && (
+                    <td style={{ width: "38%", padding: "10px 14px", fontSize: "13px" }}>{doc.name}</td>
+                    <td style={{ width: "22%", padding: "10px 14px", fontSize: "12px", color: doc.status === "non-compliant" ? "#b71c1c" : "#888" }}>{doc.expiry}</td>
+                    <td style={{ width: "18%", padding: "10px 14px" }}><StatusBadge status={doc.status} /></td>
+                    <td style={{ width: "22%", padding: "10px 14px" }}>
+                      {doc.status === "non-compliant" ? (
                         <button style={{ padding: "4px 10px", border: "1px solid #111", background: "#111", color: "#fff", fontSize: "11px", borderRadius: "2px", cursor: "pointer", fontFamily: "Roboto, sans-serif" }}>Request</button>
+                      ) : (
+                        <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                          <div style={{ width: "18px", height: "18px", borderRadius: "50%", background: "#111", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "8px", fontWeight: 500 }}>
+                            {assignedTo.split(" ").map((n) => n[0]).join("").slice(0, 2)}
+                          </div>
+                          <span style={{ fontSize: "11px", color: "#555" }}>{assignedTo}</span>
+                        </div>
                       )}
                     </td>
                   </tr>
@@ -264,7 +299,7 @@ export default function ContractorDetail() {
       {/* WORKERS */}
       <div style={{ padding: "16px 32px", borderBottom: "1px solid #d0d0d0" }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px" }}>
-          {sectionHead("Workers on site — individual tickets")}
+          {sectionHead("Workers on site", "Individual tickets per person")}
           <button onClick={() => setShowAddWorker(!showAddWorker)} style={{ padding: "5px 12px", border: "1px solid #111", background: "#111", color: "#fff", fontSize: "11px", borderRadius: "2px", cursor: "pointer", fontFamily: "Roboto, sans-serif", marginTop: "-10px" }}>
             + Add worker
           </button>
@@ -324,16 +359,16 @@ export default function ContractorDetail() {
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
                 <div>
                   <div style={{ fontSize: "11px", fontWeight: 500, color: "#555", marginBottom: "4px" }}>First name</div>
-                  <input value={newWorker.firstName} onChange={(e) => setNewWorker({ ...newWorker, firstName: e.target.value })} placeholder="Dave" style={{ width: "100%", padding: "8px 10px", border: "1px solid #d0d0d0", fontSize: "13px", color: "#111", borderRadius: "2px", fontFamily: "Roboto, sans-serif" }} />
+                  <input value={newWorker.firstName} onChange={(e) => setNewWorker({ ...newWorker, firstName: e.target.value })} placeholder="Dave" style={inputStyle} />
                 </div>
                 <div>
                   <div style={{ fontSize: "11px", fontWeight: 500, color: "#555", marginBottom: "4px" }}>Last name</div>
-                  <input value={newWorker.lastName} onChange={(e) => setNewWorker({ ...newWorker, lastName: e.target.value })} placeholder="Smith" style={{ width: "100%", padding: "8px 10px", border: "1px solid #d0d0d0", fontSize: "13px", color: "#111", borderRadius: "2px", fontFamily: "Roboto, sans-serif" }} />
+                  <input value={newWorker.lastName} onChange={(e) => setNewWorker({ ...newWorker, lastName: e.target.value })} placeholder="Smith" style={inputStyle} />
                 </div>
               </div>
               <div>
                 <div style={{ fontSize: "11px", fontWeight: 500, color: "#555", marginBottom: "4px" }}>Role on site</div>
-                <select value={newWorker.role} onChange={(e) => setNewWorker({ ...newWorker, role: e.target.value, selectedLicences: [] })} style={{ width: "100%", padding: "8px 10px", border: "1px solid #d0d0d0", fontSize: "13px", color: "#111", borderRadius: "2px", fontFamily: "Roboto, sans-serif", background: "#fff" }}>
+                <select value={newWorker.role} onChange={(e) => setNewWorker({ ...newWorker, role: e.target.value, selectedLicences: [] })} style={inputStyle}>
                   <option value="">Select role...</option>
                   <option value="labourer">Labourer</option>
                   <option value="plumber">Plumber</option>
@@ -395,7 +430,7 @@ export default function ContractorDetail() {
       {/* SUBCONTRACTORS */}
       <div style={{ padding: "16px 32px", borderBottom: "1px solid #d0d0d0" }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px" }}>
-          {sectionHead("Subcontractors — brought on site by this contractor")}
+          {sectionHead("Subcontractors", "Brought on site by this contractor")}
           <button onClick={() => setShowAddSub(!showAddSub)} style={{ padding: "5px 12px", border: "1px solid #111", background: "#111", color: "#fff", fontSize: "11px", borderRadius: "2px", cursor: "pointer", fontFamily: "Roboto, sans-serif", marginTop: "-10px" }}>
             + Add subcontractor
           </button>
@@ -406,10 +441,10 @@ export default function ContractorDetail() {
             <div key={sub.id} style={{ border: "1px solid #d0d0d0", borderRadius: "2px", overflow: "hidden" }}>
               <div style={{ padding: "10px 14px", background: "#fafafa", borderBottom: "1px solid #d0d0d0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                  <div style={{ width: "7px", height: "7px", borderRadius: "50%", background: sub.status === "compliant" ? "#3a7d44" : sub.status === "pending" ? "#aaa" : "#c0392b" }} />
+                  <div style={{ width: "7px", height: "7px", borderRadius: "50%", background: sub.status === "compliant" ? "#3a7d44" : "#aaa" }} />
                   <div>
                     <div style={{ fontSize: "13px", fontWeight: 500, color: "#111" }}>{sub.name}</div>
-                    <div style={{ fontSize: "11px", color: "#888", marginTop: "1px" }}>{sub.trade} · Contact: {sub.contact}</div>
+                    <div style={{ fontSize: "11px", color: "#888", marginTop: "1px" }}>{sub.trade} · {sub.contact}</div>
                   </div>
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
@@ -421,7 +456,7 @@ export default function ContractorDetail() {
               </div>
               <div style={{ padding: "10px 14px" }}>
                 <div style={{ fontSize: "12px", color: "#888" }}>
-                  {sub.status === "pending" ? `Invite sent to ${sub.email} — awaiting doc upload` : "All documents submitted and verified"}
+                  {sub.status === "pending" ? `Invite sent to ${sub.email} — awaiting submission` : "All documents submitted and verified"}
                 </div>
                 {sub.status === "pending" && (
                   <button style={{ marginTop: "8px", padding: "4px 10px", border: "1px solid #d0d0d0", background: "#fff", color: "#111", fontSize: "11px", borderRadius: "2px", cursor: "pointer", fontFamily: "Roboto, sans-serif" }}>Resend invite</button>
@@ -441,20 +476,20 @@ export default function ContractorDetail() {
               <div style={{ fontSize: "12px", color: "#888" }}>Vettit will send this subcontractor their own invite to submit company docs and worker tickets separately.</div>
               <div>
                 <div style={{ fontSize: "11px", fontWeight: 500, color: "#555", marginBottom: "4px" }}>Company name</div>
-                <input value={newSub.name} onChange={(e) => setNewSub({ ...newSub, name: e.target.value })} placeholder="e.g. QLD Pipe Specialists" style={{ width: "100%", padding: "8px 10px", border: "1px solid #d0d0d0", fontSize: "13px", color: "#111", borderRadius: "2px", fontFamily: "Roboto, sans-serif" }} />
+                <input value={newSub.name} onChange={(e) => setNewSub({ ...newSub, name: e.target.value })} placeholder="e.g. QLD Pipe Specialists" style={inputStyle} />
               </div>
               <div>
                 <div style={{ fontSize: "11px", fontWeight: 500, color: "#555", marginBottom: "4px" }}>Trade</div>
-                <input value={newSub.trade} onChange={(e) => setNewSub({ ...newSub, trade: e.target.value })} placeholder="e.g. Plumbing" style={{ width: "100%", padding: "8px 10px", border: "1px solid #d0d0d0", fontSize: "13px", color: "#111", borderRadius: "2px", fontFamily: "Roboto, sans-serif" }} />
+                <input value={newSub.trade} onChange={(e) => setNewSub({ ...newSub, trade: e.target.value })} placeholder="e.g. Plumbing" style={inputStyle} />
               </div>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
                 <div>
                   <div style={{ fontSize: "11px", fontWeight: 500, color: "#555", marginBottom: "4px" }}>Contact name</div>
-                  <input value={newSub.contact} onChange={(e) => setNewSub({ ...newSub, contact: e.target.value })} placeholder="Steve Moore" style={{ width: "100%", padding: "8px 10px", border: "1px solid #d0d0d0", fontSize: "13px", color: "#111", borderRadius: "2px", fontFamily: "Roboto, sans-serif" }} />
+                  <input value={newSub.contact} onChange={(e) => setNewSub({ ...newSub, contact: e.target.value })} placeholder="Steve Moore" style={inputStyle} />
                 </div>
                 <div>
                   <div style={{ fontSize: "11px", fontWeight: 500, color: "#555", marginBottom: "4px" }}>Contact email</div>
-                  <input value={newSub.email} onChange={(e) => setNewSub({ ...newSub, email: e.target.value })} placeholder="steve@sub.com.au" style={{ width: "100%", padding: "8px 10px", border: "1px solid #d0d0d0", fontSize: "13px", color: "#111", borderRadius: "2px", fontFamily: "Roboto, sans-serif" }} />
+                  <input value={newSub.email} onChange={(e) => setNewSub({ ...newSub, email: e.target.value })} placeholder="steve@sub.com.au" style={inputStyle} />
                 </div>
               </div>
               <div style={{ display: "flex", gap: "8px", justifyContent: "flex-end" }}>
@@ -463,6 +498,28 @@ export default function ContractorDetail() {
               </div>
             </div>
           </div>
+        )}
+      </div>
+
+      {/* NOTES */}
+      <div style={{ padding: "16px 32px", borderBottom: "1px solid #d0d0d0" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "10px" }}>
+          {sectionHead("Private notes", "Only visible to your team — not shared with the contractor")}
+          <button onClick={() => setShowNotes(!showNotes)} style={{ padding: "5px 12px", border: "1px solid #d0d0d0", background: "#fff", color: "#111", fontSize: "11px", borderRadius: "2px", cursor: "pointer", fontFamily: "Roboto, sans-serif", marginTop: "-10px" }}>
+            {showNotes ? "Done" : notes ? "Edit note" : "+ Add note"}
+          </button>
+        </div>
+        {showNotes ? (
+          <textarea
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            placeholder="e.g. Reliable contractor — always submits on time. Had a minor issue on Bulimba, check carefully."
+            style={{ width: "100%", padding: "10px 12px", border: "1px solid #d0d0d0", fontSize: "13px", color: "#111", borderRadius: "2px", fontFamily: "Roboto, sans-serif", minHeight: "80px", resize: "vertical" }}
+          />
+        ) : notes ? (
+          <div style={{ fontSize: "13px", color: "#555", lineHeight: 1.6, padding: "10px 12px", background: "#fafafa", border: "1px solid #ebebeb", borderRadius: "2px" }}>{notes}</div>
+        ) : (
+          <div style={{ fontSize: "12px", color: "#aaa" }}>No notes yet.</div>
         )}
       </div>
 
