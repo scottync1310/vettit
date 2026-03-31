@@ -2,18 +2,83 @@
 import { useState } from "react";
 
 const licenceOptions: Record<string, string[]> = {
-  plumber: ["Plumbing Licence — Unrestricted", "Plumbing Licence — Restricted", "Drainage Licence", "Gas Fitting Licence", "Irrigation Licence"],
-  electrician: ["Electrical Contractor Licence", "Electrical Worker Licence — Grade A (Unrestricted)", "Electrical Worker Licence — Grade B (Restricted)", "Electrical Worker Licence — Provisional", "Air Conditioning & Refrigeration Licence", "Aerial & Data Licence"],
-  scaffolder: ["Dogging DG", "Basic Rigging RB", "Intermediate Rigging RI", "Advanced Rigging RA", "Basic Scaffolding SB", "Intermediate Scaffolding SI", "Advanced Scaffolding SA"],
-  crane: ["Slewing Mobile Crane C2 (up to 20t)", "Slewing Mobile Crane C6 (up to 60t)", "Slewing Mobile Crane C1 (up to 100t)", "Slewing Mobile Crane C0 (open/over 100t)", "Non-Slewing Mobile Crane CN", "Tower Crane CT", "Self-Erecting Tower Crane CS", "Vehicle Loading Crane CV", "Bridge and Gantry Crane CB"],
-  forklift: ["Forklift Truck LF", "Order-Picking Forklift LO", "Reach Stacker RS", "Telehandler TV"],
-  ewp: ["Boom-type EWP WP (11m+)", "Materials Hoist HM", "Personnel and Materials Hoist HP", "Concrete Placing Boom PB"],
-  demolition: ["Demolition Licence", "Asbestos Removal Class A (friable)", "Asbestos Removal Class B (non-friable)"],
-  heavyvehicle: ["Light Rigid LR", "Medium Rigid MR", "Heavy Rigid HR", "Heavy Combination HC", "Multi-Combination MC"],
-  carpentry: ["Carpentry & Joinery Licence", "Building & Construction Licence"],
-  hvac: ["Air Conditioning & Refrigeration Licence", "Gas Fitting Licence", "Electrical Worker Licence (Restricted — A/C)"],
-  gasfitter: ["Gas Fitting Licence — Type A", "Gas Fitting Licence — Type B", "Gas Fitting Licence — LP Gas"],
-  painting: ["Painting & Decorating Licence", "Lead Paint Removal Certification"],
+  plumber: [
+    "Plumbing Licence — Unrestricted",
+    "Plumbing Licence — Restricted",
+    "Drainage Licence",
+    "Gas Fitting Licence",
+    "Irrigation Licence",
+  ],
+  electrician: [
+    "Electrical Contractor Licence",
+    "Electrical Worker Licence — Grade A (Unrestricted)",
+    "Electrical Worker Licence — Grade B (Restricted)",
+    "Electrical Worker Licence — Provisional",
+    "Air Conditioning & Refrigeration Licence",
+    "Aerial & Data Licence",
+  ],
+  scaffolder: [
+    "Dogging DG",
+    "Basic Rigging RB",
+    "Intermediate Rigging RI",
+    "Advanced Rigging RA",
+    "Basic Scaffolding SB",
+    "Intermediate Scaffolding SI",
+    "Advanced Scaffolding SA",
+  ],
+  crane: [
+    "Slewing Mobile Crane C2 (up to 20t)",
+    "Slewing Mobile Crane C6 (up to 60t)",
+    "Slewing Mobile Crane C1 (up to 100t)",
+    "Slewing Mobile Crane C0 (open/over 100t)",
+    "Non-Slewing Mobile Crane CN",
+    "Tower Crane CT",
+    "Self-Erecting Tower Crane CS",
+    "Vehicle Loading Crane CV",
+    "Bridge and Gantry Crane CB",
+  ],
+  forklift: [
+    "Forklift Truck LF",
+    "Order-Picking Forklift LO",
+    "Reach Stacker RS",
+    "Telehandler TV",
+  ],
+  ewp: [
+    "Boom-type EWP WP (11m+)",
+    "Materials Hoist HM",
+    "Personnel and Materials Hoist HP",
+    "Concrete Placing Boom PB",
+  ],
+  demolition: [
+    "Demolition Licence",
+    "Asbestos Removal Class A (friable)",
+    "Asbestos Removal Class B (non-friable)",
+  ],
+  heavyvehicle: [
+    "Light Rigid LR",
+    "Medium Rigid MR",
+    "Heavy Rigid HR",
+    "Heavy Combination HC",
+    "Multi-Combination MC",
+  ],
+  carpentry: [
+    "Carpentry & Joinery Licence",
+    "Building & Construction Licence",
+  ],
+  hvac: [
+    "Air Conditioning & Refrigeration Licence",
+    "Gas Fitting Licence",
+    "Electrical Worker Licence (Restricted — A/C)",
+  ],
+  gasfitter: [
+    "Gas Fitting Licence — Type A",
+    "Gas Fitting Licence — Type B",
+    "Gas Fitting Licence — LP Gas",
+  ],
+  painting: [
+    "Painting & Decorating Licence",
+    "Lead Paint Removal Certification",
+  ],
   tiling: ["Wall & Floor Tiling Licence"],
   concretor: ["Concreting Licence", "Concrete Placing Boom PB"],
 };
@@ -85,8 +150,7 @@ const mockParse = (
       const insurer = insurers[Math.floor(Math.random() * insurers.length)];
       const year = 2025 + Math.floor(Math.random() * 2);
       const month = String(Math.floor(Math.random() * 12) + 1).padStart(2, "0");
-      const expiry = `${month}/${year}`;
-      onDone("verified", insurer, expiry);
+      onDone("verified", insurer, `${month}/${year}`);
     }
   }, 2000);
 };
@@ -116,6 +180,7 @@ export default function UploadPortal() {
   const [workers, setWorkers] = useState<Worker[]>([]);
   const [showAddWorker, setShowAddWorker] = useState(false);
   const [newWorker, setNewWorker] = useState(emptyWorker);
+
   const [subs, setSubs] = useState<Sub[]>([]);
   const [showAddSub, setShowAddSub] = useState(false);
   const [newSub, setNewSub] = useState(emptySub);
@@ -190,7 +255,12 @@ export default function UploadPortal() {
 
   const ParseStatus = ({ state, insurer, expiry, error }: { state: ParseState; insurer?: string; expiry?: string; error?: string }) => {
     if (state === "idle") return null;
-    if (state === "reading") return <div style={{ fontSize: "11px", color: "#888", marginTop: "6px", display: "flex", alignItems: "center", gap: "6px" }}><span style={{ display: "inline-block", width: "10px", height: "10px", border: "2px solid #d0d0d0", borderTopColor: "#111", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />Reading document...</div>;
+    if (state === "reading") return (
+      <div style={{ fontSize: "11px", color: "#888", marginTop: "6px", display: "flex", alignItems: "center", gap: "6px" }}>
+        <span style={{ display: "inline-block", width: "10px", height: "10px", border: "2px solid #d0d0d0", borderTopColor: "#111", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
+        Reading document...
+      </div>
+    );
     if (state === "verified") return <div style={{ fontSize: "11px", color: "#3a7d44", marginTop: "6px", fontWeight: 500 }}>✓ Verified — {insurer}{expiry ? ` · expires ${expiry}` : ""}</div>;
     if (state === "expired") return <div style={{ fontSize: "11px", color: "#c0392b", marginTop: "6px", fontWeight: 500 }}>✗ {error}</div>;
     if (state === "error") return <div style={{ fontSize: "11px", color: "#c0392b", marginTop: "6px" }}>✗ {error}</div>;
@@ -234,9 +304,7 @@ export default function UploadPortal() {
   const WhiteCardUpload = ({ fileName, state, onChange }: { fileName: string; state: ParseState; onChange: (e: React.ChangeEvent<HTMLInputElement>) => void }) => (
     <div style={{ border: state === "verified" ? "1px solid #a5d6a7" : state === "error" ? "1px solid #ef9a9a" : "1px solid #d0d0d0", borderRadius: "2px", padding: "10px 12px", background: state === "verified" ? "#f9fdf9" : "#fff", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
       <div>
-        <div style={{ fontSize: "12px", color: state === "verified" ? "#1b5e20" : "#555" }}>
-          {fileName || "No file selected"}
-        </div>
+        <div style={{ fontSize: "12px", color: state === "verified" ? "#1b5e20" : "#555" }}>{fileName || "No file selected"}</div>
         <ParseStatus state={state} />
       </div>
       {state !== "verified" && state !== "reading" && (
@@ -285,7 +353,7 @@ export default function UploadPortal() {
     if (!licenceOptions[role]) return null;
     return (
       <div style={{ marginBottom: "12px" }}>
-        <div style={{ fontSize: "11px", fontWeight: 500, color: "#555", marginBottom: "5px" }}>Licences held — select all that apply then upload each one</div>
+        <div style={{ fontSize: "11px", fontWeight: 500, color: "#555", marginBottom: "5px" }}>Licences held — select all that apply</div>
         <div style={{ border: "1px solid #d0d0d0", borderRadius: "2px", padding: "8px 12px" }}>
           {licenceOptions[role].map((lic, i) => (
             <label key={lic} style={{ display: "flex", alignItems: "center", gap: "8px", padding: "7px 0", borderBottom: i < licenceOptions[role].length - 1 ? "1px solid #f0f0f0" : "none", cursor: "pointer", fontSize: "12px", color: "#111" }}>
@@ -294,19 +362,6 @@ export default function UploadPortal() {
             </label>
           ))}
         </div>
-        {selected.length > 0 && (
-          <div style={{ marginTop: "10px", display: "flex", flexDirection: "column", gap: "6px" }}>
-            {selected.map((lic) => (
-              <div key={lic} style={{ border: "1px solid #d0d0d0", borderRadius: "2px", padding: "8px 12px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                <div style={{ fontSize: "12px", color: "#555" }}>{lic}</div>
-                <label style={{ padding: "4px 10px", background: "#111", color: "#fff", border: "none", borderRadius: "2px", fontSize: "11px", fontWeight: 500, cursor: "pointer", fontFamily: "Roboto, sans-serif" }}>
-                  Upload
-                  <input type="file" accept=".pdf,.jpg,.jpeg,.png" style={{ display: "none" }} onChange={() => {}} />
-                </label>
-              </div>
-            ))}
-          </div>
-        )}
       </div>
     );
   };
@@ -341,7 +396,6 @@ export default function UploadPortal() {
           ))}
         </div>
 
-        {/* STEP 0 — COMPANY DOCS */}
         {step === 0 && (
           <div>
             <div style={{ marginBottom: "14px" }}>
@@ -349,11 +403,7 @@ export default function UploadPortal() {
               <div style={{ fontSize: "11px", color: "#aaa", marginTop: "3px" }}>Upload each document — Vettit reads and verifies them automatically</div>
             </div>
             {companyDocs.map((doc) => (
-              <DocUploadCard
-                key={doc.name}
-                doc={doc}
-                onChange={(e) => handleCompanyFile(doc.name, e)}
-              />
+              <DocUploadCard key={doc.name} doc={doc} onChange={(e) => handleCompanyFile(doc.name, e)} />
             ))}
             <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "20px" }}>
               <button onClick={() => setStep(1)} style={btnPrimary}>Next — your personal documents →</button>
@@ -361,16 +411,14 @@ export default function UploadPortal() {
           </div>
         )}
 
-        {/* STEP 1 — OWNER DOCS */}
         {step === 1 && (
           <div>
             <div style={{ marginBottom: "14px" }}>
               <div style={{ fontSize: "10px", fontWeight: 500, color: "#999", textTransform: "uppercase", letterSpacing: ".08em" }}>Your personal documents</div>
               <div style={{ fontSize: "11px", color: "#aaa", marginTop: "3px" }}>Tom Richards — added as a worker automatically as company contact</div>
             </div>
-
             <div style={{ border: "1px solid #d0d0d0", borderRadius: "2px", overflow: "hidden", marginBottom: "14px" }}>
-              {tickRow("Australian citizen or permanent resident", "If no, proof of right to work will be required — upload below", ownerDocs.citizen, (v) => setOwnerDocs({ ...ownerDocs, citizen: v }))}
+              {tickRow("Australian citizen or permanent resident", "If no, proof of right to work will be required", ownerDocs.citizen, (v) => setOwnerDocs({ ...ownerDocs, citizen: v }))}
               {tickRow("Working at heights on this site", "If yes, upload your Working at Heights certification below", ownerDocs.heights, (v) => setOwnerDocs({ ...ownerDocs, heights: v }))}
               <div style={{ padding: "12px 14px", borderBottom: "1px solid #ebebeb" }}>
                 <div style={{ fontSize: "12px", fontWeight: 500, color: "#111", marginBottom: "8px" }}>White Card — Construction Induction Training</div>
@@ -389,14 +437,11 @@ export default function UploadPortal() {
                 </div>
               )}
             </div>
-
             <div style={{ marginBottom: "14px" }}>
               <div style={{ fontSize: "11px", fontWeight: 500, color: "#555", marginBottom: "5px" }}>Your role on site</div>
               {roleSelect(ownerDocs.role, (val) => setOwnerDocs({ ...ownerDocs, role: val, licences: [] }))}
             </div>
-
             {licenceChecklist(ownerDocs.role, ownerDocs.licences, toggleOwnerLicence)}
-
             <div style={{ display: "flex", justifyContent: "space-between", marginTop: "8px" }}>
               <button onClick={() => setStep(0)} style={btnOutline}>← Back</button>
               <button onClick={() => setStep(2)} style={btnPrimary}>Next — add your workers →</button>
@@ -404,14 +449,12 @@ export default function UploadPortal() {
           </div>
         )}
 
-        {/* STEP 2 — WORKERS */}
         {step === 2 && (
           <div>
             <div style={{ marginBottom: "14px" }}>
               <div style={{ fontSize: "10px", fontWeight: 500, color: "#999", textTransform: "uppercase", letterSpacing: ".08em" }}>Your workers on site</div>
               <div style={{ fontSize: "11px", color: "#aaa", marginTop: "3px" }}>Add every person working on this site — upload their White Card and any licences</div>
             </div>
-
             <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginBottom: "12px" }}>
               {workers.map((w) => (
                 <div key={w.id} style={{ border: "1px solid #a5d6a7", borderRadius: "2px", padding: "11px 14px", background: "#f9fdf9", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
@@ -425,7 +468,6 @@ export default function UploadPortal() {
                 </div>
               ))}
             </div>
-
             {showAddWorker ? (
               <div style={{ border: "1px solid #d0d0d0", borderRadius: "2px", overflow: "hidden", marginBottom: "12px" }}>
                 <div style={{ padding: "10px 14px", background: "#fafafa", borderBottom: "1px solid #d0d0d0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -473,7 +515,6 @@ export default function UploadPortal() {
                 + Add a worker
               </button>
             )}
-
             <div style={{ display: "flex", justifyContent: "space-between" }}>
               <button onClick={() => setStep(1)} style={btnOutline}>← Back</button>
               <button onClick={() => setStep(3)} style={btnPrimary}>Next — subcontractors →</button>
@@ -481,22 +522,27 @@ export default function UploadPortal() {
           </div>
         )}
 
-        {/* STEP 3 — SUBCONTRACTORS */}
         {step === 3 && (
           <div>
             <div style={{ marginBottom: "14px" }}>
               <div style={{ fontSize: "10px", fontWeight: 500, color: "#999", textTransform: "uppercase", letterSpacing: ".08em" }}>Subcontractors</div>
-              <div style={{ fontSize: "11px", color: "#aaa", marginTop: "3px" }}>Are you bringing any subcontractors on site? Vettit will send them their own invite separately</div>
+              <div style={{ fontSize: "11px", color: "#aaa", marginTop: "3px" }}>Declare any subcontractors you are bringing on site — your builder will review and send their compliance invite</div>
+            </div>
+
+            <div style={{ padding: "12px 14px", border: "1px solid #ffe082", background: "#fff8e1", borderRadius: "2px", marginBottom: "16px" }}>
+              <div style={{ fontSize: "12px", color: "#7c4e00", lineHeight: 1.6 }}>
+                You are not inviting subcontractors — you are declaring who you plan to bring on site. Hartley Constructions will review this information and send their compliance invite separately.
+              </div>
             </div>
 
             <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginBottom: "12px" }}>
               {subs.map((sub) => (
-                <div key={sub.id} style={{ border: "1px solid #a5d6a7", borderRadius: "2px", padding: "11px 14px", background: "#f9fdf9", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <div key={sub.id} style={{ border: "1px solid #ffe082", borderRadius: "2px", padding: "11px 14px", background: "#fff8e1", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                   <div>
-                    <div style={{ fontSize: "13px", fontWeight: 500, color: "#1b5e20" }}>{sub.name}</div>
-                    <div style={{ fontSize: "11px", color: "#3a7d44", marginTop: "2px" }}>{sub.trade} · {sub.contactFirst} {sub.contactLast} · {sub.email}</div>
+                    <div style={{ fontSize: "13px", fontWeight: 500, color: "#111" }}>{sub.name}</div>
+                    <div style={{ fontSize: "11px", color: "#888", marginTop: "2px" }}>{sub.trade} · {sub.contactFirst} {sub.contactLast} · {sub.email}</div>
                   </div>
-                  <span style={{ fontSize: "11px", padding: "3px 8px", background: "#e8f5e9", color: "#1b5e20", border: "1px solid #a5d6a7", borderRadius: "2px", fontWeight: 500 }}>Invite will be sent</span>
+                  <span style={{ fontSize: "11px", padding: "3px 8px", background: "#fff8e1", color: "#7c4e00", border: "1px solid #ffe082", borderRadius: "2px", fontWeight: 500 }}>Pending builder approval</span>
                 </div>
               ))}
             </div>
@@ -504,7 +550,7 @@ export default function UploadPortal() {
             {showAddSub ? (
               <div style={{ border: "1px solid #d0d0d0", borderRadius: "2px", overflow: "hidden", marginBottom: "12px" }}>
                 <div style={{ padding: "10px 14px", background: "#fafafa", borderBottom: "1px solid #d0d0d0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <div style={{ fontSize: "13px", fontWeight: 500, color: "#111" }}>Add a subcontractor</div>
+                  <div style={{ fontSize: "13px", fontWeight: 500, color: "#111" }}>Declare a subcontractor</div>
                   <span style={{ fontSize: "18px", color: "#aaa", cursor: "pointer" }} onClick={() => setShowAddSub(false)}>×</span>
                 </div>
                 <div style={{ padding: "14px", display: "flex", flexDirection: "column", gap: "10px" }}>
@@ -538,7 +584,7 @@ export default function UploadPortal() {
               </div>
             ) : !noSubs && (
               <button onClick={() => setShowAddSub(true)} style={{ width: "100%", padding: "9px", border: "1px dashed #d0d0d0", background: "#fafafa", color: "#555", fontSize: "12px", borderRadius: "2px", cursor: "pointer", fontFamily: "Roboto, sans-serif", marginBottom: "12px" }}>
-                + Add a subcontractor
+                + Declare a subcontractor
               </button>
             )}
 
@@ -562,7 +608,6 @@ export default function UploadPortal() {
           </div>
         )}
 
-        {/* STEP 4 — CONFIRMATION */}
         {step === 4 && (
           <div style={{ textAlign: "center", padding: "40px 0" }}>
             <div style={{ width: "52px", height: "52px", borderRadius: "50%", background: "#e8f5e9", border: "2px solid #3a7d44", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px", fontSize: "22px", color: "#3a7d44" }}>✓</div>
@@ -570,7 +615,7 @@ export default function UploadPortal() {
             <div style={{ fontSize: "13px", color: "#888", lineHeight: 1.7, marginBottom: "24px" }}>
               Your documents have been submitted to Hartley Constructions.<br />
               You will receive a confirmation email shortly.<br />
-              {subs.length > 0 && `Vettit has sent invites to ${subs.length} subcontractor${subs.length > 1 ? "s" : ""} on your behalf.`}
+              {subs.length > 0 && `Hartley Constructions has been notified of ${subs.length} subcontractor${subs.length > 1 ? "s" : ""} you declared — they will send compliance invites separately.`}
             </div>
             <div style={{ border: "1px solid #ebebeb", borderRadius: "2px", padding: "16px 20px", display: "inline-block", textAlign: "left" }}>
               <div style={{ fontSize: "10px", fontWeight: 500, color: "#999", textTransform: "uppercase", letterSpacing: ".07em", marginBottom: "10px" }}>Submission summary</div>
@@ -578,7 +623,7 @@ export default function UploadPortal() {
                 <div style={{ fontSize: "12px", color: "#555" }}><span style={{ color: "#3a7d44", marginRight: "8px" }}>✓</span>{companyDocs.filter((d) => d.parseState === "verified").length} of {companyDocs.length} company documents verified</div>
                 <div style={{ fontSize: "12px", color: "#555" }}><span style={{ color: "#3a7d44", marginRight: "8px" }}>✓</span>Your personal documents submitted</div>
                 <div style={{ fontSize: "12px", color: "#555" }}><span style={{ color: "#3a7d44", marginRight: "8px" }}>✓</span>{workers.length} worker{workers.length !== 1 ? "s" : ""} added</div>
-                <div style={{ fontSize: "12px", color: "#555" }}><span style={{ color: "#3a7d44", marginRight: "8px" }}>✓</span>{noSubs ? "No subcontractors on this site" : `${subs.length} subcontractor invite${subs.length !== 1 ? "s" : ""} sent`}</div>
+                <div style={{ fontSize: "12px", color: "#555" }}><span style={{ color: "#3a7d44", marginRight: "8px" }}>✓</span>{noSubs ? "No subcontractors on this site" : `${subs.length} subcontractor${subs.length !== 1 ? "s" : ""} declared — pending builder approval`}</div>
               </div>
             </div>
             <div style={{ marginTop: "24px", fontSize: "12px", color: "#aaa" }}>You can close this window — no further action is needed.</div>
