@@ -2,10 +2,20 @@
 import { useState } from "react";
 import StatusBadge from "../../components/StatusBadge";
 
-const siteList = [
-  { id: 1, name: "Paddington Townhouses", sub: "Stage 2 — active", total: 7, cleared: 5, notCleared: 2 },
-  { id: 2, name: "Bulimba Apartments", sub: "Stage 1 — active", total: 3, cleared: 2, notCleared: 1 },
-  { id: 3, name: "Newstead Commercial", sub: "Fitout — active", total: 4, cleared: 4, notCleared: 0 },
+type Site = {
+  id: number;
+  name: string;
+  sub: string;
+  total: number;
+  cleared: number;
+  notCleared: number;
+  archived: boolean;
+};
+
+const initialSiteList: Site[] = [
+  { id: 1, name: "Paddington Townhouses", sub: "Stage 2 — active", total: 7, cleared: 5, notCleared: 2, archived: false },
+  { id: 2, name: "Bulimba Apartments", sub: "Stage 1 — active", total: 3, cleared: 2, notCleared: 1, archived: false },
+  { id: 3, name: "Newstead Commercial", sub: "Fitout — active", total: 4, cleared: 4, notCleared: 0, archived: false },
 ];
 
 const siteData: Record<number, {
@@ -46,7 +56,6 @@ const siteData: Record<number, {
 };
 
 const scoreColor = (score: number) => {
-  if (score === 100) return "#3a7d44";
   if (score >= 80) return "#3a7d44";
   if (score >= 60) return "#b8860b";
   return "#c0392b";
@@ -59,26 +68,73 @@ const scoreBg = (score: number) => {
 };
 
 export default function Sites() {
+  const [siteList, setSiteList] = useState<Site[]>(initialSiteList);
   const [activeSite, setActiveSite] = useState<number | null>(null);
+  const [showArchiveConfirm, setShowArchiveConfirm] = useState(false);
+  const [showArchived, setShowArchived] = useState(false);
 
   const data = activeSite ? siteData[activeSite] : null;
   const site = siteList.find((s) => s.id === activeSite);
 
+  const activeSites = siteList.filter((s) => !s.archived);
+  const archivedSites = siteList.filter((s) => s.archived);
+
+  const handleArchiveSite = () => {
+    setSiteList((prev) => prev.map((s) => s.id === activeSite ? { ...s, archived: true } : s));
+    setActiveSite(null);
+    setShowArchiveConfirm(false);
+  };
+
   return (
     <div>
+      {showArchiveConfirm && site && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", zIndex: 100, display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <div style={{ background: "#fff", width: "100%", maxWidth: "400px", borderRadius: "2px", border: "1px solid #d0d0d0", overflow: "hidden" }}>
+            <div style={{ padding: "16px 20px", borderBottom: "1px solid #d0d0d0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <div>
+                <div style={{ fontSize: "14px", fontWeight: 500, color: "#111" }}>Archive site</div>
+                <div style={{ fontSize: "12px", color: "#888", marginTop: "2px" }}>{site.name}</div>
+              </div>
+              <button onClick={() => setShowArchiveConfirm(false)} style={{ background: "none", border: "none", fontSize: "18px", color: "#888", cursor: "pointer" }}>×</button>
+            </div>
+            <div style={{ padding: "20px" }}>
+              <div style={{ fontSize: "13px", color: "#555", lineHeight: 1.7, marginBottom: "16px" }}>
+                Archiving this site will mark the project as complete. It will be removed from active views but all compliance records, documents and contractor history will be preserved permanently for audit purposes.
+              </div>
+              <div style={{ padding: "10px 12px", background: "#fafafa", border: "1px solid #ebebeb", borderRadius: "2px", marginBottom: "16px" }}>
+                <div style={{ fontSize: "11px", color: "#888", lineHeight: 1.6 }}>
+                  {site.total} contractors on this site will be moved to archived status. Their records remain accessible in the document vault.
+                </div>
+              </div>
+              <div style={{ display: "flex", gap: "8px", justifyContent: "flex-end" }}>
+                <button onClick={() => setShowArchiveConfirm(false)} style={{ padding: "7px 14px", border: "1px solid #d0d0d0", background: "#fff", color: "#111", fontSize: "12px", borderRadius: "2px", cursor: "pointer", fontFamily: "Roboto, sans-serif" }}>Cancel</button>
+                <button onClick={handleArchiveSite} style={{ padding: "7px 14px", border: "1px solid #c0392b", background: "#c0392b", color: "#fff", fontSize: "12px", fontWeight: 500, borderRadius: "2px", cursor: "pointer", fontFamily: "Roboto, sans-serif" }}>Archive site</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div style={{ padding: "14px 32px", borderBottom: "1px solid #d0d0d0", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <div>
           <div style={{ fontSize: "14px", fontWeight: 500, color: "#111" }}>Sites</div>
           <div style={{ fontSize: "12px", color: "#888", marginTop: "2px" }}>Select a site to see who is cleared to work today</div>
         </div>
-        <button style={{ padding: "7px 14px", border: "1px solid #d0d0d0", background: "#fff", color: "#111", fontSize: "12px", fontWeight: 500, cursor: "pointer", borderRadius: "2px", fontFamily: "Roboto, sans-serif" }}>
-          + Add site
-        </button>
+        <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+          {archivedSites.length > 0 && (
+            <button onClick={() => setShowArchived(!showArchived)} style={{ padding: "7px 14px", border: "1px solid #d0d0d0", background: showArchived ? "#111" : "#fff", color: showArchived ? "#fff" : "#888", fontSize: "12px", borderRadius: "2px", cursor: "pointer", fontFamily: "Roboto, sans-serif" }}>
+              {showArchived ? "Hide archived" : `Show archived (${archivedSites.length})`}
+            </button>
+          )}
+          <a href="/sites/new" style={{ padding: "7px 14px", border: "1px solid #d0d0d0", background: "#fff", color: "#111", fontSize: "12px", fontWeight: 500, borderRadius: "2px", fontFamily: "Roboto, sans-serif", textDecoration: "none" }}>
+            + Add site
+          </a>
+        </div>
       </div>
 
       <div style={{ padding: "24px 32px" }}>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "12px", marginBottom: activeSite ? "24px" : "0" }}>
-          {siteList.map((s) => {
+          {activeSites.map((s) => {
             const score = Math.round((s.cleared / s.total) * 100);
             return (
               <div
@@ -90,7 +146,6 @@ export default function Sites() {
                   <div style={{ fontSize: "13px", fontWeight: 500, color: "#111", marginBottom: "2px" }}>{s.name}</div>
                   <div style={{ fontSize: "11px", color: "#888" }}>{s.sub}</div>
                 </div>
-
                 <div style={{ padding: "12px 16px", display: "grid", gridTemplateColumns: "1fr 1fr 1fr", borderBottom: "1px solid #ebebeb" }}>
                   <div style={{ textAlign: "center" }}>
                     <div style={{ fontSize: "18px", fontWeight: 500, color: "#111" }}>{s.total}</div>
@@ -105,7 +160,6 @@ export default function Sites() {
                     <div style={{ fontSize: "10px", color: "#888", marginTop: "1px" }}>Not cleared</div>
                   </div>
                 </div>
-
                 <div style={{ padding: "10px 16px", background: scoreBg(score) }}>
                   <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "6px" }}>
                     <div style={{ fontSize: "11px", color: scoreColor(score), fontWeight: 500 }}>
@@ -121,17 +175,46 @@ export default function Sites() {
             );
           })}
 
-          <div
-            style={{ border: "1px dashed #d0d0d0", borderRadius: "2px", cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "32px 16px", minHeight: "160px" }}
-          >
+          <a href="/sites/new" style={{ border: "1px dashed #d0d0d0", borderRadius: "2px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "32px 16px", minHeight: "160px", textDecoration: "none" }}>
             <div style={{ width: "28px", height: "28px", borderRadius: "50%", border: "1px solid #d0d0d0", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "16px", color: "#aaa", marginBottom: "8px" }}>+</div>
             <div style={{ fontSize: "12px", color: "#aaa" }}>Add a new site</div>
-          </div>
+          </a>
         </div>
+
+        {showArchived && archivedSites.length > 0 && (
+          <div style={{ marginBottom: "24px" }}>
+            <div style={{ fontSize: "10px", fontWeight: 500, color: "#999", textTransform: "uppercase", letterSpacing: ".08em", marginBottom: "10px" }}>Archived sites</div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "12px" }}>
+              {archivedSites.map((s) => (
+                <div key={s.id} style={{ border: "1px solid #d0d0d0", borderRadius: "2px", overflow: "hidden", opacity: 0.6 }}>
+                  <div style={{ padding: "16px", borderBottom: "1px solid #ebebeb" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                      <div style={{ fontSize: "13px", fontWeight: 500, color: "#111" }}>{s.name}</div>
+                      <span style={{ fontSize: "10px", padding: "1px 6px", background: "#f5f5f5", color: "#888", border: "1px solid #ddd", borderRadius: "2px" }}>Archived</span>
+                    </div>
+                    <div style={{ fontSize: "11px", color: "#888", marginTop: "2px" }}>{s.sub}</div>
+                  </div>
+                  <div style={{ padding: "10px 16px", background: "#fafafa", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <div style={{ fontSize: "11px", color: "#888" }}>{s.total} contractors · records preserved</div>
+                    <span style={{ fontSize: "11px", color: "#3a7d44", cursor: "pointer" }}>View records</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {activeSite && data && site && (
           <div style={{ borderTop: "1px solid #d0d0d0", paddingTop: "24px" }}>
-            <div style={{ fontSize: "13px", fontWeight: 500, color: "#111", marginBottom: "16px" }}>{site.name} — {site.sub}</div>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "16px" }}>
+              <div style={{ fontSize: "13px", fontWeight: 500, color: "#111" }}>{site.name} — {site.sub}</div>
+              <button
+                onClick={() => setShowArchiveConfirm(true)}
+                style={{ padding: "6px 12px", border: "1px solid #d0d0d0", background: "#fff", color: "#888", fontSize: "11px", borderRadius: "2px", cursor: "pointer", fontFamily: "Roboto, sans-serif" }}
+              >
+                Archive site
+              </button>
+            </div>
 
             {data.notCleared.length > 0 ? (
               <div style={{ marginBottom: "20px" }}>
