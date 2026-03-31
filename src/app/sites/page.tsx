@@ -45,6 +45,19 @@ const siteData: Record<number, {
   },
 };
 
+const scoreColor = (score: number) => {
+  if (score === 100) return "#3a7d44";
+  if (score >= 80) return "#3a7d44";
+  if (score >= 60) return "#b8860b";
+  return "#c0392b";
+};
+
+const scoreBg = (score: number) => {
+  if (score >= 80) return "#f9fdf9";
+  if (score >= 60) return "#fffbf0";
+  return "#fff8f8";
+};
+
 export default function Sites() {
   const [activeSite, setActiveSite] = useState<number | null>(null);
 
@@ -65,42 +78,52 @@ export default function Sites() {
 
       <div style={{ padding: "24px 32px" }}>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "12px", marginBottom: activeSite ? "24px" : "0" }}>
-          {siteList.map((s) => (
-            <div
-              key={s.id}
-              onClick={() => setActiveSite(activeSite === s.id ? null : s.id)}
-              style={{ border: activeSite === s.id ? "1px solid #111" : "1px solid #d0d0d0", borderRadius: "2px", overflow: "hidden", cursor: "pointer" }}
-            >
-              <div style={{ padding: "16px", borderBottom: "1px solid #ebebeb" }}>
-                <div style={{ fontSize: "13px", fontWeight: 500, color: "#111", marginBottom: "2px" }}>{s.name}</div>
-                <div style={{ fontSize: "11px", color: "#888" }}>{s.sub}</div>
-              </div>
-              <div style={{ padding: "12px 16px", display: "grid", gridTemplateColumns: "1fr 1fr 1fr", borderBottom: "1px solid #ebebeb" }}>
-                <div style={{ textAlign: "center" }}>
-                  <div style={{ fontSize: "18px", fontWeight: 500, color: "#111" }}>{s.total}</div>
-                  <div style={{ fontSize: "10px", color: "#888", marginTop: "1px" }}>Total</div>
+          {siteList.map((s) => {
+            const score = Math.round((s.cleared / s.total) * 100);
+            return (
+              <div
+                key={s.id}
+                onClick={() => setActiveSite(activeSite === s.id ? null : s.id)}
+                style={{ border: activeSite === s.id ? "1px solid #111" : "1px solid #d0d0d0", borderRadius: "2px", overflow: "hidden", cursor: "pointer" }}
+              >
+                <div style={{ padding: "16px", borderBottom: "1px solid #ebebeb" }}>
+                  <div style={{ fontSize: "13px", fontWeight: 500, color: "#111", marginBottom: "2px" }}>{s.name}</div>
+                  <div style={{ fontSize: "11px", color: "#888" }}>{s.sub}</div>
                 </div>
-                <div style={{ textAlign: "center", borderLeft: "1px solid #ebebeb", borderRight: "1px solid #ebebeb" }}>
-                  <div style={{ fontSize: "18px", fontWeight: 500, color: "#3a7d44" }}>{s.cleared}</div>
-                  <div style={{ fontSize: "10px", color: "#888", marginTop: "1px" }}>Cleared</div>
-                </div>
-                <div style={{ textAlign: "center" }}>
-                  <div style={{ fontSize: "18px", fontWeight: 500, color: s.notCleared > 0 ? "#c0392b" : "#111" }}>{s.notCleared}</div>
-                  <div style={{ fontSize: "10px", color: "#888", marginTop: "1px" }}>Not cleared</div>
-                </div>
-              </div>
-              <div style={{ padding: "10px 16px", background: s.notCleared > 0 ? "#fff8f8" : "#f9fdf9", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                <div style={{ fontSize: "11px", color: s.notCleared > 0 ? "#c0392b" : "#3a7d44" }}>
-                  {s.notCleared > 0 ? `${s.notCleared} contractor${s.notCleared > 1 ? "s" : ""} not cleared` : "All contractors cleared"}
-                </div>
-                <span style={{ fontSize: "11px", color: "#111", fontWeight: 500 }}>
-                  {activeSite === s.id ? "Close ↑" : "View →"}
-                </span>
-              </div>
-            </div>
-          ))}
 
-          <div style={{ border: "1px dashed #d0d0d0", borderRadius: "2px", cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "32px 16px", minHeight: "140px" }}>
+                <div style={{ padding: "12px 16px", display: "grid", gridTemplateColumns: "1fr 1fr 1fr", borderBottom: "1px solid #ebebeb" }}>
+                  <div style={{ textAlign: "center" }}>
+                    <div style={{ fontSize: "18px", fontWeight: 500, color: "#111" }}>{s.total}</div>
+                    <div style={{ fontSize: "10px", color: "#888", marginTop: "1px" }}>Total</div>
+                  </div>
+                  <div style={{ textAlign: "center", borderLeft: "1px solid #ebebeb", borderRight: "1px solid #ebebeb" }}>
+                    <div style={{ fontSize: "18px", fontWeight: 500, color: "#3a7d44" }}>{s.cleared}</div>
+                    <div style={{ fontSize: "10px", color: "#888", marginTop: "1px" }}>Cleared</div>
+                  </div>
+                  <div style={{ textAlign: "center" }}>
+                    <div style={{ fontSize: "18px", fontWeight: 500, color: s.notCleared > 0 ? "#c0392b" : "#111" }}>{s.notCleared}</div>
+                    <div style={{ fontSize: "10px", color: "#888", marginTop: "1px" }}>Not cleared</div>
+                  </div>
+                </div>
+
+                <div style={{ padding: "10px 16px", background: scoreBg(score) }}>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "6px" }}>
+                    <div style={{ fontSize: "11px", color: scoreColor(score), fontWeight: 500 }}>
+                      {score === 100 ? "All contractors cleared" : `${s.notCleared} contractor${s.notCleared > 1 ? "s" : ""} not cleared`}
+                    </div>
+                    <div style={{ fontSize: "13px", fontWeight: 500, color: scoreColor(score) }}>{score}%</div>
+                  </div>
+                  <div style={{ height: "4px", background: "#e0e0e0", borderRadius: "2px", overflow: "hidden" }}>
+                    <div style={{ height: "100%", width: `${score}%`, background: scoreColor(score), borderRadius: "2px" }} />
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+
+          <div
+            style={{ border: "1px dashed #d0d0d0", borderRadius: "2px", cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "32px 16px", minHeight: "160px" }}
+          >
             <div style={{ width: "28px", height: "28px", borderRadius: "50%", border: "1px solid #d0d0d0", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "16px", color: "#aaa", marginBottom: "8px" }}>+</div>
             <div style={{ fontSize: "12px", color: "#aaa" }}>Add a new site</div>
           </div>
