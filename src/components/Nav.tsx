@@ -26,6 +26,7 @@ export default function Nav() {
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
             <a href="/bulk-invite" style={{ padding: "7px 14px", border: "1px solid #d0d0d0", background: pathname === "/bulk-invite" ? "#111" : "#fff", color: pathname === "/bulk-invite" ? "#fff" : "#111", fontSize: "12px", fontWeight: 500, borderRadius: "2px", fontFamily: "Roboto, sans-serif", textDecoration: "none" }}>Bulk invite</a>
+            <a href="/settings" style={{ padding: "7px 14px", border: "1px solid #d0d0d0", background: pathname === "/settings" ? "#111" : "#fff", color: pathname === "/settings" ? "#fff" : "#111", fontSize: "12px", fontWeight: 500, borderRadius: "2px", fontFamily: "Roboto, sans-serif", textDecoration: "none" }}>Settings</a>
             <button onClick={() => setShowInvite(true)} style={{ padding: "7px 14px", border: "1px solid #111", background: "#111", color: "#fff", fontSize: "12px", fontWeight: 500, cursor: "pointer", borderRadius: "2px", fontFamily: "Roboto, sans-serif" }}>+ Invite contractor</button>
           </div>
         </div>
