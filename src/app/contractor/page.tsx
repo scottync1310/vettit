@@ -2,6 +2,7 @@
 import { useState } from "react";
 import StatusBadge from "../../components/StatusBadge";
 import ArchiveModal from "../../components/ArchiveModal";
+import { isLicenceCovered, getCoveredLicences, progressiveMap } from "../../lib/licences";
 
 const licences: Record<string, string[]> = {
   scaffolder: ["Dogging DG", "Basic Rigging RB", "Intermediate Rigging RI", "Advanced Rigging RA", "Basic Scaffolding SB", "Intermediate Scaffolding SI", "Advanced Scaffolding SA"],
@@ -46,7 +47,7 @@ type Subcontractor = {
 const initialWorkers: Worker[] = [
   { id: 1, firstName: "Tom", lastName: "Richards", role: "supervisor", citizen: true, heights: false, selectedLicences: [], whiteCard: true, isContact: true },
   { id: 2, firstName: "James", lastName: "Hartley", role: "demolition", citizen: true, heights: true, selectedLicences: ["Demolition Licence"], whiteCard: true },
-  { id: 3, firstName: "Miguel", lastName: "Santos", role: "crane", citizen: false, heights: false, selectedLicences: ["Slewing Mobile Crane C6 (up to 60t)"], whiteCard: true },
+  { id: 3, firstName: "Miguel", lastName: "Santos", role: "crane", citizen: false, heights: false, selectedLicences: ["Slewing Mobile Crane C0 (open/over 100t)"], whiteCard: true },
 ];
 
 const initialSubcontractors: Subcontractor[] = [
@@ -155,6 +156,35 @@ export default function ContractorDetail() {
       {sub && <div style={{ fontSize: "11px", color: "#aaa", marginTop: "2px" }}>{sub}</div>}
     </div>
   );
+
+  const WorkerLicenceRows = ({ w }: { w: Worker }) => {
+    const covered = getCoveredLicences(w.selectedLicences);
+    const allRows = [
+      ...w.selectedLicences.map((lic) => ({ lic, type: "held" as const })),
+      ...covered.map((lic) => ({ lic, type: "covered" as const })),
+    ];
+    return (
+      <>
+        {allRows.map((row, i) => {
+          const coveredBy = row.type === "covered"
+            ? w.selectedLicences.find((h) => (progressiveMap[h] || []).includes(row.lic))
+            : null;
+          return (
+            <div key={row.lic} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "9px 0", borderBottom: i < allRows.length - 1 ? "1px solid #ebebeb" : "none", background: row.type === "covered" ? "#f9fdf9" : "transparent" }}>
+              <div style={{ fontSize: "12px", color: row.type === "covered" ? "#3a7d44" : "#555" }}>{row.lic}</div>
+              {row.type === "covered" ? (
+                <span style={{ fontSize: "10px", padding: "1px 6px", background: "#e8f5e9", color: "#3a7d44", border: "1px solid #a5d6a7", borderRadius: "2px", flexShrink: 0, marginLeft: "8px" }}>
+                  Covered by {coveredBy?.split(" ").slice(-1)[0]}
+                </span>
+              ) : (
+                <div style={{ fontSize: "12px", color: "#3a7d44", fontWeight: 500 }}>Verified</div>
+              )}
+            </div>
+          );
+        })}
+      </>
+    );
+  };
 
   if (archived && activeSites.length === 0) {
     return (
@@ -356,17 +386,12 @@ export default function ContractorDetail() {
                   </div>
                 )}
                 {w.heights && (
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "9px 0", borderBottom: w.selectedLicences.length > 0 ? "1px solid #ebebeb" : "none" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "9px 0", borderBottom: "1px solid #ebebeb" }}>
                     <div style={{ fontSize: "12px", color: "#555" }}>Working at Heights</div>
                     <div style={{ fontSize: "12px", color: "#3a7d44", fontWeight: 500 }}>Verified</div>
                   </div>
                 )}
-                {w.selectedLicences.map((lic, i) => (
-                  <div key={lic} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "9px 0", borderBottom: i < w.selectedLicences.length - 1 ? "1px solid #ebebeb" : "none" }}>
-                    <div style={{ fontSize: "12px", color: "#555" }}>{lic}</div>
-                    <div style={{ fontSize: "12px", color: "#3a7d44", fontWeight: 500 }}>Verified</div>
-                  </div>
-                ))}
+                <WorkerLicenceRows w={w} />
               </div>
             </div>
           ))}
@@ -430,13 +455,24 @@ export default function ContractorDetail() {
               {licences[newWorker.role] && (
                 <div>
                   <div style={{ fontSize: "11px", fontWeight: 500, color: "#555", marginBottom: "6px" }}>Licences held</div>
-                  <div style={{ border: "1px solid #d0d0d0", borderRadius: "2px", padding: "8px 12px" }}>
-                    {licences[newWorker.role].map((lic) => (
-                      <label key={lic} style={{ display: "flex", alignItems: "center", gap: "8px", padding: "6px 0", borderBottom: "1px solid #f0f0f0", cursor: "pointer", fontSize: "12px", color: "#111" }}>
-                        <input type="checkbox" checked={newWorker.selectedLicences.includes(lic)} onChange={() => toggleLicence(lic)} style={{ accentColor: "#111", width: "13px", height: "13px" }} />
-                        {lic}
-                      </label>
-                    ))}
+                  <div style={{ border: "1px solid #d0d0d0", borderRadius: "2px", overflow: "hidden" }}>
+                    {licences[newWorker.role].map((lic, i) => {
+                      const coveredBy = isLicenceCovered(lic, newWorker.selectedLicences);
+                      const isSelected = newWorker.selectedLicences.includes(lic);
+                      return (
+                        <div key={lic} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "8px 12px", borderBottom: i < licences[newWorker.role].length - 1 ? "1px solid #f0f0f0" : "none", background: coveredBy ? "#f9fdf9" : "#fff" }}>
+                          <label style={{ display: "flex", alignItems: "center", gap: "8px", cursor: coveredBy ? "default" : "pointer", flex: 1, fontSize: "12px", color: coveredBy ? "#3a7d44" : "#111" }}>
+                            <input type="checkbox" checked={isSelected || !!coveredBy} disabled={!!coveredBy} onChange={() => !coveredBy && toggleLicence(lic)} style={{ accentColor: "#3a7d44", width: "13px", height: "13px" }} />
+                            {lic}
+                          </label>
+                          {coveredBy && (
+                            <span style={{ fontSize: "10px", padding: "1px 6px", background: "#e8f5e9", color: "#3a7d44", border: "1px solid #a5d6a7", borderRadius: "2px", flexShrink: 0, marginLeft: "8px" }}>
+                              Covered by {coveredBy.split(" ").slice(-1)[0]}
+                            </span>
+                          )}
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               )}

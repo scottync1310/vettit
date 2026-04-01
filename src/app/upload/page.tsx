@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { getCoveredLicences, isLicenceCovered } from "../../lib/licences";
 
 const licenceOptions: Record<string, string[]> = {
   plumber: [
@@ -61,24 +62,10 @@ const licenceOptions: Record<string, string[]> = {
     "Heavy Combination HC",
     "Multi-Combination MC",
   ],
-  carpentry: [
-    "Carpentry & Joinery Licence",
-    "Building & Construction Licence",
-  ],
-  hvac: [
-    "Air Conditioning & Refrigeration Licence",
-    "Gas Fitting Licence",
-    "Electrical Worker Licence (Restricted — A/C)",
-  ],
-  gasfitter: [
-    "Gas Fitting Licence — Type A",
-    "Gas Fitting Licence — Type B",
-    "Gas Fitting Licence — LP Gas",
-  ],
-  painting: [
-    "Painting & Decorating Licence",
-    "Lead Paint Removal Certification",
-  ],
+  carpentry: ["Carpentry & Joinery Licence", "Building & Construction Licence"],
+  hvac: ["Air Conditioning & Refrigeration Licence", "Gas Fitting Licence", "Electrical Worker Licence (Restricted — A/C)"],
+  gasfitter: ["Gas Fitting Licence — Type A", "Gas Fitting Licence — Type B", "Gas Fitting Licence — LP Gas"],
+  painting: ["Painting & Decorating Licence", "Lead Paint Removal Certification"],
   tiling: ["Wall & Floor Tiling Licence"],
   concretor: ["Concreting Licence", "Concrete Placing Boom PB"],
 };
@@ -180,7 +167,6 @@ export default function UploadPortal() {
   const [workers, setWorkers] = useState<Worker[]>([]);
   const [showAddWorker, setShowAddWorker] = useState(false);
   const [newWorker, setNewWorker] = useState(emptyWorker);
-
   const [subs, setSubs] = useState<Sub[]>([]);
   const [showAddSub, setShowAddSub] = useState(false);
   const [newSub, setNewSub] = useState(emptySub);
@@ -351,17 +337,41 @@ export default function UploadPortal() {
 
   const licenceChecklist = (role: string, selected: string[], toggle: (lic: string) => void) => {
     if (!licenceOptions[role]) return null;
+    const covered = getCoveredLicences(selected);
     return (
       <div style={{ marginBottom: "12px" }}>
         <div style={{ fontSize: "11px", fontWeight: 500, color: "#555", marginBottom: "5px" }}>Licences held — select all that apply</div>
-        <div style={{ border: "1px solid #d0d0d0", borderRadius: "2px", padding: "8px 12px" }}>
-          {licenceOptions[role].map((lic, i) => (
-            <label key={lic} style={{ display: "flex", alignItems: "center", gap: "8px", padding: "7px 0", borderBottom: i < licenceOptions[role].length - 1 ? "1px solid #f0f0f0" : "none", cursor: "pointer", fontSize: "12px", color: "#111" }}>
-              <input type="checkbox" checked={selected.includes(lic)} onChange={() => toggle(lic)} style={{ accentColor: "#111", width: "13px", height: "13px" }} />
-              {lic}
-            </label>
-          ))}
+        <div style={{ border: "1px solid #d0d0d0", borderRadius: "2px", overflow: "hidden" }}>
+          {licenceOptions[role].map((lic, i) => {
+            const isSelected = selected.includes(lic);
+            const coveredBy = isLicenceCovered(lic, selected);
+            const isCovered = !!coveredBy;
+            return (
+              <div key={lic} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "9px 12px", borderBottom: i < licenceOptions[role].length - 1 ? "1px solid #f0f0f0" : "none", background: isCovered ? "#f9fdf9" : "#fff" }}>
+                <label style={{ display: "flex", alignItems: "center", gap: "8px", cursor: isCovered ? "default" : "pointer", flex: 1, fontSize: "12px", color: isCovered ? "#3a7d44" : "#111" }}>
+                  <input
+                    type="checkbox"
+                    checked={isSelected || isCovered}
+                    disabled={isCovered}
+                    onChange={() => !isCovered && toggle(lic)}
+                    style={{ accentColor: "#3a7d44", width: "13px", height: "13px" }}
+                  />
+                  {lic}
+                </label>
+                {isCovered && (
+                  <span style={{ fontSize: "10px", padding: "1px 6px", background: "#e8f5e9", color: "#3a7d44", border: "1px solid #a5d6a7", borderRadius: "2px", flexShrink: 0, marginLeft: "8px" }}>
+                    Covered by {coveredBy.split(" ").slice(-1)[0]}
+                  </span>
+                )}
+              </div>
+            );
+          })}
         </div>
+        {covered.length > 0 && (
+          <div style={{ fontSize: "11px", color: "#3a7d44", marginTop: "6px" }}>
+            ✓ {covered.length} lower class{covered.length > 1 ? "es" : ""} automatically covered by your higher licence
+          </div>
+        )}
       </div>
     );
   };
@@ -528,13 +538,11 @@ export default function UploadPortal() {
               <div style={{ fontSize: "10px", fontWeight: 500, color: "#999", textTransform: "uppercase", letterSpacing: ".08em" }}>Subcontractors</div>
               <div style={{ fontSize: "11px", color: "#aaa", marginTop: "3px" }}>Declare any subcontractors you are bringing on site — your builder will review and send their compliance invite</div>
             </div>
-
             <div style={{ padding: "12px 14px", border: "1px solid #ffe082", background: "#fff8e1", borderRadius: "2px", marginBottom: "16px" }}>
               <div style={{ fontSize: "12px", color: "#7c4e00", lineHeight: 1.6 }}>
                 You are not inviting subcontractors — you are declaring who you plan to bring on site. Hartley Constructions will review this information and send their compliance invite separately.
               </div>
             </div>
-
             <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginBottom: "12px" }}>
               {subs.map((sub) => (
                 <div key={sub.id} style={{ border: "1px solid #ffe082", borderRadius: "2px", padding: "11px 14px", background: "#fff8e1", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
@@ -546,7 +554,6 @@ export default function UploadPortal() {
                 </div>
               ))}
             </div>
-
             {showAddSub ? (
               <div style={{ border: "1px solid #d0d0d0", borderRadius: "2px", overflow: "hidden", marginBottom: "12px" }}>
                 <div style={{ padding: "10px 14px", background: "#fafafa", borderBottom: "1px solid #d0d0d0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -587,14 +594,12 @@ export default function UploadPortal() {
                 + Declare a subcontractor
               </button>
             )}
-
             {!showAddSub && (
               <label style={{ display: "flex", alignItems: "center", gap: "8px", padding: "10px 12px", border: "1px solid #d0d0d0", borderRadius: "2px", cursor: "pointer", marginBottom: "16px" }}>
                 <input type="checkbox" checked={noSubs} onChange={(e) => setNoSubs(e.target.checked)} style={{ accentColor: "#111", width: "14px", height: "14px" }} />
                 <div style={{ fontSize: "13px", color: "#111" }}>No subcontractors on this site</div>
               </label>
             )}
-
             <div style={{ display: "flex", justifyContent: "space-between" }}>
               <button onClick={() => setStep(2)} style={btnOutline}>← Back</button>
               <button
