@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { getCoveredLicences, isLicenceCovered, progressiveMap } from "../../../lib/licences";
+import { isLicenceCovered } from "../../../lib/licences";
 
 const licenceOptions: Record<string, string[]> = {
   plumber: ["Plumbing Licence — Unrestricted", "Plumbing Licence — Restricted", "Drainage Licence", "Gas Fitting Licence", "Irrigation Licence"],
@@ -60,9 +60,9 @@ const mockParse = (fileName: string, onDone: (state: ParseState, insurer?: strin
   }, 2000);
 };
 
-const emptyWorker = {
+const emptyWorker: Omit<Worker, "id"> = {
   firstName: "", lastName: "", role: "", whiteCardFile: "",
-  whiteCardState: "idle" as ParseState, citizen: true, heights: false, licences: [],
+  whiteCardState: "idle", citizen: true, heights: false, licences: [],
 };
 
 export default function AddContractorManually() {
@@ -80,7 +80,7 @@ export default function AddContractorManually() {
 
   const [workers, setWorkers] = useState<Worker[]>([]);
   const [showAddWorker, setShowAddWorker] = useState(false);
-  const [newWorker, setNewWorker] = useState(emptyWorker);
+  const [newWorker, setNewWorker] = useState<Omit<Worker, "id">>(emptyWorker);
 
   const inputStyle: React.CSSProperties = {
     width: "100%", padding: "8px 10px", border: "1px solid #d0d0d0",
@@ -230,7 +230,6 @@ export default function AddContractorManually() {
 
       <div style={{ maxWidth: "560px", margin: "0 auto", padding: "32px 24px 64px" }}>
 
-        {/* PROGRESS */}
         <div style={{ display: "flex", alignItems: "center", marginBottom: "32px" }}>
           {steps.map((s, i) => (
             <div key={s} style={{ display: "flex", alignItems: "center", flex: i < steps.length - 1 ? 1 : "none" }}>
@@ -245,7 +244,6 @@ export default function AddContractorManually() {
           ))}
         </div>
 
-        {/* STEP 0 — COMPANY DETAILS */}
         {step === 0 && (
           <div>
             <div style={{ border: "1px solid #d0d0d0", borderRadius: "2px", overflow: "hidden", marginBottom: "16px" }}>
@@ -335,7 +333,6 @@ export default function AddContractorManually() {
           </div>
         )}
 
-        {/* STEP 1 — DOCUMENTS */}
         {step === 1 && (
           <div>
             <div style={{ marginBottom: "14px" }}>
@@ -352,7 +349,6 @@ export default function AddContractorManually() {
           </div>
         )}
 
-        {/* STEP 2 — WORKERS */}
         {step === 2 && (
           <div>
             <div style={{ marginBottom: "14px" }}>
@@ -474,7 +470,6 @@ export default function AddContractorManually() {
           </div>
         )}
 
-        {/* STEP 3 — REVIEW */}
         {step === 3 && (
           <div>
             <div style={{ marginBottom: "20px" }}>
