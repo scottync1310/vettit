@@ -23,7 +23,6 @@ export default function Nav() {
 
   return (
     <>
-      {/* HEADER — logo + tagline */}
       <div style={{ maxWidth: "960px", margin: "0 auto", padding: "20px 32px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "8px" }}>
         <img src="/logo.png" alt="Vettit" style={{ height: "60px", width: "auto", display: "block" }} />
         <div style={{ fontSize: "11px", fontWeight: 500, color: "#888", letterSpacing: ".15em", textTransform: "uppercase", fontFamily: "Montserrat, sans-serif" }}>
@@ -31,7 +30,6 @@ export default function Nav() {
         </div>
       </div>
 
-      {/* NAV */}
       <nav style={{ background: "#fff", position: "sticky", top: 0, zIndex: 50 }}>
         <div style={{ maxWidth: "960px", margin: "0 auto", padding: "0 32px", height: "48px", display: "flex", alignItems: "center", justifyContent: "center" }}>
           <div style={{ display: "flex", alignItems: "center" }}>
@@ -40,7 +38,6 @@ export default function Nav() {
             <a href="/calendar" style={linkStyle("/calendar")}>CALENDAR</a>
             <a href="/vault" style={linkStyle("/vault")}>VAULT</a>
             <a href="/bulk-invite" style={linkStyle("/bulk-invite")}>BULK INVITE</a>
-            <a href="/settings" style={linkStyle("/settings")}>SETTINGS</a>
             <button
               onClick={() => setShowInvite(true)}
               style={{
@@ -53,6 +50,7 @@ export default function Nav() {
             >
               + INVITE
             </button>
+            <a href="/settings" style={linkStyle("/settings")}>SETTINGS</a>
           </div>
         </div>
       </nav>
