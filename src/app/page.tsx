@@ -70,24 +70,28 @@ export default function Dashboard() {
       {showInvite && <InviteModal onClose={() => setShowInvite(false)} />}
 
       {/* STATS */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", borderBottom: "1px solid #d0d0d0" }}>
-        <div style={{ padding: "16px 32px", borderRight: "1px solid #d0d0d0" }}>
-          <div style={{ fontSize: "22px", fontWeight: 500 }}>{active.length}</div>
-          <div style={{ fontSize: "11px", color: "#333", marginTop: "2px" }}>Active contractors</div>
-        </div>
-        <div style={{ padding: "16px 32px", borderRight: "1px solid #d0d0d0" }}>
-          <div style={{ fontSize: "22px", fontWeight: 500, color: "#3a7d44" }}>{active.filter(c => c.status === "compliant").length}</div>
-          <div style={{ fontSize: "11px", color: "#333", marginTop: "2px" }}>Compliant</div>
-        </div>
-        <div style={{ padding: "16px 32px", borderRight: "1px solid #d0d0d0" }}>
-          <div style={{ fontSize: "22px", fontWeight: 500, color: "#b8860b" }}>{active.filter(c => c.status === "expiring").length}</div>
-          <div style={{ fontSize: "11px", color: "#333", marginTop: "2px" }}>Expiring soon</div>
-        </div>
-        <div style={{ padding: "16px 32px" }}>
-          <div style={{ fontSize: "22px", fontWeight: 500, color: "#c0392b" }}>{active.filter(c => c.status === "non-compliant" || c.status === "unresponsive").length}</div>
-          <div style={{ fontSize: "11px", color: "#333", marginTop: "2px" }}>Action required</div>
-        </div>
-      </div>
+<div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", borderBottom: "1px solid #d0d0d0" }}>
+  <div style={{ padding: "16px 32px", borderRight: "1px solid #d0d0d0" }}>
+    <div style={{ fontSize: "22px", fontWeight: 500 }}>{active.length}</div>
+    <div style={{ fontSize: "11px", color: "#666", marginTop: "2px" }}>Active contractors</div>
+  </div>
+  <div style={{ padding: "16px 32px", borderRight: "1px solid #d0d0d0" }}>
+    <div style={{ fontSize: "22px", fontWeight: 500, color: "#3a7d44" }}>{active.filter(c => c.status === "compliant").length}</div>
+    <div style={{ fontSize: "11px", color: "#666", marginTop: "2px" }}>Compliant</div>
+  </div>
+  <div style={{ padding: "16px 32px", borderRight: "1px solid #d0d0d0" }}>
+    <div style={{ fontSize: "22px", fontWeight: 500, color: "#b8860b" }}>{active.filter(c => c.status === "expiring").length}</div>
+    <div style={{ fontSize: "11px", color: "#666", marginTop: "2px" }}>Expiring soon</div>
+  </div>
+  <div style={{ padding: "16px 32px", borderRight: "1px solid #d0d0d0" }}>
+    <div style={{ fontSize: "22px", fontWeight: 500, color: "#c0392b" }}>{active.filter(c => c.status === "non-compliant" || c.status === "unresponsive").length}</div>
+    <div style={{ fontSize: "11px", color: "#666", marginTop: "2px" }}>Action required</div>
+  </div>
+  <div style={{ padding: "16px 32px" }}>
+    <div style={{ fontSize: "22px", fontWeight: 500, color: "#111" }}>3</div>
+    <div style={{ fontSize: "11px", color: "#666", marginTop: "2px" }}>Active sites</div>
+  </div>
+</div>
 
       {/* SUBCONTRACTOR DECLARATIONS */}
       {declarations.length > 0 && (
