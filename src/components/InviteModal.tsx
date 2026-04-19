@@ -54,16 +54,16 @@ export default function InviteModal({ onClose }: { onClose: () => void }) {
         <div style={{ padding: "16px 20px", borderBottom: "1px solid #d0d0d0", display: "flex", justifyContent: "space-between", alignItems: "center", flexShrink: 0 }}>
           <div>
             <div style={{ fontSize: "14px", fontWeight: 500, color: "#111" }}>Invite a contractor</div>
-            <div style={{ fontSize: "12px", color: "#888", marginTop: "2px" }}>One email sent. Vettit handles the follow-up.</div>
+            <div style={{ fontSize: "12px", color: "#333", marginTop: "2px" }}>One email sent. Vettit handles the follow-up.</div>
           </div>
-          <button onClick={onClose} style={{ background: "none", border: "none", fontSize: "18px", color: "#888", cursor: "pointer", lineHeight: 1 }}>×</button>
+          <button onClick={onClose} style={{ background: "none", border: "none", fontSize: "18px", color: "#333", cursor: "pointer", lineHeight: 1 }}>×</button>
         </div>
 
         <div style={{ padding: "20px", display: "flex", flexDirection: "column", gap: "0", overflowY: "auto", flex: 1 }}>
 
           {/* SECTION 1 — COMPANY */}
           <div style={{ paddingBottom: "16px", marginBottom: "16px", borderBottom: "1px solid #ebebeb" }}>
-            <div style={{ fontSize: "10px", fontWeight: 500, color: "#999", textTransform: "uppercase", letterSpacing: ".08em", marginBottom: "12px" }}>Company details</div>
+            <div style={{ fontSize: "12px", fontWeight: 500, color: "#444", textTransform: "uppercase", letterSpacing: ".08em", marginBottom: "12px" }}>Company details</div>
             <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
               <div>
                 <label style={{ fontSize: "11px", fontWeight: 500, color: "#555", display: "block", marginBottom: "5px" }}>Company name</label>
@@ -96,8 +96,8 @@ export default function InviteModal({ onClose }: { onClose: () => void }) {
 
           {/* SECTION 2 — CONTACT PERSON */}
           <div style={{ paddingBottom: "16px", marginBottom: "16px", borderBottom: "1px solid #ebebeb" }}>
-            <div style={{ fontSize: "10px", fontWeight: 500, color: "#999", textTransform: "uppercase", letterSpacing: ".08em", marginBottom: "4px" }}>Contact person</div>
-            <div style={{ fontSize: "11px", color: "#aaa", marginBottom: "12px" }}>This person receives the invite and is added as a worker automatically</div>
+            <div style={{ fontSize: "12px", fontWeight: 500, color: "#444", textTransform: "uppercase", letterSpacing: ".08em", marginBottom: "4px" }}>Contact person</div>
+            <div style={{ fontSize: "11px", color: "#444", marginBottom: "12px" }}>This person receives the invite and is added as a worker automatically</div>
             <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
                 <div>
@@ -134,14 +134,14 @@ export default function InviteModal({ onClose }: { onClose: () => void }) {
 
           {/* SECTION 3 — SITES */}
           <div style={{ paddingBottom: "16px", marginBottom: "16px", borderBottom: "1px solid #ebebeb" }}>
-            <div style={{ fontSize: "10px", fontWeight: 500, color: "#999", textTransform: "uppercase", letterSpacing: ".08em", marginBottom: "12px" }}>Vetting for which sites</div>
+            <div style={{ fontSize: "12px", fontWeight: 500, color: "#444", textTransform: "uppercase", letterSpacing: ".08em", marginBottom: "12px" }}>Vetting for which sites</div>
             <div style={{ border: "1px solid #d0d0d0", borderRadius: "2px", overflow: "hidden" }}>
               {sites.map((s, i) => (
                 <label key={s.name} style={{ display: "flex", alignItems: "center", gap: "10px", padding: "10px 12px", borderBottom: i < sites.length - 1 ? "1px solid #ebebeb" : "none", cursor: "pointer", background: selectedSites.includes(s.name) ? "#f5f5f5" : "#fff" }}>
                   <input type="checkbox" checked={selectedSites.includes(s.name)} onChange={() => toggleSite(s.name)} style={{ accentColor: "#111", width: "14px", height: "14px" }} />
                   <div>
                     <div style={{ fontSize: "13px", color: "#111", fontWeight: selectedSites.includes(s.name) ? 500 : 400 }}>{s.name}</div>
-                    <div style={{ fontSize: "11px", color: "#888" }}>{s.sub}</div>
+                    <div style={{ fontSize: "11px", color: "#333" }}>{s.sub}</div>
                   </div>
                 </label>
               ))}
@@ -150,8 +150,8 @@ export default function InviteModal({ onClose }: { onClose: () => void }) {
 
           {/* SECTION 4 — COMPANY DOCS */}
           <div style={{ paddingBottom: "16px", marginBottom: "16px", borderBottom: "1px solid #ebebeb" }}>
-            <div style={{ fontSize: "10px", fontWeight: 500, color: "#999", textTransform: "uppercase", letterSpacing: ".08em", marginBottom: "4px" }}>Company documents</div>
-            <div style={{ fontSize: "11px", color: "#aaa", marginBottom: "12px" }}>Verified once — applies across all sites</div>
+            <div style={{ fontSize: "12px", fontWeight: 500, color: "#444", textTransform: "uppercase", letterSpacing: ".08em", marginBottom: "4px" }}>Company documents</div>
+            <div style={{ fontSize: "11px", color: "#444", marginBottom: "12px" }}>Verified once — applies across all sites</div>
             <div style={{ border: "1px solid #d0d0d0", borderRadius: "2px", padding: "8px 12px" }}>
               {companyDocs.map((doc, i) => (
                 <label key={doc} style={{ display: "flex", alignItems: "center", gap: "8px", padding: "7px 0", borderBottom: i < companyDocs.length - 1 ? "1px solid #f0f0f0" : "none", cursor: "pointer", fontSize: "13px", color: "#111" }}>
@@ -164,8 +164,8 @@ export default function InviteModal({ onClose }: { onClose: () => void }) {
 
           {/* SECTION 5 — SITE DOCS */}
           <div style={{ paddingBottom: "16px", marginBottom: "16px", borderBottom: "1px solid #ebebeb" }}>
-            <div style={{ fontSize: "10px", fontWeight: 500, color: "#999", textTransform: "uppercase", letterSpacing: ".08em", marginBottom: "4px" }}>Site documents</div>
-            <div style={{ fontSize: "11px", color: "#aaa", marginBottom: "12px" }}>Required per site — collected for each engagement</div>
+            <div style={{ fontSize: "12px", fontWeight: 500, color: "#444", textTransform: "uppercase", letterSpacing: ".08em", marginBottom: "4px" }}>Site documents</div>
+            <div style={{ fontSize: "11px", color: "#444", marginBottom: "12px" }}>Required per site — collected for each engagement</div>
             <div style={{ border: "1px solid #d0d0d0", borderRadius: "2px", padding: "8px 12px" }}>
               {siteDocs.map((doc, i) => (
                 <label key={doc} style={{ display: "flex", alignItems: "center", gap: "8px", padding: "7px 0", borderBottom: i < siteDocs.length - 1 ? "1px solid #f0f0f0" : "none", cursor: "pointer", fontSize: "13px", color: "#111" }}>
@@ -178,8 +178,8 @@ export default function InviteModal({ onClose }: { onClose: () => void }) {
 
           {/* SECTION 6 — SUBCONTRACTORS */}
           <div style={{ paddingBottom: "16px", marginBottom: "16px", borderBottom: "1px solid #ebebeb" }}>
-            <div style={{ fontSize: "10px", fontWeight: 500, color: "#999", textTransform: "uppercase", letterSpacing: ".08em", marginBottom: "4px" }}>Subcontractors</div>
-            <div style={{ fontSize: "11px", color: "#aaa", marginBottom: "12px" }}>Does this contractor bring subbies on site? Add them here and Vettit will invite them separately</div>
+            <div style={{ fontSize: "12px", fontWeight: 500, color: "#444", textTransform: "uppercase", letterSpacing: ".08em", marginBottom: "4px" }}>Subcontractors</div>
+            <div style={{ fontSize: "11px", color: "#444", marginBottom: "12px" }}>Does this contractor bring subbies on site? Add them here and Vettit will invite them separately</div>
 
             <label style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 12px", border: "1px solid #d0d0d0", borderRadius: "2px", cursor: "pointer", marginBottom: hasSubs ? "12px" : "0" }}>
               <div style={{ fontSize: "13px", color: "#111" }}>This contractor brings subcontractors on site</div>
@@ -192,9 +192,9 @@ export default function InviteModal({ onClose }: { onClose: () => void }) {
                   <div key={sub.id} style={{ border: "1px solid #d0d0d0", borderRadius: "2px", padding: "10px 12px", marginBottom: "8px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                     <div>
                       <div style={{ fontSize: "13px", fontWeight: 500, color: "#111" }}>{sub.name}</div>
-                      <div style={{ fontSize: "11px", color: "#888", marginTop: "2px" }}>{sub.trade} · {sub.contactFirst} {sub.contactLast} · {sub.email}</div>
+                      <div style={{ fontSize: "11px", color: "#333", marginTop: "2px" }}>{sub.trade} · {sub.contactFirst} {sub.contactLast} · {sub.email}</div>
                     </div>
-                    <button onClick={() => removeSub(sub.id)} style={{ background: "none", border: "none", fontSize: "16px", color: "#aaa", cursor: "pointer", lineHeight: 1 }}>×</button>
+                    <button onClick={() => removeSub(sub.id)} style={{ background: "none", border: "none", fontSize: "16px", color: "#444", cursor: "pointer", lineHeight: 1 }}>×</button>
                   </div>
                 ))}
 
@@ -241,7 +241,7 @@ export default function InviteModal({ onClose }: { onClose: () => void }) {
             <button style={{ width: "100%", padding: "10px", background: "#111", color: "#fff", border: "none", fontSize: "13px", fontWeight: 500, cursor: "pointer", borderRadius: "2px", fontFamily: "Roboto, sans-serif" }}>
               Send invite{subcontractors.length > 0 ? `s — ${subcontractors.length + 1} emails going out` : " — Vettit handles the rest"}
             </button>
-            <div style={{ fontSize: "11px", color: "#aaa", textAlign: "center" }}>
+            <div style={{ fontSize: "11px", color: "#444", textAlign: "center" }}>
               {subcontractors.length > 0
                 ? `Rapid Demo Co + ${subcontractors.length} subcontractor${subcontractors.length > 1 ? "s" : ""} will each receive their own invite`
                 : "Reminders sent automatically on day 2, 5 and 7 if incomplete"}

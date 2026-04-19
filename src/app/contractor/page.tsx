@@ -152,8 +152,8 @@ export default function ContractorDetail() {
 
   const sectionHead = (text: string, sub?: string) => (
     <div style={{ marginBottom: "10px" }}>
-      <div style={{ fontSize: "10px", fontWeight: 500, color: "#999", textTransform: "uppercase" as const, letterSpacing: ".08em" }}>{text}</div>
-      {sub && <div style={{ fontSize: "11px", color: "#aaa", marginTop: "2px" }}>{sub}</div>}
+      <div style={{ fontSize: "12px", fontWeight: 500, color: "#444", textTransform: "uppercase" as const, letterSpacing: ".08em" }}>{text}</div>
+      {sub && <div style={{ fontSize: "11px", color: "#444", marginTop: "2px" }}>{sub}</div>}
     </div>
   );
 
@@ -173,7 +173,7 @@ export default function ContractorDetail() {
             <div key={row.lic} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "9px 0", borderBottom: i < allRows.length - 1 ? "1px solid #ebebeb" : "none", background: row.type === "covered" ? "#f9fdf9" : "transparent" }}>
               <div style={{ fontSize: "12px", color: row.type === "covered" ? "#3a7d44" : "#555" }}>{row.lic}</div>
               {row.type === "covered" ? (
-                <span style={{ fontSize: "10px", padding: "1px 6px", background: "#e8f5e9", color: "#3a7d44", border: "1px solid #a5d6a7", borderRadius: "2px", flexShrink: 0, marginLeft: "8px" }}>
+                <span style={{ fontSize: "12px", padding: "1px 6px", background: "#e8f5e9", color: "#3a7d44", border: "1px solid #a5d6a7", borderRadius: "2px", flexShrink: 0, marginLeft: "8px" }}>
                   Covered by {coveredBy?.split(" ").slice(-1)[0]}
                 </span>
               ) : (
@@ -189,13 +189,13 @@ export default function ContractorDetail() {
   if (archived && activeSites.length === 0) {
     return (
       <div style={{ maxWidth: "480px", margin: "80px auto", textAlign: "center", padding: "0 24px" }}>
-        <div style={{ width: "48px", height: "48px", borderRadius: "50%", background: "#f5f5f5", border: "1px solid #d0d0d0", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px", fontSize: "20px", color: "#888" }}>✓</div>
+        <div style={{ width: "48px", height: "48px", borderRadius: "50%", background: "#f5f5f5", border: "1px solid #d0d0d0", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px", fontSize: "20px", color: "#333" }}>✓</div>
         <div style={{ fontSize: "15px", fontWeight: 500, color: "#111", marginBottom: "8px" }}>Rapid Demo Co archived</div>
-        <div style={{ fontSize: "13px", color: "#888", lineHeight: 1.7, marginBottom: "24px" }}>
+        <div style={{ fontSize: "13px", color: "#333", lineHeight: 1.7, marginBottom: "24px" }}>
           Removed from all active sites. All compliance records and documents are preserved for audit purposes.
         </div>
         <div style={{ border: "1px solid #ebebeb", borderRadius: "2px", padding: "12px 16px", marginBottom: "24px", textAlign: "left" }}>
-          <div style={{ fontSize: "10px", fontWeight: 500, color: "#999", textTransform: "uppercase", letterSpacing: ".07em", marginBottom: "8px" }}>Archived from</div>
+          <div style={{ fontSize: "12px", fontWeight: 500, color: "#444", textTransform: "uppercase", letterSpacing: ".07em", marginBottom: "8px" }}>Archived from</div>
           {archivedSites.map((s) => (
             <div key={s} style={{ fontSize: "12px", color: "#555", padding: "4px 0", borderBottom: "1px solid #f5f5f5" }}>✓ {s}</div>
           ))}
@@ -226,14 +226,14 @@ export default function ContractorDetail() {
 
       <div style={{ padding: "14px 32px", display: "flex", alignItems: "center", justifyContent: "space-between", borderBottom: "1px solid #d0d0d0" }}>
         <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-          <a href="/" style={{ fontSize: "12px", color: "#888", textDecoration: "none" }}>← All contractors</a>
+          <a href="/" style={{ fontSize: "12px", color: "#333", textDecoration: "none" }}>← All contractors</a>
           <span style={{ fontSize: "14px", fontWeight: 500, color: "#111" }}>{contractor.name}</span>
           <span style={{ fontSize: "11px", padding: "1px 6px", border: "1px solid #d0d0d0", borderRadius: "2px", color: "#555" }}>{contractor.trade}</span>
           <StatusBadge status={contractor.status} />
         </div>
         <div style={{ display: "flex", gap: "8px" }}>
           <button style={{ padding: "6px 12px", border: "1px solid #d0d0d0", background: "#fff", color: "#111", fontSize: "12px", borderRadius: "2px", cursor: "pointer", fontFamily: "Roboto, sans-serif" }}>Resend reminder</button>
-          <button onClick={() => setShowArchiveModal(true)} style={{ padding: "6px 12px", border: "1px solid #d0d0d0", background: "#fff", color: "#888", fontSize: "12px", borderRadius: "2px", cursor: "pointer", fontFamily: "Roboto, sans-serif" }}>
+          <button onClick={() => setShowArchiveModal(true)} style={{ padding: "6px 12px", border: "1px solid #d0d0d0", background: "#fff", color: "#333", fontSize: "12px", borderRadius: "2px", cursor: "pointer", fontFamily: "Roboto, sans-serif" }}>
             Archive contractor
           </button>
         </div>
@@ -241,30 +241,30 @@ export default function ContractorDetail() {
 
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr 1fr", borderBottom: "1px solid #d0d0d0" }}>
         <div style={{ padding: "14px 32px", borderRight: "1px solid #d0d0d0" }}>
-          <div style={{ fontSize: "10px", color: "#999", textTransform: "uppercase", letterSpacing: ".07em", marginBottom: "3px" }}>Contact</div>
+          <div style={{ fontSize: "12px", color: "#444", textTransform: "uppercase", letterSpacing: ".07em", marginBottom: "3px" }}>Contact</div>
           <div style={{ fontSize: "13px", color: "#111", fontWeight: 500 }}>{contractor.contactName}</div>
-          <div style={{ fontSize: "11px", color: "#888", marginTop: "1px" }}>{contractor.email}</div>
+          <div style={{ fontSize: "11px", color: "#333", marginTop: "1px" }}>{contractor.email}</div>
         </div>
         <div style={{ padding: "14px 20px", borderRight: "1px solid #d0d0d0" }}>
-          <div style={{ fontSize: "10px", color: "#999", textTransform: "uppercase", letterSpacing: ".07em", marginBottom: "3px" }}>Invited</div>
+          <div style={{ fontSize: "12px", color: "#444", textTransform: "uppercase", letterSpacing: ".07em", marginBottom: "3px" }}>Invited</div>
           <div style={{ fontSize: "13px", color: "#111" }}>{contractor.invited}</div>
         </div>
         <div style={{ padding: "14px 20px", borderRight: "1px solid #d0d0d0" }}>
-          <div style={{ fontSize: "10px", color: "#999", textTransform: "uppercase", letterSpacing: ".07em", marginBottom: "3px" }}>Active sites</div>
+          <div style={{ fontSize: "12px", color: "#444", textTransform: "uppercase", letterSpacing: ".07em", marginBottom: "3px" }}>Active sites</div>
           <div style={{ fontSize: "13px", color: "#111" }}>{activeSites.length} sites</div>
         </div>
         <div style={{ padding: "14px 20px", borderRight: "1px solid #d0d0d0" }}>
-          <div style={{ fontSize: "10px", color: "#999", textTransform: "uppercase", letterSpacing: ".07em", marginBottom: "3px" }}>Workers on site</div>
+          <div style={{ fontSize: "12px", color: "#444", textTransform: "uppercase", letterSpacing: ".07em", marginBottom: "3px" }}>Workers on site</div>
           <div style={{ fontSize: "13px", color: "#111" }}>{workers.length} workers</div>
         </div>
         <div style={{ padding: "14px 20px", position: "relative" }}>
-          <div style={{ fontSize: "10px", color: "#999", textTransform: "uppercase", letterSpacing: ".07em", marginBottom: "3px" }}>Assigned to</div>
+          <div style={{ fontSize: "12px", color: "#444", textTransform: "uppercase", letterSpacing: ".07em", marginBottom: "3px" }}>Assigned to</div>
           <div onClick={() => setShowAssignDropdown(!showAssignDropdown)} style={{ fontSize: "13px", color: "#111", cursor: "pointer", display: "flex", alignItems: "center", gap: "6px" }}>
             <div style={{ width: "20px", height: "20px", borderRadius: "50%", background: "#111", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "9px", fontWeight: 500, flexShrink: 0 }}>
               {assignedTo.split(" ").map((n) => n[0]).join("").slice(0, 2)}
             </div>
             {assignedTo}
-            <span style={{ fontSize: "10px", color: "#aaa" }}>▼</span>
+            <span style={{ fontSize: "12px", color: "#444" }}>▼</span>
           </div>
           {showAssignDropdown && (
             <div style={{ position: "absolute", top: "100%", left: "20px", background: "#fff", border: "1px solid #d0d0d0", borderRadius: "2px", zIndex: 10, minWidth: "180px", boxShadow: "0 4px 12px rgba(0,0,0,0.08)" }}>
@@ -292,17 +292,17 @@ export default function ContractorDetail() {
         <table style={{ width: "100%", borderCollapse: "collapse", tableLayout: "fixed" }}>
           <thead>
             <tr style={{ background: "#fafafa" }}>
-              <th style={{ width: "38%", fontSize: "11px", fontWeight: 500, color: "#888", textAlign: "left", padding: "8px 12px", borderBottom: "1px solid #d0d0d0" }}>Document</th>
-              <th style={{ width: "22%", fontSize: "11px", fontWeight: 500, color: "#888", textAlign: "left", padding: "8px 12px", borderBottom: "1px solid #d0d0d0" }}>Expiry</th>
-              <th style={{ width: "18%", fontSize: "11px", fontWeight: 500, color: "#888", textAlign: "left", padding: "8px 12px", borderBottom: "1px solid #d0d0d0" }}>Status</th>
-              <th style={{ width: "22%", fontSize: "11px", fontWeight: 500, color: "#888", textAlign: "left", padding: "8px 12px", borderBottom: "1px solid #d0d0d0" }}>Ownership</th>
+              <th style={{ width: "38%", fontSize: "11px", fontWeight: 500, color: "#333", textAlign: "left", padding: "8px 12px", borderBottom: "1px solid #d0d0d0" }}>Document</th>
+              <th style={{ width: "22%", fontSize: "11px", fontWeight: 500, color: "#333", textAlign: "left", padding: "8px 12px", borderBottom: "1px solid #d0d0d0" }}>Expiry</th>
+              <th style={{ width: "18%", fontSize: "11px", fontWeight: 500, color: "#333", textAlign: "left", padding: "8px 12px", borderBottom: "1px solid #d0d0d0" }}>Status</th>
+              <th style={{ width: "22%", fontSize: "11px", fontWeight: 500, color: "#333", textAlign: "left", padding: "8px 12px", borderBottom: "1px solid #d0d0d0" }}>Ownership</th>
             </tr>
           </thead>
           <tbody>
             {contractor.companyDocs.map((doc) => (
               <tr key={doc.name} style={{ borderBottom: "1px solid #ebebeb" }}>
                 <td style={{ padding: "10px 12px", fontSize: "13px" }}>{doc.name}</td>
-                <td style={{ padding: "10px 12px", fontSize: "12px", color: "#888" }}>{doc.expiry}</td>
+                <td style={{ padding: "10px 12px", fontSize: "12px", color: "#333" }}>{doc.expiry}</td>
                 <td style={{ padding: "10px 12px" }}><StatusBadge status={doc.status} /></td>
                 <td style={{ padding: "10px 12px" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
@@ -310,7 +310,7 @@ export default function ContractorDetail() {
                       {assignedTo.split(" ").map((n) => n[0]).join("").slice(0, 2)}
                     </div>
                     <span style={{ fontSize: "11px", color: "#555" }}>{assignedTo}</span>
-                    <span style={{ fontSize: "11px", color: "#aaa", cursor: "pointer" }}>Override</span>
+                    <span style={{ fontSize: "11px", color: "#444", cursor: "pointer" }}>Override</span>
                   </div>
                 </td>
               </tr>
@@ -327,7 +327,7 @@ export default function ContractorDetail() {
               <div style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "13px", fontWeight: 500, color: "#111" }}>
                 <span style={{ width: "7px", height: "7px", borderRadius: "50%", background: site.cleared ? "#3a7d44" : "#c0392b", display: "inline-block" }} />
                 {site.site}
-                {archivedSites.includes(site.site) && <span style={{ fontSize: "10px", padding: "1px 6px", background: "#f5f5f5", color: "#888", border: "1px solid #ddd", borderRadius: "2px" }}>Archived</span>}
+                {archivedSites.includes(site.site) && <span style={{ fontSize: "12px", padding: "1px 6px", background: "#f5f5f5", color: "#333", border: "1px solid #ddd", borderRadius: "2px" }}>Archived</span>}
               </div>
               <StatusBadge status={site.cleared ? "compliant" : "non-compliant"} />
             </div>
@@ -367,9 +367,9 @@ export default function ContractorDetail() {
                   <div>
                     <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                       <div style={{ fontSize: "13px", fontWeight: 500, color: "#111" }}>{w.firstName} {w.lastName}</div>
-                      {w.isContact && <span style={{ fontSize: "10px", padding: "1px 6px", background: "#f0f0f0", border: "1px solid #d0d0d0", borderRadius: "2px", color: "#555" }}>Company contact</span>}
+                      {w.isContact && <span style={{ fontSize: "12px", padding: "1px 6px", background: "#f0f0f0", border: "1px solid #d0d0d0", borderRadius: "2px", color: "#555" }}>Company contact</span>}
                     </div>
-                    <div style={{ fontSize: "11px", color: "#888", marginTop: "1px" }}>{roleLabel[w.role]} · {w.citizen ? "Australian citizen" : "Non-citizen — right to work required"}</div>
+                    <div style={{ fontSize: "11px", color: "#333", marginTop: "1px" }}>{roleLabel[w.role]} · {w.citizen ? "Australian citizen" : "Non-citizen — right to work required"}</div>
                   </div>
                 </div>
                 <StatusBadge status={workerCleared(w) ? "compliant" : "non-compliant"} />
@@ -400,7 +400,7 @@ export default function ContractorDetail() {
           <div style={{ border: "1px solid #d0d0d0", borderRadius: "2px", overflow: "hidden", marginTop: "12px" }}>
             <div style={{ padding: "10px 14px", background: "#fafafa", borderBottom: "1px solid #d0d0d0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <div style={{ fontSize: "13px", fontWeight: 500, color: "#111" }}>Add a worker</div>
-              <span style={{ fontSize: "18px", color: "#aaa", cursor: "pointer", lineHeight: 1 }} onClick={() => setShowAddWorker(false)}>×</span>
+              <span style={{ fontSize: "18px", color: "#444", cursor: "pointer", lineHeight: 1 }} onClick={() => setShowAddWorker(false)}>×</span>
             </div>
             <div style={{ padding: "16px 14px", display: "flex", flexDirection: "column", gap: "12px" }}>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
@@ -433,21 +433,21 @@ export default function ContractorDetail() {
                 <label style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 12px", borderBottom: "1px solid #ebebeb", cursor: "pointer" }}>
                   <div>
                     <div style={{ fontSize: "13px", color: "#111" }}>White Card</div>
-                    <div style={{ fontSize: "11px", color: "#888", marginTop: "1px" }}>Construction Induction Training — mandatory</div>
+                    <div style={{ fontSize: "11px", color: "#333", marginTop: "1px" }}>Construction Induction Training — mandatory</div>
                   </div>
                   <input type="checkbox" checked={newWorker.whiteCard} onChange={(e) => setNewWorker({ ...newWorker, whiteCard: e.target.checked })} style={{ accentColor: "#111", width: "14px", height: "14px" }} />
                 </label>
                 <label style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 12px", borderBottom: "1px solid #ebebeb", cursor: "pointer" }}>
                   <div>
                     <div style={{ fontSize: "13px", color: "#111" }}>Australian citizen or permanent resident</div>
-                    <div style={{ fontSize: "11px", color: "#888", marginTop: "1px" }}>If no, proof of right to work required</div>
+                    <div style={{ fontSize: "11px", color: "#333", marginTop: "1px" }}>If no, proof of right to work required</div>
                   </div>
                   <input type="checkbox" checked={newWorker.citizen} onChange={(e) => setNewWorker({ ...newWorker, citizen: e.target.checked })} style={{ accentColor: "#111", width: "14px", height: "14px" }} />
                 </label>
                 <label style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 12px", cursor: "pointer" }}>
                   <div>
                     <div style={{ fontSize: "13px", color: "#111" }}>Working at heights on this site</div>
-                    <div style={{ fontSize: "11px", color: "#888", marginTop: "1px" }}>Requires Working at Heights certification</div>
+                    <div style={{ fontSize: "11px", color: "#333", marginTop: "1px" }}>Requires Working at Heights certification</div>
                   </div>
                   <input type="checkbox" checked={newWorker.heights} onChange={(e) => setNewWorker({ ...newWorker, heights: e.target.checked })} style={{ accentColor: "#111", width: "14px", height: "14px" }} />
                 </label>
@@ -466,7 +466,7 @@ export default function ContractorDetail() {
                             {lic}
                           </label>
                           {coveredBy && (
-                            <span style={{ fontSize: "10px", padding: "1px 6px", background: "#e8f5e9", color: "#3a7d44", border: "1px solid #a5d6a7", borderRadius: "2px", flexShrink: 0, marginLeft: "8px" }}>
+                            <span style={{ fontSize: "12px", padding: "1px 6px", background: "#e8f5e9", color: "#3a7d44", border: "1px solid #a5d6a7", borderRadius: "2px", flexShrink: 0, marginLeft: "8px" }}>
                               Covered by {coveredBy.split(" ").slice(-1)[0]}
                             </span>
                           )}
@@ -500,7 +500,7 @@ export default function ContractorDetail() {
                   <div style={{ width: "7px", height: "7px", borderRadius: "50%", background: sub.status === "compliant" ? "#3a7d44" : "#aaa" }} />
                   <div>
                     <div style={{ fontSize: "13px", fontWeight: 500, color: "#111" }}>{sub.name}</div>
-                    <div style={{ fontSize: "11px", color: "#888", marginTop: "1px" }}>{sub.trade} · {sub.contact}</div>
+                    <div style={{ fontSize: "11px", color: "#333", marginTop: "1px" }}>{sub.trade} · {sub.contact}</div>
                   </div>
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
@@ -511,7 +511,7 @@ export default function ContractorDetail() {
                 </div>
               </div>
               <div style={{ padding: "10px 14px" }}>
-                <div style={{ fontSize: "12px", color: "#888" }}>
+                <div style={{ fontSize: "12px", color: "#333" }}>
                   {sub.status === "pending" ? `Invite sent to ${sub.email} — awaiting submission` : "All documents submitted and verified"}
                 </div>
                 {sub.status === "pending" && (
@@ -525,10 +525,10 @@ export default function ContractorDetail() {
           <div style={{ border: "1px solid #d0d0d0", borderRadius: "2px", overflow: "hidden", marginTop: "12px" }}>
             <div style={{ padding: "10px 14px", background: "#fafafa", borderBottom: "1px solid #d0d0d0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <div style={{ fontSize: "13px", fontWeight: 500, color: "#111" }}>Add a subcontractor</div>
-              <span style={{ fontSize: "18px", color: "#aaa", cursor: "pointer", lineHeight: 1 }} onClick={() => setShowAddSub(false)}>×</span>
+              <span style={{ fontSize: "18px", color: "#444", cursor: "pointer", lineHeight: 1 }} onClick={() => setShowAddSub(false)}>×</span>
             </div>
             <div style={{ padding: "16px 14px", display: "flex", flexDirection: "column", gap: "12px" }}>
-              <div style={{ fontSize: "12px", color: "#888" }}>Vettit will send this subcontractor their own invite to submit company docs and worker tickets separately.</div>
+              <div style={{ fontSize: "12px", color: "#333" }}>Vettit will send this subcontractor their own invite to submit company docs and worker tickets separately.</div>
               <div>
                 <div style={{ fontSize: "11px", fontWeight: 500, color: "#555", marginBottom: "4px" }}>Company name</div>
                 <input value={newSub.name} onChange={(e) => setNewSub({ ...newSub, name: e.target.value })} placeholder="e.g. QLD Pipe Specialists" style={inputStyle} />
@@ -568,7 +568,7 @@ export default function ContractorDetail() {
         ) : notes ? (
           <div style={{ fontSize: "13px", color: "#555", lineHeight: 1.6, padding: "10px 12px", background: "#fafafa", border: "1px solid #ebebeb", borderRadius: "2px" }}>{notes}</div>
         ) : (
-          <div style={{ fontSize: "12px", color: "#aaa" }}>No notes yet.</div>
+          <div style={{ fontSize: "12px", color: "#444" }}>No notes yet.</div>
         )}
       </div>
 
@@ -581,7 +581,7 @@ export default function ContractorDetail() {
               <div style={{ width: "9px", height: "9px", borderRadius: "50%", background: t.done ? "#3a7d44" : "#b8860b", marginTop: "4px", flexShrink: 0, zIndex: 1 }} />
               <div>
                 <div style={{ fontSize: "13px", color: "#111" }}>{t.label}</div>
-                <div style={{ fontSize: "11px", color: "#888", marginTop: "1px" }}>{t.detail}</div>
+                <div style={{ fontSize: "11px", color: "#333", marginTop: "1px" }}>{t.detail}</div>
               </div>
             </div>
           ))}

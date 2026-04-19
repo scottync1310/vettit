@@ -73,19 +73,19 @@ export default function Dashboard() {
       <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", borderBottom: "1px solid #d0d0d0" }}>
         <div style={{ padding: "16px 32px", borderRight: "1px solid #d0d0d0" }}>
           <div style={{ fontSize: "22px", fontWeight: 500 }}>{active.length}</div>
-          <div style={{ fontSize: "11px", color: "#888", marginTop: "2px" }}>Active contractors</div>
+          <div style={{ fontSize: "11px", color: "#333", marginTop: "2px" }}>Active contractors</div>
         </div>
         <div style={{ padding: "16px 32px", borderRight: "1px solid #d0d0d0" }}>
           <div style={{ fontSize: "22px", fontWeight: 500, color: "#3a7d44" }}>{active.filter(c => c.status === "compliant").length}</div>
-          <div style={{ fontSize: "11px", color: "#888", marginTop: "2px" }}>Compliant</div>
+          <div style={{ fontSize: "11px", color: "#333", marginTop: "2px" }}>Compliant</div>
         </div>
         <div style={{ padding: "16px 32px", borderRight: "1px solid #d0d0d0" }}>
           <div style={{ fontSize: "22px", fontWeight: 500, color: "#b8860b" }}>{active.filter(c => c.status === "expiring").length}</div>
-          <div style={{ fontSize: "11px", color: "#888", marginTop: "2px" }}>Expiring soon</div>
+          <div style={{ fontSize: "11px", color: "#333", marginTop: "2px" }}>Expiring soon</div>
         </div>
         <div style={{ padding: "16px 32px" }}>
           <div style={{ fontSize: "22px", fontWeight: 500, color: "#c0392b" }}>{active.filter(c => c.status === "non-compliant" || c.status === "unresponsive").length}</div>
-          <div style={{ fontSize: "11px", color: "#888", marginTop: "2px" }}>Action required</div>
+          <div style={{ fontSize: "11px", color: "#333", marginTop: "2px" }}>Action required</div>
         </div>
       </div>
 
@@ -106,7 +106,7 @@ export default function Dashboard() {
                 <div style={{ fontSize: "13px", color: "#111", marginBottom: "3px" }}>
                   <strong>{d.declaredBy}</strong> wants to bring <strong>{d.subName}</strong> ({d.subTrade}) on to <strong>{d.site}</strong>
                 </div>
-                <div style={{ fontSize: "11px", color: "#888" }}>
+                <div style={{ fontSize: "11px", color: "#333" }}>
                   {d.declaredDate} · Contact: {d.subContact} · {d.subEmail}
                 </div>
               </div>
@@ -119,7 +119,7 @@ export default function Dashboard() {
                 </button>
                 <button
                   onClick={() => dismiss(d.id)}
-                  style={{ padding: "5px 12px", border: "1px solid #d0d0d0", background: "#fff", color: "#888", fontSize: "11px", borderRadius: "2px", cursor: "pointer", fontFamily: "Roboto, sans-serif" }}
+                  style={{ padding: "5px 12px", border: "1px solid #d0d0d0", background: "#fff", color: "#333", fontSize: "11px", borderRadius: "2px", cursor: "pointer", fontFamily: "Roboto, sans-serif" }}
                 >
                   Dismiss
                 </button>
@@ -139,7 +139,7 @@ export default function Dashboard() {
           >
             {tab}
             {tab === "Archived" && (
-              <span style={{ marginLeft: "5px", fontSize: "10px", padding: "1px 5px", background: "#f0f0f0", color: "#888", border: "1px solid #ddd", borderRadius: "2px" }}>
+              <span style={{ marginLeft: "5px", fontSize: "12px", padding: "1px 5px", background: "#f0f0f0", color: "#333", border: "1px solid #ddd", borderRadius: "2px" }}>
                 {archived.length}
               </span>
             )}
@@ -149,19 +149,19 @@ export default function Dashboard() {
 
       {/* CONTRACTOR TABLE */}
       <table style={{ width: "100%", borderCollapse: "collapse", tableLayout: "fixed" }}>
-        <thead>
-          <tr style={{ background: "#fafafa" }}>
-            <th style={{ width: "22%", fontSize: "11px", fontWeight: 500, color: "#888", textAlign: "left", padding: "10px 16px 10px 32px", borderBottom: "1px solid #d0d0d0" }}>Contractor</th>
-            <th style={{ width: "14%", fontSize: "11px", fontWeight: 500, color: "#888", textAlign: "left", padding: "10px 16px", borderBottom: "1px solid #d0d0d0" }}>Status</th>
-            <th style={{ width: "26%", fontSize: "11px", fontWeight: 500, color: "#888", textAlign: "left", padding: "10px 16px", borderBottom: "1px solid #d0d0d0" }}>{activeTab === "Archived" ? "Last active" : "Issue"}</th>
-            <th style={{ width: "24%", fontSize: "11px", fontWeight: 500, color: "#888", textAlign: "left", padding: "10px 16px", borderBottom: "1px solid #d0d0d0" }}>Sites</th>
-            <th style={{ width: "14%", fontSize: "11px", fontWeight: 500, color: "#888", textAlign: "left", padding: "10px 16px", borderBottom: "1px solid #d0d0d0" }}></th>
-          </tr>
-        </thead>
+<thead>
+  <tr style={{ background: "#fafafa" }}>
+    <th style={{ width: "28%", fontSize: "11px", fontWeight: 500, color: "#888", textAlign: "left", padding: "10px 16px 10px 32px", borderBottom: "1px solid #d0d0d0" }}>Contractor</th>
+    <th style={{ width: "14%", fontSize: "11px", fontWeight: 500, color: "#888", textAlign: "left", padding: "10px 16px", borderBottom: "1px solid #d0d0d0" }}>Status</th>
+    <th style={{ width: "26%", fontSize: "11px", fontWeight: 500, color: "#888", textAlign: "left", padding: "10px 16px", borderBottom: "1px solid #d0d0d0" }}>{activeTab === "Archived" ? "Last active" : "Issue"}</th>
+    <th style={{ width: "22%", fontSize: "11px", fontWeight: 500, color: "#888", textAlign: "left", padding: "10px 16px", borderBottom: "1px solid #d0d0d0" }}>Sites</th>
+    <th style={{ width: "10%", fontSize: "11px", fontWeight: 500, color: "#888", textAlign: "left", padding: "10px 16px", borderBottom: "1px solid #d0d0d0" }}></th>
+  </tr>
+</thead>
         <tbody>
           {filtered.length === 0 ? (
             <tr>
-              <td colSpan={5} style={{ padding: "32px", textAlign: "center", fontSize: "13px", color: "#888" }}>No contractors in this category</td>
+              <td colSpan={5} style={{ padding: "32px", textAlign: "center", fontSize: "13px", color: "#333" }}>No contractors in this category</td>
             </tr>
           ) : (
             filtered.map((c) => (
@@ -169,15 +169,15 @@ export default function Dashboard() {
                 <td style={{ padding: "11px 16px 11px 32px" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                     <div style={{ fontWeight: 500, fontSize: "13px" }}>{c.name}</div>
-                    {c.archived && <span style={{ fontSize: "10px", padding: "1px 6px", background: "#f5f5f5", color: "#888", border: "1px solid #ddd", borderRadius: "2px" }}>Archived</span>}
+                    {c.archived && <span style={{ fontSize: "12px", padding: "1px 6px", background: "#f5f5f5", color: "#333", border: "1px solid #ddd", borderRadius: "2px" }}>Archived</span>}
                   </div>
-                  <div style={{ fontSize: "11px", color: "#999", marginTop: "2px" }}>
+                  <div style={{ fontSize: "11px", color: "#444", marginTop: "2px" }}>
                     {c.trade} · Invited {c.invited} · {c.docs}
                   </div>
                 </td>
                 <td style={{ padding: "11px 16px" }}>
                   {c.archived ? (
-                    <span style={{ fontSize: "11px", padding: "2px 8px", background: "#f5f5f5", color: "#888", border: "1px solid #ddd", borderRadius: "2px" }}>Archived</span>
+                    <span style={{ fontSize: "11px", padding: "2px 8px", background: "#f5f5f5", color: "#333", border: "1px solid #ddd", borderRadius: "2px" }}>Archived</span>
                   ) : (
                     <StatusBadge status={c.status} />
                   )}

@@ -7,30 +7,48 @@ export default function Nav() {
   const [showInvite, setShowInvite] = useState(false);
   const pathname = usePathname();
 
-  if (pathname === "/upload") return null;
+  if (pathname === "/upload" || pathname === "/onboarding") return null;
+
+  const linkStyle = (href: string): React.CSSProperties => ({
+    fontSize: "12px", fontWeight: 600, letterSpacing: ".1em", padding: "6px 14px",
+    color: pathname === href ? "#111" : "#888", textDecoration: "none",
+    borderBottom: pathname === href ? "2px solid #111" : "2px solid transparent",
+    fontFamily: "Montserrat, sans-serif", whiteSpace: "nowrap",
+  });
 
   return (
     <>
-      <nav style={{ borderBottom: "1px solid #d0d0d0", background: "#fff", position: "sticky", top: 0, zIndex: 50 }}>
-        <div style={{ maxWidth: "960px", margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 32px", height: "52px" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "24px" }}>
-            <span style={{ fontSize: "17px", fontWeight: 500, color: "#111", letterSpacing: "-0.3px" }}>
-              vett<span style={{ color: "#3a7d44" }}>it</span>
-            </span>
-            <div style={{ display: "flex", border: "1px solid #d0d0d0", borderRadius: "2px", overflow: "hidden" }}>
-              <a href="/" style={{ fontSize: "12px", padding: "6px 14px", color: pathname === "/" ? "#fff" : "#888", background: pathname === "/" ? "#111" : "#fff", textDecoration: "none", fontWeight: pathname === "/" ? 500 : 400, borderRight: "1px solid #d0d0d0" }}>Dashboard</a>
-              <a href="/sites" style={{ fontSize: "12px", padding: "6px 14px", color: pathname === "/sites" ? "#fff" : "#888", background: pathname === "/sites" ? "#111" : "#fff", textDecoration: "none", fontWeight: pathname === "/sites" ? 500 : 400, borderRight: "1px solid #d0d0d0" }}>Sites</a>
-              <a href="/calendar" style={{ fontSize: "12px", padding: "6px 14px", color: pathname === "/calendar" ? "#fff" : "#888", background: pathname === "/calendar" ? "#111" : "#fff", textDecoration: "none", fontWeight: pathname === "/calendar" ? 500 : 400, borderRight: "1px solid #d0d0d0" }}>Calendar</a>
-              <a href="/vault" style={{ fontSize: "12px", padding: "6px 14px", color: pathname === "/vault" ? "#fff" : "#888", background: pathname === "/vault" ? "#111" : "#fff", textDecoration: "none", fontWeight: pathname === "/vault" ? 500 : 400 }}>Vault</a>
-            </div>
-          </div>
-          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            <a href="/bulk-invite" style={{ padding: "7px 14px", border: "1px solid #d0d0d0", background: pathname === "/bulk-invite" ? "#111" : "#fff", color: pathname === "/bulk-invite" ? "#fff" : "#111", fontSize: "12px", fontWeight: 500, borderRadius: "2px", fontFamily: "Roboto, sans-serif", textDecoration: "none" }}>Bulk invite</a>
-            <a href="/settings" style={{ padding: "7px 14px", border: "1px solid #d0d0d0", background: pathname === "/settings" ? "#111" : "#fff", color: pathname === "/settings" ? "#fff" : "#111", fontSize: "12px", fontWeight: 500, borderRadius: "2px", fontFamily: "Roboto, sans-serif", textDecoration: "none" }}>Settings</a>
-            <button onClick={() => setShowInvite(true)} style={{ padding: "7px 14px", border: "1px solid #111", background: "#111", color: "#fff", fontSize: "12px", fontWeight: 500, cursor: "pointer", borderRadius: "2px", fontFamily: "Roboto, sans-serif" }}>+ Invite contractor</button>
+      <div style={{ padding: "16px 0" }}>
+        <div style={{ maxWidth: "960px", margin: "0 auto", padding: "0 32px", borderBottom: "1px solid #d0d0d0", paddingBottom: "16px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <img src="/logo.png" alt="Vettit" style={{ height: "60px", width: "auto", display: "block" }} />
+        </div>
+      </div>
+
+      <nav style={{ background: "#fff", position: "sticky", top: 0, zIndex: 50 }}>
+        <div style={{ maxWidth: "960px", margin: "0 auto", padding: "0 32px", borderBottom: "1px solid #d0d0d0", height: "44px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <a href="/" style={linkStyle("/")}>DASHBOARD</a>
+            <a href="/sites" style={linkStyle("/sites")}>SITES</a>
+            <a href="/calendar" style={linkStyle("/calendar")}>CALENDAR</a>
+            <a href="/vault" style={linkStyle("/vault")}>VAULT</a>
+            <a href="/bulk-invite" style={linkStyle("/bulk-invite")}>BULK INVITE</a>
+            <a href="/settings" style={linkStyle("/settings")}>SETTINGS</a>
+            <button
+              onClick={() => setShowInvite(true)}
+              style={{
+                fontSize: "12px", fontWeight: 600, letterSpacing: ".1em",
+                padding: "6px 14px", border: "none", background: "none",
+                color: "#333", borderBottom: "2px solid transparent",
+                cursor: "pointer", fontFamily: "Montserrat, sans-serif",
+                whiteSpace: "nowrap",
+              }}
+            >
+              + INVITE
+            </button>
           </div>
         </div>
       </nav>
+
       {showInvite && <InviteModal onClose={() => setShowInvite(false)} />}
     </>
   );

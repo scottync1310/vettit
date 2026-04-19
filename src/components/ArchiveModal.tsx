@@ -23,15 +23,15 @@ export default function ArchiveModal({ contractorName, sites, onConfirm, onClose
         <div style={{ padding: "16px 20px", borderBottom: "1px solid #d0d0d0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <div>
             <div style={{ fontSize: "14px", fontWeight: 500, color: "#111" }}>Archive contractor</div>
-            <div style={{ fontSize: "12px", color: "#888", marginTop: "2px" }}>{contractorName}</div>
+            <div style={{ fontSize: "12px", color: "#333", marginTop: "2px" }}>{contractorName}</div>
           </div>
-          <button onClick={onClose} style={{ background: "none", border: "none", fontSize: "18px", color: "#888", cursor: "pointer" }}>×</button>
+          <button onClick={onClose} style={{ background: "none", border: "none", fontSize: "18px", color: "#333", cursor: "pointer" }}>×</button>
         </div>
         <div style={{ padding: "20px" }}>
           <div style={{ fontSize: "12px", color: "#555", marginBottom: "16px", lineHeight: 1.6 }}>
             Select which sites to archive this contractor from. Their full compliance history will be preserved for audit purposes.
           </div>
-          <div style={{ fontSize: "11px", fontWeight: 500, color: "#999", textTransform: "uppercase", letterSpacing: ".07em", marginBottom: "8px" }}>Remove from sites</div>
+          <div style={{ fontSize: "11px", fontWeight: 500, color: "#444", textTransform: "uppercase", letterSpacing: ".07em", marginBottom: "8px" }}>Remove from sites</div>
           <div style={{ border: "1px solid #d0d0d0", borderRadius: "2px", overflow: "hidden", marginBottom: "16px" }}>
             {sites.map((site, i) => (
               <label key={site} style={{ display: "flex", alignItems: "center", gap: "10px", padding: "10px 12px", borderBottom: i < sites.length - 1 ? "1px solid #ebebeb" : "none", cursor: "pointer", background: selectedSites.includes(site) ? "#fff8f8" : "#fff" }}>
@@ -41,7 +41,7 @@ export default function ArchiveModal({ contractorName, sites, onConfirm, onClose
             ))}
           </div>
           <div style={{ padding: "10px 12px", background: "#fafafa", border: "1px solid #ebebeb", borderRadius: "2px", marginBottom: "16px" }}>
-            <div style={{ fontSize: "11px", color: "#888", lineHeight: 1.6 }}>
+            <div style={{ fontSize: "11px", color: "#333", lineHeight: 1.6 }}>
               Archived contractors are removed from active views but all compliance records, documents and reminder history are preserved permanently for WHS audit purposes.
             </div>
           </div>

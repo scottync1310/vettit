@@ -37,7 +37,7 @@ export default function Onboarding() {
   const label = (text: string, sub?: string) => (
     <div style={{ marginBottom: "5px" }}>
       <div style={{ fontSize: "11px", fontWeight: 500, color: "#555" }}>{text}</div>
-      {sub && <div style={{ fontSize: "11px", color: "#aaa", marginTop: "1px" }}>{sub}</div>}
+      {sub && <div style={{ fontSize: "11px", color: "#444", marginTop: "1px" }}>{sub}</div>}
     </div>
   );
 
@@ -86,7 +86,7 @@ export default function Onboarding() {
         <div style={{ maxWidth: "520px", margin: "80px auto", padding: "0 24px", textAlign: "center" }}>
           <div style={{ width: "56px", height: "56px", borderRadius: "50%", background: "#e8f5e9", border: "2px solid #3a7d44", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 20px", fontSize: "24px", color: "#3a7d44" }}>✓</div>
           <div style={{ fontSize: "20px", fontWeight: 500, color: "#111", marginBottom: "8px" }}>Account set up — handed off to {primaryUser.firstName}</div>
-          <div style={{ fontSize: "13px", color: "#888", lineHeight: 1.8, marginBottom: "28px" }}>
+          <div style={{ fontSize: "13px", color: "#333", lineHeight: 1.8, marginBottom: "28px" }}>
             <strong style={{ color: "#111" }}>{company.name}</strong> is registered on Vettit.<br />
             {primaryUser.firstName} {primaryUser.lastName} has been sent an activation email at <strong style={{ color: "#111" }}>{primaryUser.email}</strong>.<br />
             They will complete the site and contractor setup from there.
@@ -99,22 +99,22 @@ export default function Onboarding() {
           </div>
 
           <div style={{ border: "1px solid #ebebeb", borderRadius: "2px", padding: "14px 16px", marginBottom: "28px", textAlign: "left" }}>
-            <div style={{ fontSize: "10px", fontWeight: 500, color: "#999", textTransform: "uppercase", letterSpacing: ".07em", marginBottom: "10px" }}>Account summary</div>
+            <div style={{ fontSize: "12px", fontWeight: 500, color: "#444", textTransform: "uppercase", letterSpacing: ".07em", marginBottom: "10px" }}>Account summary</div>
             <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
               <div style={{ display: "grid", gridTemplateColumns: "140px 1fr", fontSize: "12px" }}>
-                <div style={{ color: "#888" }}>Company</div>
+                <div style={{ color: "#333" }}>Company</div>
                 <div style={{ color: "#111", fontWeight: 500 }}>{company.name}</div>
               </div>
               <div style={{ display: "grid", gridTemplateColumns: "140px 1fr", fontSize: "12px" }}>
-                <div style={{ color: "#888" }}>Account owner</div>
+                <div style={{ color: "#333" }}>Account owner</div>
                 <div style={{ color: "#111" }}>{company.ownerName} · {company.ownerEmail}</div>
               </div>
               <div style={{ display: "grid", gridTemplateColumns: "140px 1fr", fontSize: "12px" }}>
-                <div style={{ color: "#888" }}>Primary user</div>
+                <div style={{ color: "#333" }}>Primary user</div>
                 <div style={{ color: "#111" }}>{primaryUser.firstName} {primaryUser.lastName} · {primaryUser.role}</div>
               </div>
               <div style={{ display: "grid", gridTemplateColumns: "140px 1fr", fontSize: "12px" }}>
-                <div style={{ color: "#888" }}>Activation sent to</div>
+                <div style={{ color: "#333" }}>Activation sent to</div>
                 <div style={{ color: "#111" }}>{primaryUser.email}</div>
               </div>
             </div>
@@ -123,7 +123,7 @@ export default function Onboarding() {
           <a href="/" style={{ display: "inline-block", padding: "11px 32px", background: "#111", color: "#fff", fontSize: "13px", fontWeight: 500, textDecoration: "none", borderRadius: "2px", fontFamily: "Roboto, sans-serif" }}>
             Go to your dashboard →
           </a>
-          <div style={{ fontSize: "11px", color: "#aaa", marginTop: "12px" }}>You have full access as account owner — sites and contractors will appear once {primaryUser.firstName} completes setup</div>
+          <div style={{ fontSize: "11px", color: "#444", marginTop: "12px" }}>You have full access as account owner — sites and contractors will appear once {primaryUser.firstName} completes setup</div>
         </div>
       </div>
     );
@@ -136,24 +136,24 @@ export default function Onboarding() {
         <div style={{ textAlign: "center", maxWidth: "480px", padding: "0 24px" }}>
           <div style={{ width: "56px", height: "56px", borderRadius: "50%", background: "#e8f5e9", border: "2px solid #3a7d44", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 20px", fontSize: "24px", color: "#3a7d44" }}>✓</div>
           <div style={{ fontSize: "20px", fontWeight: 500, color: "#111", marginBottom: "8px" }}>All set — you're live.</div>
-          <div style={{ fontSize: "13px", color: "#888", lineHeight: 1.8, marginBottom: "28px" }}>
+          <div style={{ fontSize: "13px", color: "#333", lineHeight: 1.8, marginBottom: "28px" }}>
             {company.name || "Your company"} is fully set up on Vettit.<br />
             <strong style={{ color: "#111" }}>{contractor.company}</strong> has been invited to <strong style={{ color: "#111" }}>{site.name}</strong>.<br />
             Vettit handles all reminders and follow-up automatically from here.
           </div>
           <div style={{ border: "1px solid #ebebeb", borderRadius: "2px", padding: "14px 16px", marginBottom: "28px", textAlign: "left" }}>
-            <div style={{ fontSize: "10px", fontWeight: 500, color: "#999", textTransform: "uppercase", letterSpacing: ".07em", marginBottom: "10px" }}>Setup summary</div>
+            <div style={{ fontSize: "12px", fontWeight: 500, color: "#444", textTransform: "uppercase", letterSpacing: ".07em", marginBottom: "10px" }}>Setup summary</div>
             <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
               <div style={{ display: "grid", gridTemplateColumns: "140px 1fr", fontSize: "12px" }}>
-                <div style={{ color: "#888" }}>First site</div>
+                <div style={{ color: "#333" }}>First site</div>
                 <div style={{ color: "#111", fontWeight: 500 }}>{site.name}</div>
               </div>
               <div style={{ display: "grid", gridTemplateColumns: "140px 1fr", fontSize: "12px" }}>
-                <div style={{ color: "#888" }}>First invite</div>
+                <div style={{ color: "#333" }}>First invite</div>
                 <div style={{ color: "#111" }}>{contractor.company} — sent to {contractor.email}</div>
               </div>
               <div style={{ display: "grid", gridTemplateColumns: "140px 1fr", fontSize: "12px" }}>
-                <div style={{ color: "#888" }}>Weekly digest</div>
+                <div style={{ color: "#333" }}>Weekly digest</div>
                 <div style={{ color: "#111" }}>Every Monday at 7am to {primaryUser.email}</div>
               </div>
             </div>
@@ -174,7 +174,7 @@ export default function Onboarding() {
     <div style={{ fontFamily: "Roboto, sans-serif", background: "#fff", minHeight: "100vh" }}>
       <div style={{ borderBottom: "1px solid #d0d0d0", padding: "0 32px", height: "52px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <span style={{ fontSize: "17px", fontWeight: 500, color: "#111", letterSpacing: "-.3px" }}>vett<span style={{ color: "#3a7d44" }}>it</span></span>
-        <span style={{ fontSize: "11px", color: "#888" }}>
+        <span style={{ fontSize: "11px", color: "#333" }}>
           {isOwnerJourney ? "Account setup — takes 2 minutes" : `Setting up ${company.name || "your account"}`}
         </span>
       </div>
@@ -189,7 +189,7 @@ export default function Onboarding() {
                 <div style={{ width: "26px", height: "26px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "11px", fontWeight: 500, background: i < currentStep ? "#3a7d44" : i === currentStep ? "#111" : "#f0f0f0", color: i < currentStep ? "#fff" : i === currentStep ? "#fff" : "#aaa", flexShrink: 0 }}>
                   {i < currentStep ? "✓" : i + 1}
                 </div>
-                <div style={{ fontSize: "10px", color: i === currentStep ? "#111" : i < currentStep ? "#3a7d44" : "#aaa", fontWeight: i === currentStep ? 500 : 400, whiteSpace: "nowrap" }}>{s}</div>
+                <div style={{ fontSize: "12px", color: i === currentStep ? "#111" : i < currentStep ? "#3a7d44" : "#aaa", fontWeight: i === currentStep ? 500 : 400, whiteSpace: "nowrap" }}>{s}</div>
               </div>
               {i < steps.length - 1 && <div style={{ flex: 1, height: "1px", background: i < currentStep ? "#3a7d44" : "#d0d0d0", margin: "0 8px", marginBottom: "16px" }} />}
             </div>
@@ -202,7 +202,7 @@ export default function Onboarding() {
             <div style={{ fontSize: "24px", fontWeight: 500, color: "#111", marginBottom: "12px", letterSpacing: "-.3px" }}>
               Welcome to vett<span style={{ color: "#3a7d44" }}>it</span>
             </div>
-            <div style={{ fontSize: "14px", color: "#888", lineHeight: 1.8, marginBottom: "32px" }}>
+            <div style={{ fontSize: "14px", color: "#333", lineHeight: 1.8, marginBottom: "32px" }}>
               Contractor compliance — done automatically.<br />
               One email to your subcontractor. Vettit handles everything else.
             </div>
@@ -216,7 +216,7 @@ export default function Onboarding() {
                   <div style={{ width: "26px", height: "26px", borderRadius: "50%", background: "#111", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "11px", fontWeight: 500, flexShrink: 0 }}>{item.num}</div>
                   <div>
                     <div style={{ fontSize: "13px", fontWeight: 500, color: "#111" }}>{item.title}</div>
-                    <div style={{ fontSize: "11px", color: "#888", marginTop: "2px" }}>{item.sub}</div>
+                    <div style={{ fontSize: "11px", color: "#333", marginTop: "2px" }}>{item.sub}</div>
                   </div>
                 </div>
               ))}
@@ -232,7 +232,7 @@ export default function Onboarding() {
           <div>
             <div style={{ marginBottom: "24px" }}>
               <div style={{ fontSize: "18px", fontWeight: 500, color: "#111", marginBottom: "4px" }}>Your company</div>
-              <div style={{ fontSize: "13px", color: "#888" }}>Account and billing details</div>
+              <div style={{ fontSize: "13px", color: "#333" }}>Account and billing details</div>
             </div>
             <div style={{ border: "1px solid #d0d0d0", borderRadius: "2px", overflow: "hidden", marginBottom: "24px" }}>
               <div style={{ padding: "16px", display: "flex", flexDirection: "column", gap: "14px" }}>
@@ -272,7 +272,7 @@ export default function Onboarding() {
           <div>
             <div style={{ marginBottom: "24px" }}>
               <div style={{ fontSize: "18px", fontWeight: 500, color: "#111", marginBottom: "4px" }}>Who manages compliance day to day?</div>
-              <div style={{ fontSize: "13px", color: "#888", lineHeight: 1.7 }}>
+              <div style={{ fontSize: "13px", color: "#333", lineHeight: 1.7 }}>
                 This person receives the weekly digest, compliance alerts and unresponsive contractor notifications.
               </div>
             </div>
@@ -281,15 +281,15 @@ export default function Onboarding() {
               <input type="checkbox" checked={isSameUser} onChange={(e) => handleSameUser(e.target.checked)} style={{ accentColor: "#111", width: "14px", height: "14px" }} />
               <div>
                 <div style={{ fontSize: "13px", fontWeight: 500, color: "#111" }}>This is me — I manage compliance myself</div>
-                <div style={{ fontSize: "11px", color: "#888", marginTop: "1px" }}>I will complete the site and contractor setup now</div>
+                <div style={{ fontSize: "11px", color: "#333", marginTop: "1px" }}>I will complete the site and contractor setup now</div>
               </div>
             </label>
 
             {!isSameUser && (
               <div style={{ border: "1px solid #d0d0d0", borderRadius: "2px", overflow: "hidden", marginBottom: "16px" }}>
                 <div style={{ padding: "10px 14px", background: "#fafafa", borderBottom: "1px solid #d0d0d0" }}>
-                  <div style={{ fontSize: "10px", fontWeight: 500, color: "#999", textTransform: "uppercase", letterSpacing: ".07em" }}>Primary user details</div>
-                  <div style={{ fontSize: "11px", color: "#aaa", marginTop: "2px" }}>They will receive an activation email to set their password and complete setup</div>
+                  <div style={{ fontSize: "12px", fontWeight: 500, color: "#444", textTransform: "uppercase", letterSpacing: ".07em" }}>Primary user details</div>
+                  <div style={{ fontSize: "11px", color: "#444", marginTop: "2px" }}>They will receive an activation email to set their password and complete setup</div>
                 </div>
                 <div style={{ padding: "16px", display: "flex", flexDirection: "column", gap: "14px" }}>
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
@@ -351,11 +351,11 @@ export default function Onboarding() {
           <div>
             <div style={{ marginBottom: "24px" }}>
               <div style={{ fontSize: "18px", fontWeight: 500, color: "#111", marginBottom: "4px" }}>Add your first site</div>
-              <div style={{ fontSize: "13px", color: "#888" }}>Add the project you want to vet contractors for first</div>
+              <div style={{ fontSize: "13px", color: "#333" }}>Add the project you want to vet contractors for first</div>
             </div>
             <div style={{ border: "1px solid #d0d0d0", borderRadius: "2px", overflow: "hidden", marginBottom: "14px" }}>
               <div style={{ padding: "10px 14px", background: "#fafafa", borderBottom: "1px solid #d0d0d0" }}>
-                <div style={{ fontSize: "10px", fontWeight: 500, color: "#999", textTransform: "uppercase", letterSpacing: ".07em" }}>Site details</div>
+                <div style={{ fontSize: "12px", fontWeight: 500, color: "#444", textTransform: "uppercase", letterSpacing: ".07em" }}>Site details</div>
               </div>
               <div style={{ padding: "16px", display: "flex", flexDirection: "column", gap: "14px" }}>
                 <div>
@@ -386,8 +386,8 @@ export default function Onboarding() {
             </div>
             <div style={{ border: "1px solid #d0d0d0", borderRadius: "2px", overflow: "hidden", marginBottom: "24px" }}>
               <div style={{ padding: "10px 14px", background: "#fafafa", borderBottom: "1px solid #d0d0d0" }}>
-                <div style={{ fontSize: "10px", fontWeight: 500, color: "#999", textTransform: "uppercase", letterSpacing: ".07em" }}>Site supervisor</div>
-                <div style={{ fontSize: "11px", color: "#aaa", marginTop: "2px" }}>Receives compliance alerts for this site</div>
+                <div style={{ fontSize: "12px", fontWeight: 500, color: "#444", textTransform: "uppercase", letterSpacing: ".07em" }}>Site supervisor</div>
+                <div style={{ fontSize: "11px", color: "#444", marginTop: "2px" }}>Receives compliance alerts for this site</div>
               </div>
               <div style={{ padding: "16px", display: "flex", flexDirection: "column", gap: "14px" }}>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
@@ -423,7 +423,7 @@ export default function Onboarding() {
           <div>
             <div style={{ marginBottom: "24px" }}>
               <div style={{ fontSize: "18px", fontWeight: 500, color: "#111", marginBottom: "4px" }}>Invite your first contractor</div>
-              <div style={{ fontSize: "13px", color: "#888", lineHeight: 1.7 }}>
+              <div style={{ fontSize: "13px", color: "#333", lineHeight: 1.7 }}>
                 They receive a secure link to submit their documents. Vettit reads, verifies and chases automatically.
               </div>
             </div>

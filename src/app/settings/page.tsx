@@ -88,7 +88,7 @@ export default function Settings() {
   const label = (text: string, sub?: string) => (
     <div style={{ marginBottom: "5px" }}>
       <div style={{ fontSize: "11px", fontWeight: 500, color: "#555" }}>{text}</div>
-      {sub && <div style={{ fontSize: "11px", color: "#aaa", marginTop: "1px" }}>{sub}</div>}
+      {sub && <div style={{ fontSize: "11px", color: "#444", marginTop: "1px" }}>{sub}</div>}
     </div>
   );
 
@@ -97,7 +97,7 @@ export default function Settings() {
       <div style={{ padding: "14px 32px", borderBottom: "1px solid #d0d0d0", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <div>
           <div style={{ fontSize: "14px", fontWeight: 500, color: "#111" }}>Settings</div>
-          <div style={{ fontSize: "12px", color: "#888", marginTop: "2px" }}>Manage your company profile, team and notification preferences</div>
+          <div style={{ fontSize: "12px", color: "#333", marginTop: "2px" }}>Manage your company profile, team and notification preferences</div>
         </div>
         {activeTab !== "Billing" && (
           <button
@@ -127,7 +127,7 @@ export default function Settings() {
           <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
             <div style={{ border: "1px solid #d0d0d0", borderRadius: "2px", overflow: "hidden" }}>
               <div style={{ padding: "12px 16px", background: "#fafafa", borderBottom: "1px solid #d0d0d0" }}>
-                <div style={{ fontSize: "10px", fontWeight: 500, color: "#999", textTransform: "uppercase", letterSpacing: ".08em" }}>Company details</div>
+                <div style={{ fontSize: "12px", fontWeight: 500, color: "#444", textTransform: "uppercase", letterSpacing: ".08em" }}>Company details</div>
               </div>
               <div style={{ padding: "16px", display: "flex", flexDirection: "column", gap: "14px" }}>
                 <div>
@@ -141,7 +141,7 @@ export default function Settings() {
                 <div>
                   {label("Company logo", "Appears on contractor invite emails")}
                   <div style={{ border: "1px dashed #d0d0d0", borderRadius: "2px", padding: "20px", textAlign: "center", background: "#fafafa" }}>
-                    <div style={{ fontSize: "12px", color: "#888", marginBottom: "8px" }}>No logo uploaded</div>
+                    <div style={{ fontSize: "12px", color: "#333", marginBottom: "8px" }}>No logo uploaded</div>
                     <label style={{ padding: "6px 14px", border: "1px solid #d0d0d0", background: "#fff", color: "#111", fontSize: "12px", borderRadius: "2px", cursor: "pointer", fontFamily: "Roboto, sans-serif" }}>
                       Upload logo
                       <input type="file" accept=".png,.jpg,.svg" style={{ display: "none" }} />
@@ -153,7 +153,7 @@ export default function Settings() {
 
             <div style={{ border: "1px solid #d0d0d0", borderRadius: "2px", overflow: "hidden" }}>
               <div style={{ padding: "12px 16px", background: "#fafafa", borderBottom: "1px solid #d0d0d0" }}>
-                <div style={{ fontSize: "10px", fontWeight: 500, color: "#999", textTransform: "uppercase", letterSpacing: ".08em" }}>Contact details</div>
+                <div style={{ fontSize: "12px", fontWeight: 500, color: "#444", textTransform: "uppercase", letterSpacing: ".08em" }}>Contact details</div>
               </div>
               <div style={{ padding: "16px", display: "flex", flexDirection: "column", gap: "14px" }}>
                 <div>
@@ -176,7 +176,7 @@ export default function Settings() {
         {activeTab === "Team & roles" && (
           <div>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "16px" }}>
-              <div style={{ fontSize: "12px", color: "#888" }}>{team.length} team members</div>
+              <div style={{ fontSize: "12px", color: "#333" }}>{team.length} team members</div>
               <button onClick={() => setShowAddMember(true)} style={{ padding: "6px 14px", border: "1px solid #111", background: "#111", color: "#fff", fontSize: "12px", fontWeight: 500, borderRadius: "2px", cursor: "pointer", fontFamily: "Roboto, sans-serif" }}>
                 + Add team member
               </button>
@@ -184,9 +184,9 @@ export default function Settings() {
 
             <div style={{ border: "1px solid #d0d0d0", borderRadius: "2px", overflow: "hidden", marginBottom: "16px" }}>
               <div style={{ padding: "8px 16px", background: "#fafafa", borderBottom: "1px solid #d0d0d0", display: "grid", gridTemplateColumns: "1fr 1fr 1fr auto", gap: "8px" }}>
-                <div style={{ fontSize: "11px", fontWeight: 500, color: "#888" }}>Name</div>
-                <div style={{ fontSize: "11px", fontWeight: 500, color: "#888" }}>Email</div>
-                <div style={{ fontSize: "11px", fontWeight: 500, color: "#888" }}>Role</div>
+                <div style={{ fontSize: "11px", fontWeight: 500, color: "#333" }}>Name</div>
+                <div style={{ fontSize: "11px", fontWeight: 500, color: "#333" }}>Email</div>
+                <div style={{ fontSize: "11px", fontWeight: 500, color: "#333" }}>Role</div>
                 <div></div>
               </div>
               {team.map((member) => (
@@ -197,16 +197,16 @@ export default function Settings() {
                   >
                     <div>
                       <div style={{ fontSize: "13px", fontWeight: 500, color: "#111" }}>{member.firstName} {member.lastName}</div>
-                      {member.role === "Owner" && <div style={{ fontSize: "10px", color: "#888", marginTop: "1px" }}>You</div>}
+                      {member.role === "Owner" && <div style={{ fontSize: "12px", color: "#333", marginTop: "1px" }}>You</div>}
                     </div>
-                    <div style={{ fontSize: "12px", color: "#888" }}>{member.email}</div>
+                    <div style={{ fontSize: "12px", color: "#333" }}>{member.email}</div>
                     <div>
                       <span style={{ fontSize: "11px", padding: "2px 8px", background: "#f5f5f5", color: "#555", border: "1px solid #ddd", borderRadius: "2px" }}>{member.role}</span>
                     </div>
                     <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
-                      <span style={{ fontSize: "10px", color: "#aaa" }}>{expandedMember === member.id ? "▲" : "▼"}</span>
+                      <span style={{ fontSize: "12px", color: "#444" }}>{expandedMember === member.id ? "▲" : "▼"}</span>
                       {member.role !== "Owner" && (
-                        <span onClick={(e) => { e.stopPropagation(); removeMember(member.id); }} style={{ fontSize: "12px", color: "#aaa", cursor: "pointer" }}>×</span>
+                        <span onClick={(e) => { e.stopPropagation(); removeMember(member.id); }} style={{ fontSize: "12px", color: "#444", cursor: "pointer" }}>×</span>
                       )}
                     </div>
                   </div>
@@ -222,7 +222,7 @@ export default function Settings() {
                         >
                           {Object.keys(roleDescriptions).map((r) => <option key={r}>{r}</option>)}
                         </select>
-                        <div style={{ fontSize: "11px", color: "#888", marginTop: "6px" }}>{roleDescriptions[member.role]}</div>
+                        <div style={{ fontSize: "11px", color: "#333", marginTop: "6px" }}>{roleDescriptions[member.role]}</div>
                       </div>
                       <div>
                         <div style={{ fontSize: "11px", fontWeight: 500, color: "#555", marginBottom: "8px" }}>Alert notifications</div>
@@ -250,7 +250,7 @@ export default function Settings() {
               <div style={{ border: "1px solid #d0d0d0", borderRadius: "2px", overflow: "hidden" }}>
                 <div style={{ padding: "10px 16px", background: "#fafafa", borderBottom: "1px solid #d0d0d0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                   <div style={{ fontSize: "13px", fontWeight: 500, color: "#111" }}>Add team member</div>
-                  <span onClick={() => setShowAddMember(false)} style={{ fontSize: "18px", color: "#aaa", cursor: "pointer" }}>×</span>
+                  <span onClick={() => setShowAddMember(false)} style={{ fontSize: "18px", color: "#444", cursor: "pointer" }}>×</span>
                 </div>
                 <div style={{ padding: "16px", display: "flex", flexDirection: "column", gap: "12px" }}>
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
@@ -275,7 +275,7 @@ export default function Settings() {
                       <option>Foreman</option>
                       <option>Office</option>
                     </select>
-                    <div style={{ fontSize: "11px", color: "#aaa", marginTop: "4px" }}>{roleDescriptions[newMember.role]}</div>
+                    <div style={{ fontSize: "11px", color: "#444", marginTop: "4px" }}>{roleDescriptions[newMember.role]}</div>
                   </div>
                   <div style={{ display: "flex", gap: "8px", justifyContent: "flex-end" }}>
                     <button onClick={() => setShowAddMember(false)} style={{ padding: "7px 14px", border: "1px solid #d0d0d0", background: "#fff", color: "#111", fontSize: "12px", borderRadius: "2px", cursor: "pointer", fontFamily: "Roboto, sans-serif" }}>Cancel</button>
@@ -287,12 +287,12 @@ export default function Settings() {
 
             <div style={{ border: "1px solid #d0d0d0", borderRadius: "2px", overflow: "hidden", marginTop: "16px" }}>
               <div style={{ padding: "12px 16px", background: "#fafafa", borderBottom: "1px solid #d0d0d0" }}>
-                <div style={{ fontSize: "10px", fontWeight: 500, color: "#999", textTransform: "uppercase", letterSpacing: ".08em" }}>Role permissions</div>
+                <div style={{ fontSize: "12px", fontWeight: 500, color: "#444", textTransform: "uppercase", letterSpacing: ".08em" }}>Role permissions</div>
               </div>
               {Object.entries(roleDescriptions).map(([role, desc], i) => (
                 <div key={role} style={{ padding: "10px 16px", borderBottom: i < Object.keys(roleDescriptions).length - 1 ? "1px solid #ebebeb" : "none", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                   <div style={{ fontSize: "13px", fontWeight: 500, color: "#111" }}>{role}</div>
-                  <div style={{ fontSize: "12px", color: "#888", maxWidth: "380px", textAlign: "right" }}>{desc}</div>
+                  <div style={{ fontSize: "12px", color: "#333", maxWidth: "380px", textAlign: "right" }}>{desc}</div>
                 </div>
               ))}
             </div>
@@ -303,7 +303,7 @@ export default function Settings() {
           <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
             <div style={{ border: "1px solid #d0d0d0", borderRadius: "2px", overflow: "hidden" }}>
               <div style={{ padding: "12px 16px", background: "#fafafa", borderBottom: "1px solid #d0d0d0" }}>
-                <div style={{ fontSize: "10px", fontWeight: 500, color: "#999", textTransform: "uppercase", letterSpacing: ".08em" }}>Weekly digest</div>
+                <div style={{ fontSize: "12px", fontWeight: 500, color: "#444", textTransform: "uppercase", letterSpacing: ".08em" }}>Weekly digest</div>
               </div>
               <div style={{ padding: "16px", display: "flex", flexDirection: "column", gap: "14px" }}>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
@@ -332,7 +332,7 @@ export default function Settings() {
 
             <div style={{ border: "1px solid #d0d0d0", borderRadius: "2px", overflow: "hidden" }}>
               <div style={{ padding: "12px 16px", background: "#fafafa", borderBottom: "1px solid #d0d0d0" }}>
-                <div style={{ fontSize: "10px", fontWeight: 500, color: "#999", textTransform: "uppercase", letterSpacing: ".08em" }}>Expiry warnings</div>
+                <div style={{ fontSize: "12px", fontWeight: 500, color: "#444", textTransform: "uppercase", letterSpacing: ".08em" }}>Expiry warnings</div>
               </div>
               <div style={{ padding: "16px", display: "flex", flexDirection: "column", gap: "14px" }}>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
@@ -360,7 +360,7 @@ export default function Settings() {
 
             <div style={{ border: "1px solid #d0d0d0", borderRadius: "2px", overflow: "hidden" }}>
               <div style={{ padding: "12px 16px", background: "#fafafa", borderBottom: "1px solid #d0d0d0" }}>
-                <div style={{ fontSize: "10px", fontWeight: 500, color: "#999", textTransform: "uppercase", letterSpacing: ".08em" }}>Autopilot escalation</div>
+                <div style={{ fontSize: "12px", fontWeight: 500, color: "#444", textTransform: "uppercase", letterSpacing: ".08em" }}>Autopilot escalation</div>
               </div>
               <div style={{ padding: "16px" }}>
                 {label("Mark contractor as unresponsive after", "Vettit will alert the assigned team member after this many automated reminders")}
@@ -375,15 +375,15 @@ export default function Settings() {
 
             <div style={{ border: "1px solid #d0d0d0", borderRadius: "2px", overflow: "hidden" }}>
               <div style={{ padding: "12px 16px", background: "#fafafa", borderBottom: "1px solid #d0d0d0" }}>
-                <div style={{ fontSize: "10px", fontWeight: 500, color: "#999", textTransform: "uppercase", letterSpacing: ".08em" }}>Alert recipients by type</div>
-                <div style={{ fontSize: "11px", color: "#aaa", marginTop: "2px" }}>Configure per team member in Team & roles tab</div>
+                <div style={{ fontSize: "12px", fontWeight: 500, color: "#444", textTransform: "uppercase", letterSpacing: ".08em" }}>Alert recipients by type</div>
+                <div style={{ fontSize: "11px", color: "#444", marginTop: "2px" }}>Configure per team member in Team & roles tab</div>
               </div>
               {alertTypes.map((alert, i) => {
                 const recipients = team.filter((m) => m.alerts.includes(alert));
                 return (
                   <div key={alert} style={{ padding: "10px 16px", borderBottom: i < alertTypes.length - 1 ? "1px solid #ebebeb" : "none", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                     <div style={{ fontSize: "13px", color: "#111" }}>{alert}</div>
-                    <div style={{ fontSize: "12px", color: "#888" }}>
+                    <div style={{ fontSize: "12px", color: "#333" }}>
                       {recipients.length === 0 ? "No recipients" : recipients.map((m) => m.firstName).join(", ")}
                     </div>
                   </div>
@@ -397,17 +397,17 @@ export default function Settings() {
           <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
             <div style={{ border: "1px solid #d0d0d0", borderRadius: "2px", overflow: "hidden" }}>
               <div style={{ padding: "12px 16px", background: "#fafafa", borderBottom: "1px solid #d0d0d0" }}>
-                <div style={{ fontSize: "10px", fontWeight: 500, color: "#999", textTransform: "uppercase", letterSpacing: ".08em" }}>Current plan</div>
+                <div style={{ fontSize: "12px", fontWeight: 500, color: "#444", textTransform: "uppercase", letterSpacing: ".08em" }}>Current plan</div>
               </div>
               <div style={{ padding: "16px" }}>
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px" }}>
                   <div>
                     <div style={{ fontSize: "14px", fontWeight: 500, color: "#111" }}>Vettit Pro</div>
-                    <div style={{ fontSize: "12px", color: "#888", marginTop: "2px" }}>Up to 100 active contractors · unlimited sites · full autopilot</div>
+                    <div style={{ fontSize: "12px", color: "#333", marginTop: "2px" }}>Up to 100 active contractors · unlimited sites · full autopilot</div>
                   </div>
                   <div style={{ textAlign: "right" }}>
-                    <div style={{ fontSize: "16px", fontWeight: 500, color: "#111" }}>$199<span style={{ fontSize: "12px", color: "#888", fontWeight: 400 }}>/mo</span></div>
-                    <div style={{ fontSize: "11px", color: "#888", marginTop: "2px" }}>Billed monthly</div>
+                    <div style={{ fontSize: "16px", fontWeight: 500, color: "#111" }}>$199<span style={{ fontSize: "12px", color: "#333", fontWeight: 400 }}>/mo</span></div>
+                    <div style={{ fontSize: "11px", color: "#333", marginTop: "2px" }}>Billed monthly</div>
                   </div>
                 </div>
                 <div style={{ padding: "10px 14px", background: "#f9fdf9", border: "1px solid #a5d6a7", borderRadius: "2px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -419,7 +419,7 @@ export default function Settings() {
 
             <div style={{ border: "1px solid #d0d0d0", borderRadius: "2px", overflow: "hidden" }}>
               <div style={{ padding: "12px 16px", background: "#fafafa", borderBottom: "1px solid #d0d0d0" }}>
-                <div style={{ fontSize: "10px", fontWeight: 500, color: "#999", textTransform: "uppercase", letterSpacing: ".08em" }}>Usage this month</div>
+                <div style={{ fontSize: "12px", fontWeight: 500, color: "#444", textTransform: "uppercase", letterSpacing: ".08em" }}>Usage this month</div>
               </div>
               <div style={{ padding: "16px", display: "flex", flexDirection: "column", gap: "12px" }}>
                 {[
@@ -431,7 +431,7 @@ export default function Settings() {
                   <div key={item.label} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0", borderBottom: "1px solid #f5f5f5" }}>
                     <div style={{ fontSize: "13px", color: "#555" }}>{item.label}</div>
                     <div style={{ fontSize: "13px", fontWeight: 500, color: "#111" }}>
-                      {item.value}{item.limit ? <span style={{ fontSize: "11px", color: "#aaa", fontWeight: 400 }}> / {item.limit}</span> : ""}
+                      {item.value}{item.limit ? <span style={{ fontSize: "11px", color: "#444", fontWeight: 400 }}> / {item.limit}</span> : ""}
                     </div>
                   </div>
                 ))}
@@ -440,14 +440,14 @@ export default function Settings() {
 
             <div style={{ border: "1px solid #d0d0d0", borderRadius: "2px", overflow: "hidden" }}>
               <div style={{ padding: "12px 16px", background: "#fafafa", borderBottom: "1px solid #d0d0d0" }}>
-                <div style={{ fontSize: "10px", fontWeight: 500, color: "#999", textTransform: "uppercase", letterSpacing: ".08em" }}>Payment method</div>
+                <div style={{ fontSize: "12px", fontWeight: 500, color: "#444", textTransform: "uppercase", letterSpacing: ".08em" }}>Payment method</div>
               </div>
               <div style={{ padding: "16px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
                   <div style={{ width: "40px", height: "26px", border: "1px solid #d0d0d0", borderRadius: "2px", background: "#f5f5f5", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "9px", fontWeight: 500, color: "#555" }}>VISA</div>
                   <div>
                     <div style={{ fontSize: "13px", color: "#111" }}>Visa ending in 4242</div>
-                    <div style={{ fontSize: "11px", color: "#888", marginTop: "1px" }}>Expires 08/2027</div>
+                    <div style={{ fontSize: "11px", color: "#333", marginTop: "1px" }}>Expires 08/2027</div>
                   </div>
                 </div>
                 <button style={{ padding: "5px 12px", border: "1px solid #d0d0d0", background: "#fff", color: "#111", fontSize: "11px", borderRadius: "2px", cursor: "pointer", fontFamily: "Roboto, sans-serif" }}>Update card</button>
@@ -456,7 +456,7 @@ export default function Settings() {
 
             <div style={{ border: "1px solid #d0d0d0", borderRadius: "2px", overflow: "hidden" }}>
               <div style={{ padding: "12px 16px", background: "#fafafa", borderBottom: "1px solid #d0d0d0" }}>
-                <div style={{ fontSize: "10px", fontWeight: 500, color: "#999", textTransform: "uppercase", letterSpacing: ".08em" }}>Invoice history</div>
+                <div style={{ fontSize: "12px", fontWeight: 500, color: "#444", textTransform: "uppercase", letterSpacing: ".08em" }}>Invoice history</div>
               </div>
               {[
                 { date: "1 Apr 2025", amount: "$199.00", status: "Paid" },
@@ -475,7 +475,7 @@ export default function Settings() {
             </div>
 
             <div style={{ border: "1px solid #ebebeb", borderRadius: "2px", padding: "14px 16px" }}>
-              <div style={{ fontSize: "12px", color: "#888", lineHeight: 1.6 }}>
+              <div style={{ fontSize: "12px", color: "#333", lineHeight: 1.6 }}>
                 Need to cancel or change plans? Contact us at <span style={{ color: "#111", fontWeight: 500 }}>support@vettit.com.au</span> and we will sort it out same day.
               </div>
             </div>

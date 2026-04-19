@@ -67,10 +67,10 @@ export default function Vault() {
       <div style={{ padding: "14px 32px", borderBottom: "1px solid #d0d0d0", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <div>
           <div style={{ fontSize: "14px", fontWeight: 500, color: "#111" }}>Document vault</div>
-          <div style={{ fontSize: "12px", color: "#888", marginTop: "2px" }}>Every document uploaded by every contractor — searchable and downloadable</div>
+          <div style={{ fontSize: "12px", color: "#333", marginTop: "2px" }}>Every document uploaded by every contractor — searchable and downloadable</div>
         </div>
         <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
-          <span style={{ fontSize: "12px", color: "#888" }}>{filtered.length} documents</span>
+          <span style={{ fontSize: "12px", color: "#333" }}>{filtered.length} documents</span>
           <button style={{ padding: "7px 14px", border: "1px solid #111", background: "#111", color: "#fff", fontSize: "12px", fontWeight: 500, cursor: "pointer", borderRadius: "2px", fontFamily: "Roboto, sans-serif" }}>
             Export all
           </button>
@@ -97,7 +97,7 @@ export default function Vault() {
         {(search || filterContractor !== "All contractors" || filterLevel !== "All levels" || filterStatus !== "All statuses") && (
           <button
             onClick={() => { setSearch(""); setFilterContractor("All contractors"); setFilterLevel("All levels"); setFilterStatus("All statuses"); }}
-            style={{ fontSize: "12px", color: "#888", background: "none", border: "none", cursor: "pointer", fontFamily: "Roboto, sans-serif" }}
+            style={{ fontSize: "12px", color: "#333", background: "none", border: "none", cursor: "pointer", fontFamily: "Roboto, sans-serif" }}
           >
             Clear filters
           </button>
@@ -107,35 +107,35 @@ export default function Vault() {
       <table style={{ width: "100%", borderCollapse: "collapse", tableLayout: "fixed" }}>
         <thead>
           <tr style={{ background: "#fafafa" }}>
-            <th style={{ width: "18%", fontSize: "11px", fontWeight: 500, color: "#888", textAlign: "left", padding: "10px 16px 10px 32px", borderBottom: "1px solid #d0d0d0" }}>Contractor</th>
-            <th style={{ width: "22%", fontSize: "11px", fontWeight: 500, color: "#888", textAlign: "left", padding: "10px 16px", borderBottom: "1px solid #d0d0d0" }}>Document</th>
-            <th style={{ width: "20%", fontSize: "11px", fontWeight: 500, color: "#888", textAlign: "left", padding: "10px 16px", borderBottom: "1px solid #d0d0d0" }}>Level</th>
-            <th style={{ width: "14%", fontSize: "11px", fontWeight: 500, color: "#888", textAlign: "left", padding: "10px 16px", borderBottom: "1px solid #d0d0d0" }}>Uploaded</th>
-            <th style={{ width: "14%", fontSize: "11px", fontWeight: 500, color: "#888", textAlign: "left", padding: "10px 16px", borderBottom: "1px solid #d0d0d0" }}>Expiry</th>
-            <th style={{ width: "7%", fontSize: "11px", fontWeight: 500, color: "#888", textAlign: "left", padding: "10px 16px", borderBottom: "1px solid #d0d0d0" }}>Status</th>
-            <th style={{ width: "5%", fontSize: "11px", fontWeight: 500, color: "#888", textAlign: "left", padding: "10px 16px", borderBottom: "1px solid #d0d0d0" }}></th>
+            <th style={{ width: "18%", fontSize: "11px", fontWeight: 500, color: "#333", textAlign: "left", padding: "10px 16px 10px 32px", borderBottom: "1px solid #d0d0d0" }}>Contractor</th>
+            <th style={{ width: "22%", fontSize: "11px", fontWeight: 500, color: "#333", textAlign: "left", padding: "10px 16px", borderBottom: "1px solid #d0d0d0" }}>Document</th>
+            <th style={{ width: "20%", fontSize: "11px", fontWeight: 500, color: "#333", textAlign: "left", padding: "10px 16px", borderBottom: "1px solid #d0d0d0" }}>Level</th>
+            <th style={{ width: "14%", fontSize: "11px", fontWeight: 500, color: "#333", textAlign: "left", padding: "10px 16px", borderBottom: "1px solid #d0d0d0" }}>Uploaded</th>
+            <th style={{ width: "14%", fontSize: "11px", fontWeight: 500, color: "#333", textAlign: "left", padding: "10px 16px", borderBottom: "1px solid #d0d0d0" }}>Expiry</th>
+            <th style={{ width: "7%", fontSize: "11px", fontWeight: 500, color: "#333", textAlign: "left", padding: "10px 16px", borderBottom: "1px solid #d0d0d0" }}>Status</th>
+            <th style={{ width: "5%", fontSize: "11px", fontWeight: 500, color: "#333", textAlign: "left", padding: "10px 16px", borderBottom: "1px solid #d0d0d0" }}></th>
           </tr>
         </thead>
         <tbody>
           {filtered.length === 0 ? (
             <tr>
-              <td colSpan={7} style={{ padding: "32px", textAlign: "center", fontSize: "13px", color: "#888" }}>No documents match your filters</td>
+              <td colSpan={7} style={{ padding: "32px", textAlign: "center", fontSize: "13px", color: "#333" }}>No documents match your filters</td>
             </tr>
           ) : (
             filtered.map((doc) => (
               <tr key={doc.id} style={{ borderBottom: "1px solid #ebebeb" }}>
                 <td style={{ padding: "11px 16px 11px 32px" }}>
                   <div style={{ fontSize: "13px", fontWeight: 500, color: "#111" }}>{doc.contractor}</div>
-                  <div style={{ fontSize: "11px", color: "#999", marginTop: "1px" }}>{doc.trade}</div>
+                  <div style={{ fontSize: "11px", color: "#444", marginTop: "1px" }}>{doc.trade}</div>
                 </td>
                 <td style={{ padding: "11px 16px" }}>
                   <div style={{ fontSize: "13px", color: "#111" }}>{doc.docType}</div>
-                  <div style={{ fontSize: "11px", color: "#999", marginTop: "1px" }}>{doc.fileName}</div>
+                  <div style={{ fontSize: "11px", color: "#444", marginTop: "1px" }}>{doc.fileName}</div>
                 </td>
                 <td style={{ padding: "11px 16px" }}>
                   {levelBadge(doc.level, doc.site, doc.worker)}
                 </td>
-                <td style={{ padding: "11px 16px", fontSize: "12px", color: "#888" }}>{doc.uploadedDate}</td>
+                <td style={{ padding: "11px 16px", fontSize: "12px", color: "#333" }}>{doc.uploadedDate}</td>
                 <td style={{ padding: "11px 16px", fontSize: "12px", color: doc.status === "expired" ? "#b71c1c" : doc.status === "expiring" ? "#7c4e00" : "#888" }}>{doc.expiry}</td>
                 <td style={{ padding: "11px 16px" }}>{statusBadge(doc.status)}</td>
                 <td style={{ padding: "11px 16px" }}>

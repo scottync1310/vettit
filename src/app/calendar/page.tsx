@@ -61,9 +61,9 @@ export default function Calendar() {
   const selectedEvents = selectedDay ? eventsForDay(selectedDay) : [];
 
   const levelTag = (e: ExpiryEvent) => {
-    if (e.level === "company") return <span style={{ fontSize: "10px", padding: "1px 5px", background: "#f5f5f5", color: "#555", border: "1px solid #ddd", borderRadius: "2px" }}>Company</span>;
-    if (e.level === "site") return <span style={{ fontSize: "10px", padding: "1px 5px", background: "#E6F1FB", color: "#0C447C", border: "1px solid #85B7EB", borderRadius: "2px" }}>{e.site}</span>;
-    if (e.level === "worker") return <span style={{ fontSize: "10px", padding: "1px 5px", background: "#EEEDFE", color: "#3C3489", border: "1px solid #AFA9EC", borderRadius: "2px" }}>{e.worker}</span>;
+    if (e.level === "company") return <span style={{ fontSize: "12px", padding: "1px 5px", background: "#f5f5f5", color: "#555", border: "1px solid #ddd", borderRadius: "2px" }}>Company</span>;
+    if (e.level === "site") return <span style={{ fontSize: "12px", padding: "1px 5px", background: "#E6F1FB", color: "#0C447C", border: "1px solid #85B7EB", borderRadius: "2px" }}>{e.site}</span>;
+    if (e.level === "worker") return <span style={{ fontSize: "12px", padding: "1px 5px", background: "#EEEDFE", color: "#3C3489", border: "1px solid #AFA9EC", borderRadius: "2px" }}>{e.worker}</span>;
   };
 
   const cells = [];
@@ -77,7 +77,7 @@ export default function Calendar() {
       <div style={{ padding: "14px 32px", borderBottom: "1px solid #d0d0d0", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <div>
           <div style={{ fontSize: "14px", fontWeight: 500, color: "#111" }}>Expiry calendar</div>
-          <div style={{ fontSize: "12px", color: "#888", marginTop: "2px" }}>Monthly view of all upcoming document expirations</div>
+          <div style={{ fontSize: "12px", color: "#333", marginTop: "2px" }}>Monthly view of all upcoming document expirations</div>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
           <button onClick={prevMonth} style={{ padding: "6px 12px", border: "1px solid #d0d0d0", background: "#fff", color: "#111", fontSize: "12px", borderRadius: "2px", cursor: "pointer", fontFamily: "Roboto, sans-serif" }}>←</button>
@@ -90,10 +90,10 @@ export default function Calendar() {
 
         <div style={{ padding: "24px 32px" }}>
           {eventsThisMonth.length === 0 && (
-            <div style={{ padding: "10px 0 16px", fontSize: "12px", color: "#888" }}>No expirations this month.</div>
+            <div style={{ padding: "10px 0 16px", fontSize: "12px", color: "#333" }}>No expirations this month.</div>
           )}
           {eventsThisMonth.length > 0 && (
-            <div style={{ padding: "8px 0 16px", fontSize: "12px", color: "#888" }}>
+            <div style={{ padding: "8px 0 16px", fontSize: "12px", color: "#333" }}>
               <span style={{ fontWeight: 500, color: "#c0392b" }}>{eventsThisMonth.length} document{eventsThisMonth.length > 1 ? "s" : ""}</span> expiring this month — click a date to see details
             </div>
           )}
@@ -101,7 +101,7 @@ export default function Calendar() {
           <div style={{ border: "1px solid #d0d0d0", borderRadius: "2px", overflow: "hidden" }}>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", background: "#fafafa", borderBottom: "1px solid #d0d0d0" }}>
               {days.map((d) => (
-                <div key={d} style={{ padding: "8px 0", textAlign: "center", fontSize: "11px", fontWeight: 500, color: "#888" }}>{d}</div>
+                <div key={d} style={{ padding: "8px 0", textAlign: "center", fontSize: "11px", fontWeight: 500, color: "#333" }}>{d}</div>
               ))}
             </div>
 
@@ -131,12 +131,12 @@ export default function Calendar() {
                         </div>
                         <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
                           {dayEvents.slice(0, 2).map((e) => (
-                            <div key={e.id} style={{ fontSize: "10px", padding: "2px 4px", background: "#ffebee", color: "#b71c1c", borderRadius: "2px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                            <div key={e.id} style={{ fontSize: "12px", padding: "2px 4px", background: "#ffebee", color: "#b71c1c", borderRadius: "2px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                               {e.contractor}
                             </div>
                           ))}
                           {dayEvents.length > 2 && (
-                            <div style={{ fontSize: "10px", color: "#888" }}>+{dayEvents.length - 2} more</div>
+                            <div style={{ fontSize: "12px", color: "#333" }}>+{dayEvents.length - 2} more</div>
                           )}
                         </div>
                       </>
@@ -152,7 +152,7 @@ export default function Calendar() {
           <div style={{ borderLeft: "1px solid #d0d0d0", padding: "24px 24px" }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "16px" }}>
               <div style={{ fontSize: "13px", fontWeight: 500, color: "#111" }}>{selectedDay} {months[viewMonth]}</div>
-              <span onClick={() => setSelectedDay(null)} style={{ fontSize: "16px", color: "#aaa", cursor: "pointer" }}>×</span>
+              <span onClick={() => setSelectedDay(null)} style={{ fontSize: "16px", color: "#444", cursor: "pointer" }}>×</span>
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
               {selectedEvents.map((e) => (

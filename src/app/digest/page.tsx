@@ -88,9 +88,9 @@ const twoWeeks = expiringDocs.filter((d) => d.daysLeft > 7 && d.daysLeft <= 14);
 const threeToFour = expiringDocs.filter((d) => d.daysLeft > 14 && d.daysLeft <= 30);
 
 const levelTag = (level: string, site: string | null, worker: string | null) => {
-  if (level === "Company") return <span style={{ fontSize: "10px", padding: "2px 6px", background: "#f5f5f5", color: "#555", border: "1px solid #ddd", borderRadius: "2px" }}>Company</span>;
-  if (level === "Site") return <span style={{ fontSize: "10px", padding: "2px 6px", background: "#E6F1FB", color: "#0C447C", border: "1px solid #85B7EB", borderRadius: "2px" }}>{site}</span>;
-  if (level === "Worker") return <span style={{ fontSize: "10px", padding: "2px 6px", background: "#EEEDFE", color: "#3C3489", border: "1px solid #AFA9EC", borderRadius: "2px" }}>{worker}</span>;
+  if (level === "Company") return <span style={{ fontSize: "12px", padding: "2px 6px", background: "#f5f5f5", color: "#555", border: "1px solid #ddd", borderRadius: "2px" }}>Company</span>;
+  if (level === "Site") return <span style={{ fontSize: "12px", padding: "2px 6px", background: "#E6F1FB", color: "#0C447C", border: "1px solid #85B7EB", borderRadius: "2px" }}>{site}</span>;
+  if (level === "Worker") return <span style={{ fontSize: "12px", padding: "2px 6px", background: "#EEEDFE", color: "#3C3489", border: "1px solid #AFA9EC", borderRadius: "2px" }}>{worker}</span>;
 };
 
 const DocRow = ({ doc }: { doc: typeof expiringDocs[0] }) => (
@@ -100,11 +100,11 @@ const DocRow = ({ doc }: { doc: typeof expiringDocs[0] }) => (
         <span style={{ fontSize: "13px", fontWeight: 500, color: "#111" }}>{doc.contractor}</span>
         {levelTag(doc.level, doc.site, doc.worker)}
       </div>
-      <div style={{ fontSize: "11px", color: "#888" }}>{doc.docType}</div>
+      <div style={{ fontSize: "11px", color: "#333" }}>{doc.docType}</div>
     </div>
     <div style={{ textAlign: "right", flexShrink: 0, marginLeft: "16px" }}>
       <div style={{ fontSize: "12px", fontWeight: 500, color: doc.daysLeft <= 7 ? "#c0392b" : doc.daysLeft <= 14 ? "#b8860b" : "#555" }}>{doc.daysLeft} days</div>
-      <div style={{ fontSize: "11px", color: "#aaa", marginTop: "1px" }}>{doc.expiry}</div>
+      <div style={{ fontSize: "11px", color: "#444", marginTop: "1px" }}>{doc.expiry}</div>
     </div>
   </div>
 );
@@ -113,7 +113,7 @@ const Section = ({ title, color, docs }: { title: string; color: string; docs: t
   if (docs.length === 0) return null;
   return (
     <div style={{ padding: "14px 24px", borderBottom: "1px solid #ebebeb" }}>
-      <div style={{ fontSize: "10px", fontWeight: 500, color, textTransform: "uppercase" as const, letterSpacing: ".08em", marginBottom: "10px" }}>{title}</div>
+      <div style={{ fontSize: "12px", fontWeight: 500, color, textTransform: "uppercase" as const, letterSpacing: ".08em", marginBottom: "10px" }}>{title}</div>
       {docs.map((doc, i) => (
         <div key={i} style={{ borderBottom: i < docs.length - 1 ? "1px solid #f5f5f5" : "none" }}>
           <DocRow doc={doc} />
@@ -132,12 +132,12 @@ export default function Digest() {
           <span style={{ fontSize: "16px", fontWeight: 500, color: "#fff", letterSpacing: "-.3px" }}>
             vett<span style={{ color: "#3a7d44" }}>it</span>
           </span>
-          <span style={{ fontSize: "11px", color: "#888" }}>Weekly expiry report — Mon 24 Mar 2025</span>
+          <span style={{ fontSize: "11px", color: "#333" }}>Weekly expiry report — Mon 24 Mar 2025</span>
         </div>
 
         <div style={{ padding: "20px 24px", borderBottom: "1px solid #d0d0d0" }}>
           <div style={{ fontSize: "14px", fontWeight: 500, color: "#111", marginBottom: "3px" }}>Good morning, Mila.</div>
-          <div style={{ fontSize: "12px", color: "#888", lineHeight: 1.6 }}>
+          <div style={{ fontSize: "12px", color: "#333", lineHeight: 1.6 }}>
             Here are the documents expiring in the next 30 days across all your contractors and sites.
             {thisWeek.length > 0 && <span style={{ color: "#c0392b", fontWeight: 500 }}> {thisWeek.length} expire this week — action needed.</span>}
           </div>
@@ -146,15 +146,15 @@ export default function Digest() {
         <div style={{ padding: "10px 24px", background: "#fafafa", borderBottom: "1px solid #d0d0d0", display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "8px" }}>
           <div style={{ textAlign: "center" }}>
             <div style={{ fontSize: "20px", fontWeight: 500, color: "#c0392b" }}>{thisWeek.length}</div>
-            <div style={{ fontSize: "10px", color: "#888", marginTop: "2px" }}>This week</div>
+            <div style={{ fontSize: "12px", color: "#333", marginTop: "2px" }}>This week</div>
           </div>
           <div style={{ textAlign: "center", borderLeft: "1px solid #ebebeb", borderRight: "1px solid #ebebeb" }}>
             <div style={{ fontSize: "20px", fontWeight: 500, color: "#b8860b" }}>{twoWeeks.length}</div>
-            <div style={{ fontSize: "10px", color: "#888", marginTop: "2px" }}>Within 2 weeks</div>
+            <div style={{ fontSize: "12px", color: "#333", marginTop: "2px" }}>Within 2 weeks</div>
           </div>
           <div style={{ textAlign: "center" }}>
             <div style={{ fontSize: "20px", fontWeight: 500, color: "#555" }}>{threeToFour.length}</div>
-            <div style={{ fontSize: "10px", color: "#888", marginTop: "2px" }}>Within 30 days</div>
+            <div style={{ fontSize: "12px", color: "#333", marginTop: "2px" }}>Within 30 days</div>
           </div>
         </div>
 

@@ -93,16 +93,16 @@ export default function Sites() {
             <div style={{ padding: "16px 20px", borderBottom: "1px solid #d0d0d0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <div>
                 <div style={{ fontSize: "14px", fontWeight: 500, color: "#111" }}>Archive site</div>
-                <div style={{ fontSize: "12px", color: "#888", marginTop: "2px" }}>{site.name}</div>
+                <div style={{ fontSize: "12px", color: "#333", marginTop: "2px" }}>{site.name}</div>
               </div>
-              <button onClick={() => setShowArchiveConfirm(false)} style={{ background: "none", border: "none", fontSize: "18px", color: "#888", cursor: "pointer" }}>×</button>
+              <button onClick={() => setShowArchiveConfirm(false)} style={{ background: "none", border: "none", fontSize: "18px", color: "#333", cursor: "pointer" }}>×</button>
             </div>
             <div style={{ padding: "20px" }}>
               <div style={{ fontSize: "13px", color: "#555", lineHeight: 1.7, marginBottom: "16px" }}>
                 Archiving this site will mark the project as complete. It will be removed from active views but all compliance records, documents and contractor history will be preserved permanently for audit purposes.
               </div>
               <div style={{ padding: "10px 12px", background: "#fafafa", border: "1px solid #ebebeb", borderRadius: "2px", marginBottom: "16px" }}>
-                <div style={{ fontSize: "11px", color: "#888", lineHeight: 1.6 }}>
+                <div style={{ fontSize: "11px", color: "#333", lineHeight: 1.6 }}>
                   {site.total} contractors on this site will be moved to archived status. Their records remain accessible in the document vault.
                 </div>
               </div>
@@ -118,7 +118,7 @@ export default function Sites() {
       <div style={{ padding: "14px 32px", borderBottom: "1px solid #d0d0d0", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <div>
           <div style={{ fontSize: "14px", fontWeight: 500, color: "#111" }}>Sites</div>
-          <div style={{ fontSize: "12px", color: "#888", marginTop: "2px" }}>Select a site to see who is cleared to work today</div>
+          <div style={{ fontSize: "12px", color: "#333", marginTop: "2px" }}>Select a site to see who is cleared to work today</div>
         </div>
         <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
           {archivedSites.length > 0 && (
@@ -144,20 +144,20 @@ export default function Sites() {
               >
                 <div style={{ padding: "16px", borderBottom: "1px solid #ebebeb" }}>
                   <div style={{ fontSize: "13px", fontWeight: 500, color: "#111", marginBottom: "2px" }}>{s.name}</div>
-                  <div style={{ fontSize: "11px", color: "#888" }}>{s.sub}</div>
+                  <div style={{ fontSize: "11px", color: "#333" }}>{s.sub}</div>
                 </div>
                 <div style={{ padding: "12px 16px", display: "grid", gridTemplateColumns: "1fr 1fr 1fr", borderBottom: "1px solid #ebebeb" }}>
                   <div style={{ textAlign: "center" }}>
                     <div style={{ fontSize: "18px", fontWeight: 500, color: "#111" }}>{s.total}</div>
-                    <div style={{ fontSize: "10px", color: "#888", marginTop: "1px" }}>Total</div>
+                    <div style={{ fontSize: "12px", color: "#333", marginTop: "1px" }}>Total</div>
                   </div>
                   <div style={{ textAlign: "center", borderLeft: "1px solid #ebebeb", borderRight: "1px solid #ebebeb" }}>
                     <div style={{ fontSize: "18px", fontWeight: 500, color: "#3a7d44" }}>{s.cleared}</div>
-                    <div style={{ fontSize: "10px", color: "#888", marginTop: "1px" }}>Cleared</div>
+                    <div style={{ fontSize: "12px", color: "#333", marginTop: "1px" }}>Cleared</div>
                   </div>
                   <div style={{ textAlign: "center" }}>
                     <div style={{ fontSize: "18px", fontWeight: 500, color: s.notCleared > 0 ? "#c0392b" : "#111" }}>{s.notCleared}</div>
-                    <div style={{ fontSize: "10px", color: "#888", marginTop: "1px" }}>Not cleared</div>
+                    <div style={{ fontSize: "12px", color: "#333", marginTop: "1px" }}>Not cleared</div>
                   </div>
                 </div>
                 <div style={{ padding: "10px 16px", background: scoreBg(score) }}>
@@ -176,26 +176,26 @@ export default function Sites() {
           })}
 
           <a href="/sites/new" style={{ border: "1px dashed #d0d0d0", borderRadius: "2px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "32px 16px", minHeight: "160px", textDecoration: "none" }}>
-            <div style={{ width: "28px", height: "28px", borderRadius: "50%", border: "1px solid #d0d0d0", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "16px", color: "#aaa", marginBottom: "8px" }}>+</div>
-            <div style={{ fontSize: "12px", color: "#aaa" }}>Add a new site</div>
+            <div style={{ width: "28px", height: "28px", borderRadius: "50%", border: "1px solid #d0d0d0", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "16px", color: "#444", marginBottom: "8px" }}>+</div>
+            <div style={{ fontSize: "12px", color: "#444" }}>Add a new site</div>
           </a>
         </div>
 
         {showArchived && archivedSites.length > 0 && (
           <div style={{ marginBottom: "24px" }}>
-            <div style={{ fontSize: "10px", fontWeight: 500, color: "#999", textTransform: "uppercase", letterSpacing: ".08em", marginBottom: "10px" }}>Archived sites</div>
+            <div style={{ fontSize: "12px", fontWeight: 500, color: "#444", textTransform: "uppercase", letterSpacing: ".08em", marginBottom: "10px" }}>Archived sites</div>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "12px" }}>
               {archivedSites.map((s) => (
                 <div key={s.id} style={{ border: "1px solid #d0d0d0", borderRadius: "2px", overflow: "hidden", opacity: 0.6 }}>
                   <div style={{ padding: "16px", borderBottom: "1px solid #ebebeb" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                       <div style={{ fontSize: "13px", fontWeight: 500, color: "#111" }}>{s.name}</div>
-                      <span style={{ fontSize: "10px", padding: "1px 6px", background: "#f5f5f5", color: "#888", border: "1px solid #ddd", borderRadius: "2px" }}>Archived</span>
+                      <span style={{ fontSize: "12px", padding: "1px 6px", background: "#f5f5f5", color: "#333", border: "1px solid #ddd", borderRadius: "2px" }}>Archived</span>
                     </div>
-                    <div style={{ fontSize: "11px", color: "#888", marginTop: "2px" }}>{s.sub}</div>
+                    <div style={{ fontSize: "11px", color: "#333", marginTop: "2px" }}>{s.sub}</div>
                   </div>
                   <div style={{ padding: "10px 16px", background: "#fafafa", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <div style={{ fontSize: "11px", color: "#888" }}>{s.total} contractors · records preserved</div>
+                    <div style={{ fontSize: "11px", color: "#333" }}>{s.total} contractors · records preserved</div>
                     <span style={{ fontSize: "11px", color: "#3a7d44", cursor: "pointer" }}>View records</span>
                   </div>
                 </div>
@@ -210,7 +210,7 @@ export default function Sites() {
               <div style={{ fontSize: "13px", fontWeight: 500, color: "#111" }}>{site.name} — {site.sub}</div>
               <button
                 onClick={() => setShowArchiveConfirm(true)}
-                style={{ padding: "6px 12px", border: "1px solid #d0d0d0", background: "#fff", color: "#888", fontSize: "11px", borderRadius: "2px", cursor: "pointer", fontFamily: "Roboto, sans-serif" }}
+                style={{ padding: "6px 12px", border: "1px solid #d0d0d0", background: "#fff", color: "#333", fontSize: "11px", borderRadius: "2px", cursor: "pointer", fontFamily: "Roboto, sans-serif" }}
               >
                 Archive site
               </button>
@@ -218,7 +218,7 @@ export default function Sites() {
 
             {data.notCleared.length > 0 ? (
               <div style={{ marginBottom: "20px" }}>
-                <div style={{ fontSize: "10px", fontWeight: 500, color: "#b71c1c", textTransform: "uppercase", letterSpacing: ".08em", marginBottom: "10px" }}>Not cleared — do not allow site access</div>
+                <div style={{ fontSize: "12px", fontWeight: 500, color: "#b71c1c", textTransform: "uppercase", letterSpacing: ".08em", marginBottom: "10px" }}>Not cleared — do not allow site access</div>
                 <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
                   {data.notCleared.map((c) => (
                     <div key={c.name} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 14px", border: "1px solid #ef9a9a", borderRadius: "2px", background: "#fff" }}>
@@ -226,7 +226,7 @@ export default function Sites() {
                         <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#c0392b", flexShrink: 0 }} />
                         <div>
                           <div style={{ fontSize: "13px", fontWeight: 500, color: "#111" }}>{c.name}</div>
-                          <div style={{ fontSize: "11px", color: "#888", marginTop: "1px" }}>{c.trade}</div>
+                          <div style={{ fontSize: "11px", color: "#333", marginTop: "1px" }}>{c.trade}</div>
                           <div style={{ fontSize: "11px", color: "#c0392b", marginTop: "2px" }}>{c.reason}</div>
                         </div>
                       </div>
@@ -245,14 +245,14 @@ export default function Sites() {
             )}
 
             <div>
-              <div style={{ fontSize: "10px", fontWeight: 500, color: "#3a7d44", textTransform: "uppercase", letterSpacing: ".08em", marginBottom: "10px" }}>Cleared to work</div>
+              <div style={{ fontSize: "12px", fontWeight: 500, color: "#3a7d44", textTransform: "uppercase", letterSpacing: ".08em", marginBottom: "10px" }}>Cleared to work</div>
               {data.cleared.map((c, i) => (
                 <div key={c.name} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "11px 0", borderBottom: i < data.cleared.length - 1 ? "1px solid #ebebeb" : "none" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
                     <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#3a7d44", flexShrink: 0 }} />
                     <div>
                       <div style={{ fontSize: "13px", fontWeight: 500, color: "#111" }}>{c.name}</div>
-                      <div style={{ fontSize: "11px", color: "#888", marginTop: "1px" }}>{c.trade} · next expiry {c.nextExpiry}</div>
+                      <div style={{ fontSize: "11px", color: "#333", marginTop: "1px" }}>{c.trade} · next expiry {c.nextExpiry}</div>
                     </div>
                   </div>
                   <span style={{ fontSize: "11px", padding: "3px 8px", background: "#e8f5e9", color: "#1b5e20", border: "1px solid #a5d6a7", borderRadius: "2px", fontWeight: 500 }}>Cleared</span>
