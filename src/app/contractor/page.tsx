@@ -4,13 +4,21 @@ import StatusBadge from "../../components/StatusBadge";
 import ArchiveModal from "../../components/ArchiveModal";
 import { isLicenceCovered, getCoveredLicences, progressiveMap } from "../../lib/licences";
 
-const licences: Record<string, string[]> = {
+export const dynamic = "force-dynamic";
+
+const licenceOptions: Record<string, string[]> = {
   scaffolder: ["Dogging DG", "Basic Rigging RB", "Intermediate Rigging RI", "Advanced Rigging RA", "Basic Scaffolding SB", "Intermediate Scaffolding SI", "Advanced Scaffolding SA"],
   crane: ["Slewing Mobile Crane C2 (up to 20t)", "Slewing Mobile Crane C6 (up to 60t)", "Slewing Mobile Crane C1 (up to 100t)", "Slewing Mobile Crane C0 (open/over 100t)", "Non-Slewing Mobile Crane CN", "Tower Crane CT", "Vehicle Loading Crane CV", "Bridge and Gantry Crane CB"],
   forklift: ["Forklift Truck LF", "Order-Picking Forklift LO", "Reach Stacker RS", "Telehandler TV"],
   ewp: ["Boom-type EWP WP (11m+)", "Materials Hoist HM", "Personnel and Materials Hoist HP", "Concrete Placing Boom PB"],
   demolition: ["Demolition Licence", "Asbestos Removal Class A", "Asbestos Removal Class B"],
   heavyvehicle: ["Light Rigid LR", "Medium Rigid MR", "Heavy Rigid HR", "Heavy Combination HC", "Multi-Combination MC"],
+  plumber: ["Plumbing Licence — Unrestricted", "Plumbing Licence — Restricted", "Drainage Licence", "Gas Fitting Licence"],
+  electrician: ["Electrical Contractor Licence", "Electrical Worker Licence — Grade A", "Electrical Worker Licence — Grade B", "Electrical Worker Licence — Provisional"],
+  hvac: ["Air Conditioning & Refrigeration Licence", "Gas Fitting Licence"],
+  gasfitter: ["Gas Fitting Licence — Type A", "Gas Fitting Licence — Type B"],
+  carpentry: ["Carpentry & Joinery Licence", "Building & Construction Licence"],
+  painting: ["Painting & Decorating Licence", "Lead Paint Removal Certification"],
 };
 
 const roleLabel: Record<string, string> = {
@@ -18,7 +26,18 @@ const roleLabel: Record<string, string> = {
   scaffolder: "Scaffolder / Rigger", crane: "Crane Operator",
   forklift: "Forklift / Plant Operator", ewp: "EWP / Hoist Operator",
   demolition: "Demolition / Asbestos", heavyvehicle: "Heavy Vehicle Driver",
-  supervisor: "Supervisor / Manager",
+  supervisor: "Supervisor / Manager", hvac: "HVAC Technician",
+  gasfitter: "Gas Fitter", carpentry: "Carpenter", painting: "Painter",
+};
+
+const tradeConditionalDocs: Record<string, string[]> = {
+  electrician: ["Electrical Contractor Licence"],
+  plumber: ["Plumbing Contractor Licence"],
+  gasfitter: ["Gas Fitting Contractor Licence"],
+  hvac: ["Gas Fitting Contractor Licence"],
+  demolition: ["Asbestos Removal Licence — Class A (friable)", "Asbestos Removal Licence — Class B (non-friable)"],
+  scaffolder: ["SafeWork High Risk Work Licence — Scaffolding/Rigging"],
+  crane: ["SafeWork High Risk Work Licence — Crane Operation"],
 };
 
 const teamMembers = ["Mila Hartley", "James Foreman", "Sarah Admin", "Chris Site Manager", "Unassigned"];
@@ -33,6 +52,9 @@ type Worker = {
   selectedLicences: string[];
   whiteCard: boolean;
   isContact?: boolean;
+  invited?: boolean;
+  email?: string;
+  mobile?: string;
 };
 
 type Subcontractor = {
@@ -58,14 +80,20 @@ const contractor = {
   name: "Rapid Demo Co",
   trade: "Demolition",
   email: "tom@rapiddemo.com.au",
+  mobile: "0400 000 456",
   contactName: "Tom Richards",
   invited: "10 March 2025",
   sites: ["Paddington Townhouses", "Newstead Commercial"],
   status: "non-compliant" as const,
   companyDocs: [
     { name: "Public liability insurance", expiry: "30 Nov 2025", status: "compliant" as const },
-    { name: "Workers compensation", expiry: "30 Jun 2025", status: "compliant" as const },
-    { name: "Trade licence", expiry: "15 Nov 2025", status: "compliant" as const },
+    { name: "Workers compensation insurance", expiry: "30 Jun 2025", status: "compliant" as const },
+    { name: "Contractor licence", expiry: "15 Nov 2025", status: "compliant" as const },
+    { name: "Professional indemnity insurance", expiry: "Not provided", status: "non-compliant" as const },
+    { name: "Accident and illness insurance", expiry: "Not provided", status: "non-compliant" as const },
+    { name: "Asbestos Removal Licence — Class A (friable)", expiry: "30 Jun 2025", status: "compliant" as const },
+    { name: "Asbestos Removal Licence — Class B (non-friable)", expiry: "Not provided", status: "non-compliant" as const },
+    { name: "Contractor Statement", expiry: "Declared 10 Mar 2025", status: "compliant" as const },
   ],
   siteDocs: [
     {
@@ -96,15 +124,18 @@ const contractor = {
 const emptyWorker = {
   firstName: "", lastName: "", role: "", citizen: true,
   heights: false, selectedLicences: [] as string[], whiteCard: false,
+  email: "", mobile: "",
 };
 
 export default function ContractorDetail() {
   const [workers, setWorkers] = useState<Worker[]>(initialWorkers);
   const [subcontractors, setSubcontractors] = useState<Subcontractor[]>(initialSubcontractors);
   const [showAddWorker, setShowAddWorker] = useState(false);
+  const [workerMode, setWorkerMode] = useState<"manual" | "invite">("manual");
   const [showAddSub, setShowAddSub] = useState(false);
   const [newWorker, setNewWorker] = useState(emptyWorker);
   const [newSub, setNewSub] = useState({ name: "", trade: "", contact: "", email: "" });
+  const [workerInviteSent, setWorkerInviteSent] = useState(false);
   const [assignedTo, setAssignedTo] = useState("Mila Hartley");
   const [showAssignDropdown, setShowAssignDropdown] = useState(false);
   const [notes, setNotes] = useState("");
@@ -127,6 +158,19 @@ export default function ContractorDetail() {
     setWorkers((prev) => [...prev, { ...newWorker, id: Date.now() }]);
     setNewWorker(emptyWorker);
     setShowAddWorker(false);
+    setWorkerMode("manual");
+  };
+
+  const sendWorkerInvite = () => {
+    if (!newWorker.firstName || !newWorker.email) return;
+    setWorkers((prev) => [...prev, { ...newWorker, id: Date.now(), invited: true }]);
+    setWorkerInviteSent(true);
+    setTimeout(() => {
+      setWorkerInviteSent(false);
+      setNewWorker(emptyWorker);
+      setShowAddWorker(false);
+      setWorkerMode("manual");
+    }, 2000);
   };
 
   const addSubcontractor = () => {
@@ -147,13 +191,13 @@ export default function ContractorDetail() {
 
   const inputStyle: React.CSSProperties = {
     width: "100%", padding: "8px 10px", border: "1px solid #d0d0d0",
-    fontSize: "13px", color: "#111", borderRadius: "2px", fontFamily: "Roboto, sans-serif",
+    fontSize: "13px", color: "#111", borderRadius: "2px", fontFamily: "Montserrat, sans-serif",
   };
 
   const sectionHead = (text: string, sub?: string) => (
     <div style={{ marginBottom: "10px" }}>
-      <div style={{ fontSize: "12px", fontWeight: 500, color: "#444", textTransform: "uppercase" as const, letterSpacing: ".08em" }}>{text}</div>
-      {sub && <div style={{ fontSize: "11px", color: "#444", marginTop: "2px" }}>{sub}</div>}
+      <div style={{ fontSize: "12px", fontWeight: 700, color: "#111", textTransform: "uppercase" as const, letterSpacing: ".08em" }}>{text}</div>
+      {sub && <div style={{ fontSize: "11px", color: "#555", marginTop: "2px" }}>{sub}</div>}
     </div>
   );
 
@@ -170,7 +214,7 @@ export default function ContractorDetail() {
             ? w.selectedLicences.find((h) => (progressiveMap[h] || []).includes(row.lic))
             : null;
           return (
-            <div key={row.lic} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "9px 0", borderBottom: i < allRows.length - 1 ? "1px solid #ebebeb" : "none", background: row.type === "covered" ? "#f9fdf9" : "transparent" }}>
+            <div key={row.lic} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "9px 0", borderBottom: i < allRows.length - 1 ? "1px solid #ebebeb" : "none" }}>
               <div style={{ fontSize: "12px", color: row.type === "covered" ? "#3a7d44" : "#555" }}>{row.lic}</div>
               {row.type === "covered" ? (
                 <span style={{ fontSize: "12px", padding: "1px 6px", background: "#e8f5e9", color: "#3a7d44", border: "1px solid #a5d6a7", borderRadius: "2px", flexShrink: 0, marginLeft: "8px" }}>
@@ -194,13 +238,7 @@ export default function ContractorDetail() {
         <div style={{ fontSize: "13px", color: "#333", lineHeight: 1.7, marginBottom: "24px" }}>
           Removed from all active sites. All compliance records and documents are preserved for audit purposes.
         </div>
-        <div style={{ border: "1px solid #ebebeb", borderRadius: "2px", padding: "12px 16px", marginBottom: "24px", textAlign: "left" }}>
-          <div style={{ fontSize: "12px", fontWeight: 500, color: "#444", textTransform: "uppercase", letterSpacing: ".07em", marginBottom: "8px" }}>Archived from</div>
-          {archivedSites.map((s) => (
-            <div key={s} style={{ fontSize: "12px", color: "#555", padding: "4px 0", borderBottom: "1px solid #f5f5f5" }}>✓ {s}</div>
-          ))}
-        </div>
-        <a href="/" style={{ display: "inline-block", padding: "9px 20px", background: "#111", color: "#fff", fontSize: "12px", fontWeight: 500, textDecoration: "none", borderRadius: "2px", fontFamily: "Roboto, sans-serif" }}>
+        <a href="/" style={{ display: "inline-block", padding: "9px 20px", background: "#111", color: "#fff", fontSize: "12px", fontWeight: 500, textDecoration: "none", borderRadius: "2px", fontFamily: "Montserrat, sans-serif" }}>
           Back to dashboard
         </a>
       </div>
@@ -208,7 +246,7 @@ export default function ContractorDetail() {
   }
 
   return (
-    <div>
+    <div style={{ fontFamily: "Montserrat, sans-serif" }}>
       {showArchiveModal && (
         <ArchiveModal
           contractorName={contractor.name}
@@ -227,44 +265,43 @@ export default function ContractorDetail() {
       <div style={{ padding: "14px 32px", display: "flex", alignItems: "center", justifyContent: "space-between", borderBottom: "1px solid #d0d0d0" }}>
         <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
           <a href="/" style={{ fontSize: "12px", color: "#333", textDecoration: "none" }}>← All contractors</a>
-          <span style={{ fontSize: "14px", fontWeight: 500, color: "#111" }}>{contractor.name}</span>
+          <span style={{ fontSize: "14px", fontWeight: 600, color: "#111" }}>{contractor.name}</span>
           <span style={{ fontSize: "11px", padding: "1px 6px", border: "1px solid #d0d0d0", borderRadius: "2px", color: "#555" }}>{contractor.trade}</span>
           <StatusBadge status={contractor.status} />
         </div>
         <div style={{ display: "flex", gap: "8px" }}>
-          <button style={{ padding: "6px 12px", border: "1px solid #d0d0d0", background: "#fff", color: "#111", fontSize: "12px", borderRadius: "2px", cursor: "pointer", fontFamily: "Roboto, sans-serif" }}>Resend reminder</button>
-          <button onClick={() => setShowArchiveModal(true)} style={{ padding: "6px 12px", border: "1px solid #d0d0d0", background: "#fff", color: "#333", fontSize: "12px", borderRadius: "2px", cursor: "pointer", fontFamily: "Roboto, sans-serif" }}>
-            Archive contractor
-          </button>
+          <button style={{ padding: "6px 12px", border: "1px solid #d0d0d0", background: "#fff", color: "#111", fontSize: "12px", borderRadius: "2px", cursor: "pointer", fontFamily: "Montserrat, sans-serif" }}>Resend reminder</button>
+          <button onClick={() => setShowArchiveModal(true)} style={{ padding: "6px 12px", border: "1px solid #d0d0d0", background: "#fff", color: "#333", fontSize: "12px", borderRadius: "2px", cursor: "pointer", fontFamily: "Montserrat, sans-serif" }}>Archive contractor</button>
         </div>
       </div>
 
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr 1fr", borderBottom: "1px solid #d0d0d0" }}>
         <div style={{ padding: "14px 32px", borderRight: "1px solid #d0d0d0" }}>
-          <div style={{ fontSize: "12px", color: "#444", textTransform: "uppercase", letterSpacing: ".07em", marginBottom: "3px" }}>Contact</div>
+          <div style={{ fontSize: "11px", fontWeight: 700, color: "#111", textTransform: "uppercase", letterSpacing: ".07em", marginBottom: "4px" }}>Contact</div>
           <div style={{ fontSize: "13px", color: "#111", fontWeight: 500 }}>{contractor.contactName}</div>
-          <div style={{ fontSize: "11px", color: "#333", marginTop: "1px" }}>{contractor.email}</div>
+          <div style={{ fontSize: "11px", color: "#555", marginTop: "2px" }}>{contractor.email}</div>
+          <div style={{ fontSize: "11px", color: "#555", marginTop: "1px" }}>{contractor.mobile}</div>
         </div>
         <div style={{ padding: "14px 20px", borderRight: "1px solid #d0d0d0" }}>
-          <div style={{ fontSize: "12px", color: "#444", textTransform: "uppercase", letterSpacing: ".07em", marginBottom: "3px" }}>Invited</div>
+          <div style={{ fontSize: "11px", fontWeight: 700, color: "#111", textTransform: "uppercase", letterSpacing: ".07em", marginBottom: "4px" }}>Invited</div>
           <div style={{ fontSize: "13px", color: "#111" }}>{contractor.invited}</div>
         </div>
         <div style={{ padding: "14px 20px", borderRight: "1px solid #d0d0d0" }}>
-          <div style={{ fontSize: "12px", color: "#444", textTransform: "uppercase", letterSpacing: ".07em", marginBottom: "3px" }}>Active sites</div>
+          <div style={{ fontSize: "11px", fontWeight: 700, color: "#111", textTransform: "uppercase", letterSpacing: ".07em", marginBottom: "4px" }}>Active sites</div>
           <div style={{ fontSize: "13px", color: "#111" }}>{activeSites.length} sites</div>
         </div>
         <div style={{ padding: "14px 20px", borderRight: "1px solid #d0d0d0" }}>
-          <div style={{ fontSize: "12px", color: "#444", textTransform: "uppercase", letterSpacing: ".07em", marginBottom: "3px" }}>Workers on site</div>
+          <div style={{ fontSize: "11px", fontWeight: 700, color: "#111", textTransform: "uppercase", letterSpacing: ".07em", marginBottom: "4px" }}>Workers on site</div>
           <div style={{ fontSize: "13px", color: "#111" }}>{workers.length} workers</div>
         </div>
         <div style={{ padding: "14px 20px", position: "relative" }}>
-          <div style={{ fontSize: "12px", color: "#444", textTransform: "uppercase", letterSpacing: ".07em", marginBottom: "3px" }}>Assigned to</div>
+          <div style={{ fontSize: "11px", fontWeight: 700, color: "#111", textTransform: "uppercase", letterSpacing: ".07em", marginBottom: "4px" }}>Assigned to</div>
           <div onClick={() => setShowAssignDropdown(!showAssignDropdown)} style={{ fontSize: "13px", color: "#111", cursor: "pointer", display: "flex", alignItems: "center", gap: "6px" }}>
             <div style={{ width: "20px", height: "20px", borderRadius: "50%", background: "#111", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "9px", fontWeight: 500, flexShrink: 0 }}>
               {assignedTo.split(" ").map((n) => n[0]).join("").slice(0, 2)}
             </div>
             {assignedTo}
-            <span style={{ fontSize: "12px", color: "#444" }}>▼</span>
+            <span style={{ fontSize: "12px", color: "#888" }}>▼</span>
           </div>
           {showAssignDropdown && (
             <div style={{ position: "absolute", top: "100%", left: "20px", background: "#fff", border: "1px solid #d0d0d0", borderRadius: "2px", zIndex: 10, minWidth: "180px", boxShadow: "0 4px 12px rgba(0,0,0,0.08)" }}>
@@ -283,43 +320,35 @@ export default function ContractorDetail() {
           <div style={{ fontSize: "12px", color: "#b71c1c" }}>
             Autopilot has failed — contractor unresponsive after 3 reminders. <strong>{assignedTo}</strong> is responsible for follow-up.
           </div>
-          <button style={{ padding: "5px 12px", border: "1px solid #b71c1c", background: "#fff", color: "#b71c1c", fontSize: "11px", borderRadius: "2px", cursor: "pointer", fontFamily: "Roboto, sans-serif" }}>Send manual reminder</button>
+          <button style={{ padding: "5px 12px", border: "1px solid #b71c1c", background: "#fff", color: "#b71c1c", fontSize: "11px", borderRadius: "2px", cursor: "pointer", fontFamily: "Montserrat, sans-serif" }}>Send manual reminder</button>
         </div>
       )}
 
-      <div style={{ padding: "16px 32px", borderBottom: "1px solid #d0d0d0" }}>
+      <div style={{ padding: "20px 32px" }}>
         {sectionHead("Company documents", "Verified once — applies across all sites")}
-        <table style={{ width: "100%", borderCollapse: "collapse", tableLayout: "fixed" }}>
-          <thead>
-            <tr style={{ background: "#fafafa" }}>
-              <th style={{ width: "38%", fontSize: "11px", fontWeight: 500, color: "#333", textAlign: "left", padding: "8px 12px", borderBottom: "1px solid #d0d0d0" }}>Document</th>
-              <th style={{ width: "22%", fontSize: "11px", fontWeight: 500, color: "#333", textAlign: "left", padding: "8px 12px", borderBottom: "1px solid #d0d0d0" }}>Expiry</th>
-              <th style={{ width: "18%", fontSize: "11px", fontWeight: 500, color: "#333", textAlign: "left", padding: "8px 12px", borderBottom: "1px solid #d0d0d0" }}>Status</th>
-              <th style={{ width: "22%", fontSize: "11px", fontWeight: 500, color: "#333", textAlign: "left", padding: "8px 12px", borderBottom: "1px solid #d0d0d0" }}>Ownership</th>
-            </tr>
-          </thead>
-          <tbody>
-            {contractor.companyDocs.map((doc) => (
-              <tr key={doc.name} style={{ borderBottom: "1px solid #ebebeb" }}>
-                <td style={{ padding: "10px 12px", fontSize: "13px" }}>{doc.name}</td>
-                <td style={{ padding: "10px 12px", fontSize: "12px", color: "#333" }}>{doc.expiry}</td>
-                <td style={{ padding: "10px 12px" }}><StatusBadge status={doc.status} /></td>
-                <td style={{ padding: "10px 12px" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                    <div style={{ width: "18px", height: "18px", borderRadius: "50%", background: "#111", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "8px", fontWeight: 500 }}>
-                      {assignedTo.split(" ").map((n) => n[0]).join("").slice(0, 2)}
-                    </div>
-                    <span style={{ fontSize: "11px", color: "#555" }}>{assignedTo}</span>
-                    <span style={{ fontSize: "11px", color: "#444", cursor: "pointer" }}>Override</span>
-                  </div>
-                </td>
+        <div style={{ border: "1px solid #d0d0d0", borderRadius: "2px", overflow: "hidden" }}>
+          <table style={{ width: "100%", borderCollapse: "collapse", tableLayout: "fixed" }}>
+            <thead>
+              <tr style={{ background: "#fafafa" }}>
+                <th style={{ width: "45%", fontSize: "11px", fontWeight: 600, color: "#111", textAlign: "left", padding: "8px 14px", borderBottom: "1px solid #d0d0d0" }}>Document</th>
+                <th style={{ width: "25%", fontSize: "11px", fontWeight: 600, color: "#111", textAlign: "left", padding: "8px 14px", borderBottom: "1px solid #d0d0d0" }}>Expiry</th>
+                <th style={{ width: "30%", fontSize: "11px", fontWeight: 600, color: "#111", textAlign: "left", padding: "8px 14px", borderBottom: "1px solid #d0d0d0" }}>Status</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {contractor.companyDocs.map((doc, i) => (
+                <tr key={doc.name} style={{ borderBottom: i < contractor.companyDocs.length - 1 ? "1px solid #ebebeb" : "none" }}>
+                  <td style={{ padding: "10px 14px", fontSize: "13px", color: "#111" }}>{doc.name}</td>
+                  <td style={{ padding: "10px 14px", fontSize: "12px", color: doc.status === "non-compliant" ? "#b71c1c" : "#555" }}>{doc.expiry}</td>
+                  <td style={{ padding: "10px 14px" }}><StatusBadge status={doc.status} /></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
 
-      <div style={{ padding: "16px 32px", borderBottom: "1px solid #d0d0d0" }}>
+      <div style={{ padding: "20px 32px" }}>
         {sectionHead("Site documents", "Required per site — per engagement")}
         {contractor.siteDocs.map((site) => (
           <div key={site.site} style={{ border: "1px solid #d0d0d0", borderRadius: "2px", overflow: "hidden", marginBottom: "10px", opacity: archivedSites.includes(site.site) ? 0.4 : 1 }}>
@@ -333,14 +362,14 @@ export default function ContractorDetail() {
             </div>
             <table style={{ width: "100%", borderCollapse: "collapse", tableLayout: "fixed" }}>
               <tbody>
-                {site.docs.map((doc) => (
-                  <tr key={doc.name} style={{ borderBottom: "1px solid #ebebeb" }}>
-                    <td style={{ width: "38%", padding: "10px 14px", fontSize: "13px" }}>{doc.name}</td>
-                    <td style={{ width: "22%", padding: "10px 14px", fontSize: "12px", color: doc.status === "non-compliant" ? "#b71c1c" : "#888" }}>{doc.expiry}</td>
-                    <td style={{ width: "18%", padding: "10px 14px" }}><StatusBadge status={doc.status} /></td>
-                    <td style={{ width: "22%", padding: "10px 14px" }}>
+                {site.docs.map((doc, i) => (
+                  <tr key={doc.name} style={{ borderBottom: i < site.docs.length - 1 ? "1px solid #ebebeb" : "none" }}>
+                    <td style={{ width: "45%", padding: "10px 14px", fontSize: "13px", color: "#111" }}>{doc.name}</td>
+                    <td style={{ width: "25%", padding: "10px 14px", fontSize: "12px", color: doc.status === "non-compliant" ? "#b71c1c" : "#555" }}>{doc.expiry}</td>
+                    <td style={{ width: "15%", padding: "10px 14px" }}><StatusBadge status={doc.status} /></td>
+                    <td style={{ width: "15%", padding: "10px 14px" }}>
                       {doc.status === "non-compliant" && !archivedSites.includes(site.site) && (
-                        <button style={{ padding: "4px 10px", border: "1px solid #111", background: "#111", color: "#fff", fontSize: "11px", borderRadius: "2px", cursor: "pointer", fontFamily: "Roboto, sans-serif" }}>Request</button>
+                        <button style={{ padding: "4px 10px", border: "1px solid #111", background: "#111", color: "#fff", fontSize: "11px", borderRadius: "2px", cursor: "pointer", fontFamily: "Montserrat, sans-serif" }}>Request</button>
                       )}
                     </td>
                   </tr>
@@ -351,144 +380,228 @@ export default function ContractorDetail() {
         ))}
       </div>
 
-      <div style={{ padding: "16px 32px", borderBottom: "1px solid #d0d0d0" }}>
+      <div style={{ padding: "20px 32px" }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px" }}>
           {sectionHead("Workers on site", "Individual tickets per person")}
-          <button onClick={() => setShowAddWorker(!showAddWorker)} style={{ padding: "5px 12px", border: "1px solid #111", background: "#111", color: "#fff", fontSize: "11px", borderRadius: "2px", cursor: "pointer", fontFamily: "Roboto, sans-serif", marginTop: "-10px" }}>
-            + Add worker
-          </button>
+          <div style={{ display: "flex", gap: "8px", marginTop: "-10px" }}>
+            <button onClick={() => { setShowAddWorker(true); setWorkerMode("invite"); }} style={{ padding: "5px 12px", border: "1px solid #111", background: "#111", color: "#fff", fontSize: "11px", borderRadius: "2px", cursor: "pointer", fontFamily: "Montserrat, sans-serif" }}>
+              + Invite worker
+            </button>
+            <button onClick={() => { setShowAddWorker(true); setWorkerMode("manual"); }} style={{ padding: "5px 12px", border: "1px solid #111", background: "#111", color: "#fff", fontSize: "11px", borderRadius: "2px", cursor: "pointer", fontFamily: "Montserrat, sans-serif" }}>
+              + Add manually
+            </button>
+          </div>
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
           {workers.map((w) => (
             <div key={w.id} style={{ border: "1px solid #d0d0d0", borderRadius: "2px", overflow: "hidden" }}>
               <div style={{ padding: "10px 14px", background: "#fafafa", borderBottom: "1px solid #d0d0d0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                  <div style={{ width: "7px", height: "7px", borderRadius: "50%", background: workerCleared(w) ? "#3a7d44" : "#c0392b" }} />
+                  <div style={{ width: "7px", height: "7px", borderRadius: "50%", background: w.invited ? "#f5a623" : workerCleared(w) ? "#3a7d44" : "#c0392b" }} />
                   <div>
                     <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                       <div style={{ fontSize: "13px", fontWeight: 500, color: "#111" }}>{w.firstName} {w.lastName}</div>
-                      {w.isContact && <span style={{ fontSize: "12px", padding: "1px 6px", background: "#f0f0f0", border: "1px solid #d0d0d0", borderRadius: "2px", color: "#555" }}>Company contact</span>}
+                      {w.isContact && <span style={{ fontSize: "11px", padding: "1px 6px", background: "#f0f0f0", border: "1px solid #d0d0d0", borderRadius: "2px", color: "#555" }}>Company contact</span>}
+                      {w.invited && <span style={{ fontSize: "11px", padding: "1px 6px", background: "#fff8e1", border: "1px solid #ffe082", borderRadius: "2px", color: "#7c4e00" }}>Invite sent</span>}
                     </div>
-                    <div style={{ fontSize: "11px", color: "#333", marginTop: "1px" }}>{roleLabel[w.role]} · {w.citizen ? "Australian citizen" : "Non-citizen — right to work required"}</div>
+                    <div style={{ fontSize: "11px", color: "#555", marginTop: "2px" }}>{roleLabel[w.role] || w.role} · {w.citizen ? "Australian citizen" : "Non-citizen — right to work required"}</div>
                   </div>
                 </div>
-                <StatusBadge status={workerCleared(w) ? "compliant" : "non-compliant"} />
+                <StatusBadge status={w.invited ? "expiring" : workerCleared(w) ? "compliant" : "non-compliant"} />
               </div>
-              <div style={{ padding: "0 14px" }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "9px 0", borderBottom: "1px solid #ebebeb" }}>
-                  <div style={{ fontSize: "12px", color: "#555" }}>White Card</div>
-                  <div style={{ fontSize: "12px", color: w.whiteCard ? "#3a7d44" : "#c0392b", fontWeight: 500 }}>{w.whiteCard ? "Verified" : "Missing"}</div>
+              {!w.invited && (
+                <div style={{ padding: "0 14px" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "9px 0", borderBottom: "1px solid #ebebeb" }}>
+                    <div style={{ fontSize: "12px", color: "#555" }}>White Card</div>
+                    <div style={{ fontSize: "12px", color: w.whiteCard ? "#3a7d44" : "#c0392b", fontWeight: 500 }}>{w.whiteCard ? "Verified" : "Missing"}</div>
+                  </div>
+                  {!w.citizen && (
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "9px 0", borderBottom: "1px solid #ebebeb" }}>
+                      <div style={{ fontSize: "12px", color: "#555" }}>Proof of right to work</div>
+                      <div style={{ fontSize: "12px", color: "#c0392b", fontWeight: 500 }}>Required</div>
+                    </div>
+                  )}
+                  {w.heights && (
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "9px 0", borderBottom: "1px solid #ebebeb" }}>
+                      <div style={{ fontSize: "12px", color: "#555" }}>Working at Heights</div>
+                      <div style={{ fontSize: "12px", color: "#3a7d44", fontWeight: 500 }}>Verified</div>
+                    </div>
+                  )}
+                  <WorkerLicenceRows w={w} />
                 </div>
-                {!w.citizen && (
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "9px 0", borderBottom: "1px solid #ebebeb" }}>
-                    <div style={{ fontSize: "12px", color: "#555" }}>Proof of right to work</div>
-                    <div style={{ fontSize: "12px", color: "#c0392b", fontWeight: 500 }}>Required</div>
-                  </div>
-                )}
-                {w.heights && (
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "9px 0", borderBottom: "1px solid #ebebeb" }}>
-                    <div style={{ fontSize: "12px", color: "#555" }}>Working at Heights</div>
-                    <div style={{ fontSize: "12px", color: "#3a7d44", fontWeight: 500 }}>Verified</div>
-                  </div>
-                )}
-                <WorkerLicenceRows w={w} />
-              </div>
+              )}
+              {w.invited && (
+                <div style={{ padding: "10px 14px", fontSize: "12px", color: "#7c4e00" }}>
+                  Invite sent to {w.email} — awaiting submission of White Card and licences
+                </div>
+              )}
             </div>
           ))}
         </div>
+
         {showAddWorker && (
           <div style={{ border: "1px solid #d0d0d0", borderRadius: "2px", overflow: "hidden", marginTop: "12px" }}>
             <div style={{ padding: "10px 14px", background: "#fafafa", borderBottom: "1px solid #d0d0d0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <div style={{ fontSize: "13px", fontWeight: 500, color: "#111" }}>Add a worker</div>
-              <span style={{ fontSize: "18px", color: "#444", cursor: "pointer", lineHeight: 1 }} onClick={() => setShowAddWorker(false)}>×</span>
+              <div style={{ fontSize: "13px", fontWeight: 500, color: "#111" }}>
+                {workerMode === "invite" ? "Invite a worker" : "Add a worker manually"}
+              </div>
+              <span style={{ fontSize: "18px", color: "#444", cursor: "pointer", lineHeight: 1 }} onClick={() => { setShowAddWorker(false); setWorkerMode("manual"); }}>×</span>
             </div>
-            <div style={{ padding: "16px 14px", display: "flex", flexDirection: "column", gap: "12px" }}>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
-                <div>
-                  <div style={{ fontSize: "11px", fontWeight: 500, color: "#555", marginBottom: "4px" }}>First name</div>
-                  <input value={newWorker.firstName} onChange={(e) => setNewWorker({ ...newWorker, firstName: e.target.value })} placeholder="Dave" style={inputStyle} />
+
+            {workerMode === "invite" ? (
+              <div style={{ padding: "16px 14px", display: "flex", flexDirection: "column", gap: "12px" }}>
+                <div style={{ fontSize: "12px", color: "#555", padding: "10px 12px", background: "#f9fdf9", border: "1px solid #a5d6a7", borderRadius: "2px" }}>
+                  Vettit will send this worker a secure link to upload their White Card, licences and personal compliance documents.
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
+                  <div>
+                    <div style={{ fontSize: "11px", fontWeight: 500, color: "#555", marginBottom: "4px" }}>First name</div>
+                    <input value={newWorker.firstName} onChange={(e) => setNewWorker({ ...newWorker, firstName: e.target.value })} placeholder="Dave" style={inputStyle} />
+                  </div>
+                  <div>
+                    <div style={{ fontSize: "11px", fontWeight: 500, color: "#555", marginBottom: "4px" }}>Last name</div>
+                    <input value={newWorker.lastName} onChange={(e) => setNewWorker({ ...newWorker, lastName: e.target.value })} placeholder="Smith" style={inputStyle} />
+                  </div>
                 </div>
                 <div>
-                  <div style={{ fontSize: "11px", fontWeight: 500, color: "#555", marginBottom: "4px" }}>Last name</div>
-                  <input value={newWorker.lastName} onChange={(e) => setNewWorker({ ...newWorker, lastName: e.target.value })} placeholder="Smith" style={inputStyle} />
+                  <div style={{ fontSize: "11px", fontWeight: 500, color: "#555", marginBottom: "4px" }}>Role on site — determines which licences are requested</div>
+                  <select value={newWorker.role} onChange={(e) => setNewWorker({ ...newWorker, role: e.target.value, selectedLicences: [] })} style={{ ...inputStyle, background: "#fff" }}>
+                    <option value="">Select role...</option>
+                    <option value="labourer">Labourer</option>
+                    <option value="plumber">Plumber</option>
+                    <option value="electrician">Electrician</option>
+                    <option value="scaffolder">Scaffolder / Rigger</option>
+                    <option value="crane">Crane Operator</option>
+                    <option value="forklift">Forklift / Plant Operator</option>
+                    <option value="ewp">EWP / Hoist Operator</option>
+                    <option value="demolition">Demolition / Asbestos</option>
+                    <option value="heavyvehicle">Heavy Vehicle Driver</option>
+                    <option value="supervisor">Supervisor / Manager</option>
+                    <option value="hvac">HVAC Technician</option>
+                    <option value="gasfitter">Gas Fitter</option>
+                    <option value="carpentry">Carpenter</option>
+                    <option value="painting">Painter</option>
+                  </select>
                 </div>
-              </div>
-              <div>
-                <div style={{ fontSize: "11px", fontWeight: 500, color: "#555", marginBottom: "4px" }}>Role on site</div>
-                <select value={newWorker.role} onChange={(e) => setNewWorker({ ...newWorker, role: e.target.value, selectedLicences: [] })} style={inputStyle}>
-                  <option value="">Select role...</option>
-                  <option value="labourer">Labourer</option>
-                  <option value="plumber">Plumber</option>
-                  <option value="electrician">Electrician</option>
-                  <option value="scaffolder">Scaffolder / Rigger</option>
-                  <option value="crane">Crane Operator</option>
-                  <option value="forklift">Forklift / Plant Operator</option>
-                  <option value="ewp">EWP / Hoist Operator</option>
-                  <option value="demolition">Demolition / Asbestos</option>
-                  <option value="heavyvehicle">Heavy Vehicle Driver</option>
-                  <option value="supervisor">Supervisor / Manager</option>
-                </select>
-              </div>
-              <div style={{ border: "1px solid #d0d0d0", borderRadius: "2px", overflow: "hidden" }}>
-                <label style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 12px", borderBottom: "1px solid #ebebeb", cursor: "pointer" }}>
-                  <div>
-                    <div style={{ fontSize: "13px", color: "#111" }}>White Card</div>
-                    <div style={{ fontSize: "11px", color: "#333", marginTop: "1px" }}>Construction Induction Training — mandatory</div>
+                {newWorker.role && licenceOptions[newWorker.role] && (
+                  <div style={{ padding: "10px 12px", background: "#fafafa", border: "1px solid #ebebeb", borderRadius: "2px", fontSize: "12px", color: "#555" }}>
+                    ✓ Invite will request: White Card + {licenceOptions[newWorker.role].slice(0, 2).join(", ")}{licenceOptions[newWorker.role].length > 2 ? ` and ${licenceOptions[newWorker.role].length - 2} more` : ""}
                   </div>
-                  <input type="checkbox" checked={newWorker.whiteCard} onChange={(e) => setNewWorker({ ...newWorker, whiteCard: e.target.checked })} style={{ accentColor: "#111", width: "14px", height: "14px" }} />
-                </label>
-                <label style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 12px", borderBottom: "1px solid #ebebeb", cursor: "pointer" }}>
-                  <div>
-                    <div style={{ fontSize: "13px", color: "#111" }}>Australian citizen or permanent resident</div>
-                    <div style={{ fontSize: "11px", color: "#333", marginTop: "1px" }}>If no, proof of right to work required</div>
-                  </div>
-                  <input type="checkbox" checked={newWorker.citizen} onChange={(e) => setNewWorker({ ...newWorker, citizen: e.target.checked })} style={{ accentColor: "#111", width: "14px", height: "14px" }} />
-                </label>
-                <label style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 12px", cursor: "pointer" }}>
-                  <div>
-                    <div style={{ fontSize: "13px", color: "#111" }}>Working at heights on this site</div>
-                    <div style={{ fontSize: "11px", color: "#333", marginTop: "1px" }}>Requires Working at Heights certification</div>
-                  </div>
-                  <input type="checkbox" checked={newWorker.heights} onChange={(e) => setNewWorker({ ...newWorker, heights: e.target.checked })} style={{ accentColor: "#111", width: "14px", height: "14px" }} />
-                </label>
-              </div>
-              {licences[newWorker.role] && (
+                )}
                 <div>
-                  <div style={{ fontSize: "11px", fontWeight: 500, color: "#555", marginBottom: "6px" }}>Licences held</div>
-                  <div style={{ border: "1px solid #d0d0d0", borderRadius: "2px", overflow: "hidden" }}>
-                    {licences[newWorker.role].map((lic, i) => {
-                      const coveredBy = isLicenceCovered(lic, newWorker.selectedLicences);
-                      const isSelected = newWorker.selectedLicences.includes(lic);
-                      return (
-                        <div key={lic} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "8px 12px", borderBottom: i < licences[newWorker.role].length - 1 ? "1px solid #f0f0f0" : "none", background: coveredBy ? "#f9fdf9" : "#fff" }}>
-                          <label style={{ display: "flex", alignItems: "center", gap: "8px", cursor: coveredBy ? "default" : "pointer", flex: 1, fontSize: "12px", color: coveredBy ? "#3a7d44" : "#111" }}>
-                            <input type="checkbox" checked={isSelected || !!coveredBy} disabled={!!coveredBy} onChange={() => !coveredBy && toggleLicence(lic)} style={{ accentColor: "#3a7d44", width: "13px", height: "13px" }} />
-                            {lic}
-                          </label>
-                          {coveredBy && (
-                            <span style={{ fontSize: "12px", padding: "1px 6px", background: "#e8f5e9", color: "#3a7d44", border: "1px solid #a5d6a7", borderRadius: "2px", flexShrink: 0, marginLeft: "8px" }}>
-                              Covered by {coveredBy.split(" ").slice(-1)[0]}
-                            </span>
-                          )}
-                        </div>
-                      );
-                    })}
+                  <div style={{ fontSize: "11px", fontWeight: 500, color: "#555", marginBottom: "4px" }}>Email</div>
+                  <input value={newWorker.email} onChange={(e) => setNewWorker({ ...newWorker, email: e.target.value })} placeholder="dave@rapiddemo.com.au" style={inputStyle} />
+                </div>
+                <div>
+                  <div style={{ fontSize: "11px", fontWeight: 500, color: "#555", marginBottom: "4px" }}>Mobile</div>
+                  <input value={newWorker.mobile} onChange={(e) => setNewWorker({ ...newWorker, mobile: e.target.value })} placeholder="0400 000 000" style={inputStyle} />
+                </div>
+                {workerInviteSent ? (
+                  <div style={{ padding: "10px 12px", background: "#f9fdf9", border: "1px solid #a5d6a7", borderRadius: "2px", fontSize: "13px", color: "#3a7d44", fontWeight: 500, textAlign: "center" }}>
+                    ✓ Invite sent to {newWorker.firstName}
+                  </div>
+                ) : (
+                  <div style={{ display: "flex", gap: "8px", justifyContent: "flex-end" }}>
+                    <button onClick={() => { setShowAddWorker(false); setWorkerMode("manual"); }} style={{ padding: "7px 14px", border: "1px solid #d0d0d0", background: "#fff", color: "#111", fontSize: "12px", borderRadius: "2px", cursor: "pointer", fontFamily: "Montserrat, sans-serif" }}>Cancel</button>
+                    <button onClick={sendWorkerInvite} disabled={!newWorker.firstName || !newWorker.email} style={{ padding: "7px 14px", border: "none", background: !newWorker.firstName || !newWorker.email ? "#aaa" : "#111", color: "#fff", fontSize: "12px", borderRadius: "2px", cursor: !newWorker.firstName || !newWorker.email ? "not-allowed" : "pointer", fontFamily: "Montserrat, sans-serif" }}>
+                      Send invite
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div style={{ padding: "16px 14px", display: "flex", flexDirection: "column", gap: "12px" }}>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
+                  <div>
+                    <div style={{ fontSize: "11px", fontWeight: 500, color: "#555", marginBottom: "4px" }}>First name</div>
+                    <input value={newWorker.firstName} onChange={(e) => setNewWorker({ ...newWorker, firstName: e.target.value })} placeholder="Dave" style={inputStyle} />
+                  </div>
+                  <div>
+                    <div style={{ fontSize: "11px", fontWeight: 500, color: "#555", marginBottom: "4px" }}>Last name</div>
+                    <input value={newWorker.lastName} onChange={(e) => setNewWorker({ ...newWorker, lastName: e.target.value })} placeholder="Smith" style={inputStyle} />
                   </div>
                 </div>
-              )}
-              <div style={{ display: "flex", gap: "8px", justifyContent: "flex-end" }}>
-                <button onClick={() => setShowAddWorker(false)} style={{ padding: "7px 14px", border: "1px solid #d0d0d0", background: "#fff", color: "#111", fontSize: "12px", borderRadius: "2px", cursor: "pointer", fontFamily: "Roboto, sans-serif" }}>Cancel</button>
-                <button onClick={addWorker} style={{ padding: "7px 14px", border: "1px solid #111", background: "#111", color: "#fff", fontSize: "12px", borderRadius: "2px", cursor: "pointer", fontFamily: "Roboto, sans-serif" }}>Add worker</button>
+                <div>
+                  <div style={{ fontSize: "11px", fontWeight: 500, color: "#555", marginBottom: "4px" }}>Role on site — licences appear automatically based on role</div>
+                  <select value={newWorker.role} onChange={(e) => setNewWorker({ ...newWorker, role: e.target.value, selectedLicences: [] })} style={{ ...inputStyle, background: "#fff" }}>
+                    <option value="">Select role...</option>
+                    <option value="labourer">Labourer</option>
+                    <option value="plumber">Plumber</option>
+                    <option value="electrician">Electrician</option>
+                    <option value="scaffolder">Scaffolder / Rigger</option>
+                    <option value="crane">Crane Operator</option>
+                    <option value="forklift">Forklift / Plant Operator</option>
+                    <option value="ewp">EWP / Hoist Operator</option>
+                    <option value="demolition">Demolition / Asbestos</option>
+                    <option value="heavyvehicle">Heavy Vehicle Driver</option>
+                    <option value="supervisor">Supervisor / Manager</option>
+                    <option value="hvac">HVAC Technician</option>
+                    <option value="gasfitter">Gas Fitter</option>
+                    <option value="carpentry">Carpenter</option>
+                    <option value="painting">Painter</option>
+                  </select>
+                </div>
+                <div style={{ border: "1px solid #d0d0d0", borderRadius: "2px", overflow: "hidden" }}>
+                  <label style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 12px", borderBottom: "1px solid #ebebeb", cursor: "pointer" }}>
+                    <div>
+                      <div style={{ fontSize: "13px", color: "#111" }}>White Card</div>
+                      <div style={{ fontSize: "11px", color: "#555", marginTop: "1px" }}>Construction Induction Training — mandatory</div>
+                    </div>
+                    <input type="checkbox" checked={newWorker.whiteCard} onChange={(e) => setNewWorker({ ...newWorker, whiteCard: e.target.checked })} style={{ accentColor: "#111", width: "14px", height: "14px" }} />
+                  </label>
+                  <label style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 12px", borderBottom: "1px solid #ebebeb", cursor: "pointer" }}>
+                    <div>
+                      <div style={{ fontSize: "13px", color: "#111" }}>Australian citizen or permanent resident</div>
+                      <div style={{ fontSize: "11px", color: "#555", marginTop: "1px" }}>If no, proof of right to work required</div>
+                    </div>
+                    <input type="checkbox" checked={newWorker.citizen} onChange={(e) => setNewWorker({ ...newWorker, citizen: e.target.checked })} style={{ accentColor: "#111", width: "14px", height: "14px" }} />
+                  </label>
+                  <label style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 12px", cursor: "pointer" }}>
+                    <div>
+                      <div style={{ fontSize: "13px", color: "#111" }}>Working at heights on this site</div>
+                      <div style={{ fontSize: "11px", color: "#555", marginTop: "1px" }}>Requires Working at Heights certification</div>
+                    </div>
+                    <input type="checkbox" checked={newWorker.heights} onChange={(e) => setNewWorker({ ...newWorker, heights: e.target.checked })} style={{ accentColor: "#111", width: "14px", height: "14px" }} />
+                  </label>
+                </div>
+                {licenceOptions[newWorker.role] && (
+                  <div>
+                    <div style={{ fontSize: "11px", fontWeight: 500, color: "#555", marginBottom: "6px" }}>Licences held — tick all that apply</div>
+                    <div style={{ border: "1px solid #d0d0d0", borderRadius: "2px", overflow: "hidden" }}>
+                      {licenceOptions[newWorker.role].map((lic, i) => {
+                        const coveredBy = isLicenceCovered(lic, newWorker.selectedLicences);
+                        const isSelected = newWorker.selectedLicences.includes(lic);
+                        return (
+                          <div key={lic} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "8px 12px", borderBottom: i < licenceOptions[newWorker.role].length - 1 ? "1px solid #f0f0f0" : "none", background: coveredBy ? "#f9fdf9" : "#fff" }}>
+                            <label style={{ display: "flex", alignItems: "center", gap: "8px", cursor: coveredBy ? "default" : "pointer", flex: 1, fontSize: "12px", color: coveredBy ? "#3a7d44" : "#111" }}>
+                              <input type="checkbox" checked={isSelected || !!coveredBy} disabled={!!coveredBy} onChange={() => !coveredBy && toggleLicence(lic)} style={{ accentColor: "#3a7d44", width: "13px", height: "13px" }} />
+                              {lic}
+                            </label>
+                            {coveredBy && (
+                              <span style={{ fontSize: "11px", padding: "1px 6px", background: "#e8f5e9", color: "#3a7d44", border: "1px solid #a5d6a7", borderRadius: "2px", flexShrink: 0, marginLeft: "8px" }}>
+                                Covered by {coveredBy.split(" ").slice(-1)[0]}
+                              </span>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+                <div style={{ display: "flex", gap: "8px", justifyContent: "flex-end" }}>
+                  <button onClick={() => { setShowAddWorker(false); setWorkerMode("manual"); }} style={{ padding: "7px 14px", border: "1px solid #d0d0d0", background: "#fff", color: "#111", fontSize: "12px", borderRadius: "2px", cursor: "pointer", fontFamily: "Montserrat, sans-serif" }}>Cancel</button>
+                  <button onClick={addWorker} style={{ padding: "7px 14px", border: "1px solid #111", background: "#111", color: "#fff", fontSize: "12px", borderRadius: "2px", cursor: "pointer", fontFamily: "Montserrat, sans-serif" }}>Add worker</button>
+                </div>
               </div>
-            </div>
+            )}
           </div>
         )}
       </div>
 
-      <div style={{ padding: "16px 32px", borderBottom: "1px solid #d0d0d0" }}>
+      <div style={{ padding: "20px 32px" }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px" }}>
           {sectionHead("Subcontractors", "Brought on site by this contractor")}
-          <button onClick={() => setShowAddSub(!showAddSub)} style={{ padding: "5px 12px", border: "1px solid #111", background: "#111", color: "#fff", fontSize: "11px", borderRadius: "2px", cursor: "pointer", fontFamily: "Roboto, sans-serif", marginTop: "-10px" }}>
+          <button onClick={() => setShowAddSub(!showAddSub)} style={{ padding: "5px 12px", border: "1px solid #111", background: "#111", color: "#fff", fontSize: "11px", borderRadius: "2px", cursor: "pointer", fontFamily: "Montserrat, sans-serif", marginTop: "-10px" }}>
             + Add subcontractor
           </button>
         </div>
@@ -500,22 +613,22 @@ export default function ContractorDetail() {
                   <div style={{ width: "7px", height: "7px", borderRadius: "50%", background: sub.status === "compliant" ? "#3a7d44" : "#aaa" }} />
                   <div>
                     <div style={{ fontSize: "13px", fontWeight: 500, color: "#111" }}>{sub.name}</div>
-                    <div style={{ fontSize: "11px", color: "#333", marginTop: "1px" }}>{sub.trade} · {sub.contact}</div>
+                    <div style={{ fontSize: "11px", color: "#555", marginTop: "1px" }}>{sub.trade} · {sub.contact}</div>
                   </div>
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                   <span style={{ fontSize: "11px", padding: "3px 8px", background: sub.status === "pending" ? "#f5f5f5" : "#e8f5e9", color: sub.status === "pending" ? "#555" : "#1b5e20", border: `1px solid ${sub.status === "pending" ? "#ddd" : "#a5d6a7"}`, borderRadius: "2px", fontWeight: 500 }}>
                     {sub.status === "pending" ? "Invite sent" : "Compliant"}
                   </span>
-                  <button style={{ padding: "4px 10px", border: "1px solid #d0d0d0", background: "#fff", color: "#111", fontSize: "11px", borderRadius: "2px", cursor: "pointer", fontFamily: "Roboto, sans-serif" }}>View</button>
+                  <button style={{ padding: "4px 10px", border: "1px solid #d0d0d0", background: "#fff", color: "#111", fontSize: "11px", borderRadius: "2px", cursor: "pointer", fontFamily: "Montserrat, sans-serif" }}>View</button>
                 </div>
               </div>
               <div style={{ padding: "10px 14px" }}>
-                <div style={{ fontSize: "12px", color: "#333" }}>
+                <div style={{ fontSize: "12px", color: "#555" }}>
                   {sub.status === "pending" ? `Invite sent to ${sub.email} — awaiting submission` : "All documents submitted and verified"}
                 </div>
                 {sub.status === "pending" && (
-                  <button style={{ marginTop: "8px", padding: "4px 10px", border: "1px solid #d0d0d0", background: "#fff", color: "#111", fontSize: "11px", borderRadius: "2px", cursor: "pointer", fontFamily: "Roboto, sans-serif" }}>Resend invite</button>
+                  <button style={{ marginTop: "8px", padding: "4px 10px", border: "1px solid #d0d0d0", background: "#fff", color: "#111", fontSize: "11px", borderRadius: "2px", cursor: "pointer", fontFamily: "Montserrat, sans-serif" }}>Resend invite</button>
                 )}
               </div>
             </div>
@@ -528,15 +641,37 @@ export default function ContractorDetail() {
               <span style={{ fontSize: "18px", color: "#444", cursor: "pointer", lineHeight: 1 }} onClick={() => setShowAddSub(false)}>×</span>
             </div>
             <div style={{ padding: "16px 14px", display: "flex", flexDirection: "column", gap: "12px" }}>
-              <div style={{ fontSize: "12px", color: "#333" }}>Vettit will send this subcontractor their own invite to submit company docs and worker tickets separately.</div>
+              <div style={{ fontSize: "12px", color: "#555" }}>Vettit will send this subcontractor their own invite to submit company docs and worker tickets separately.</div>
               <div>
                 <div style={{ fontSize: "11px", fontWeight: 500, color: "#555", marginBottom: "4px" }}>Company name</div>
                 <input value={newSub.name} onChange={(e) => setNewSub({ ...newSub, name: e.target.value })} placeholder="e.g. QLD Pipe Specialists" style={inputStyle} />
               </div>
               <div>
-                <div style={{ fontSize: "11px", fontWeight: 500, color: "#555", marginBottom: "4px" }}>Trade</div>
-                <input value={newSub.trade} onChange={(e) => setNewSub({ ...newSub, trade: e.target.value })} placeholder="e.g. Plumbing" style={inputStyle} />
+                <div style={{ fontSize: "11px", fontWeight: 500, color: "#555", marginBottom: "4px" }}>Trade — determines which documents they must submit</div>
+                <select value={newSub.trade} onChange={(e) => setNewSub({ ...newSub, trade: e.target.value })} style={{ ...inputStyle, background: "#fff" }}>
+                  <option value="">Select trade...</option>
+                  <option value="plumber">Plumbing</option>
+                  <option value="electrician">Electrical</option>
+                  <option value="carpentry">Carpentry</option>
+                  <option value="painting">Painting</option>
+                  <option value="tiling">Tiling</option>
+                  <option value="concretor">Concreting</option>
+                  <option value="demolition">Demolition</option>
+                  <option value="scaffolder">Scaffolding / Rigging</option>
+                  <option value="hvac">HVAC</option>
+                  <option value="gasfitter">Gas Fitting</option>
+                  <option value="labourer">Labourer</option>
+                  <option value="crane">Crane Operation</option>
+                  <option value="forklift">Forklift / Plant Operation</option>
+                  <option value="heavyvehicle">Heavy Vehicle</option>
+                  <option value="other">Other</option>
+                </select>
               </div>
+              {newSub.trade && tradeConditionalDocs[newSub.trade] && (
+                <div style={{ padding: "10px 12px", background: "#fafafa", border: "1px solid #ebebeb", borderRadius: "2px", fontSize: "12px", color: "#555" }}>
+                  ✓ Invite will also request: {tradeConditionalDocs[newSub.trade].join(", ")}
+                </div>
+              )}
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
                 <div>
                   <div style={{ fontSize: "11px", fontWeight: 500, color: "#555", marginBottom: "4px" }}>Contact name</div>
@@ -548,31 +683,31 @@ export default function ContractorDetail() {
                 </div>
               </div>
               <div style={{ display: "flex", gap: "8px", justifyContent: "flex-end" }}>
-                <button onClick={() => setShowAddSub(false)} style={{ padding: "7px 14px", border: "1px solid #d0d0d0", background: "#fff", color: "#111", fontSize: "12px", borderRadius: "2px", cursor: "pointer", fontFamily: "Roboto, sans-serif" }}>Cancel</button>
-                <button onClick={addSubcontractor} style={{ padding: "7px 14px", border: "1px solid #111", background: "#111", color: "#fff", fontSize: "12px", borderRadius: "2px", cursor: "pointer", fontFamily: "Roboto, sans-serif" }}>Send invite</button>
+                <button onClick={() => setShowAddSub(false)} style={{ padding: "7px 14px", border: "1px solid #d0d0d0", background: "#fff", color: "#111", fontSize: "12px", borderRadius: "2px", cursor: "pointer", fontFamily: "Montserrat, sans-serif" }}>Cancel</button>
+                <button onClick={addSubcontractor} style={{ padding: "7px 14px", border: "1px solid #111", background: "#111", color: "#fff", fontSize: "12px", borderRadius: "2px", cursor: "pointer", fontFamily: "Montserrat, sans-serif" }}>Send invite</button>
               </div>
             </div>
           </div>
         )}
       </div>
 
-      <div style={{ padding: "16px 32px", borderBottom: "1px solid #d0d0d0" }}>
+      <div style={{ padding: "20px 32px" }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "10px" }}>
           {sectionHead("Private notes", "Only visible to your team — not shared with the contractor")}
-          <button onClick={() => setShowNotes(!showNotes)} style={{ padding: "5px 12px", border: "1px solid #d0d0d0", background: "#fff", color: "#111", fontSize: "11px", borderRadius: "2px", cursor: "pointer", fontFamily: "Roboto, sans-serif", marginTop: "-10px" }}>
+          <button onClick={() => setShowNotes(!showNotes)} style={{ padding: "5px 12px", border: "1px solid #d0d0d0", background: "#fff", color: "#111", fontSize: "11px", borderRadius: "2px", cursor: "pointer", fontFamily: "Montserrat, sans-serif", marginTop: "-10px" }}>
             {showNotes ? "Done" : notes ? "Edit note" : "+ Add note"}
           </button>
         </div>
         {showNotes ? (
-          <textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="e.g. Reliable contractor — always submits on time." style={{ width: "100%", padding: "10px 12px", border: "1px solid #d0d0d0", fontSize: "13px", color: "#111", borderRadius: "2px", fontFamily: "Roboto, sans-serif", minHeight: "80px", resize: "vertical" }} />
+          <textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="e.g. Reliable contractor — always submits on time." style={{ width: "100%", padding: "10px 12px", border: "1px solid #d0d0d0", fontSize: "13px", color: "#111", borderRadius: "2px", fontFamily: "Montserrat, sans-serif", minHeight: "80px", resize: "vertical" }} />
         ) : notes ? (
           <div style={{ fontSize: "13px", color: "#555", lineHeight: 1.6, padding: "10px 12px", background: "#fafafa", border: "1px solid #ebebeb", borderRadius: "2px" }}>{notes}</div>
         ) : (
-          <div style={{ fontSize: "12px", color: "#444" }}>No notes yet.</div>
+          <div style={{ fontSize: "12px", color: "#888" }}>No notes yet.</div>
         )}
       </div>
 
-      <div style={{ padding: "16px 32px" }}>
+      <div style={{ padding: "20px 32px" }}>
         {sectionHead("Autopilot reminder history")}
         <div style={{ position: "relative" }}>
           <div style={{ position: "absolute", left: "4px", top: "10px", bottom: "10px", width: "1px", background: "#ebebeb" }} />
@@ -581,7 +716,7 @@ export default function ContractorDetail() {
               <div style={{ width: "9px", height: "9px", borderRadius: "50%", background: t.done ? "#3a7d44" : "#b8860b", marginTop: "4px", flexShrink: 0, zIndex: 1 }} />
               <div>
                 <div style={{ fontSize: "13px", color: "#111" }}>{t.label}</div>
-                <div style={{ fontSize: "11px", color: "#333", marginTop: "1px" }}>{t.detail}</div>
+                <div style={{ fontSize: "11px", color: "#555", marginTop: "1px" }}>{t.detail}</div>
               </div>
             </div>
           ))}
