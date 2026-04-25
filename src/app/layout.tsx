@@ -33,7 +33,7 @@ export default function RootLayout({
         <footer style={{ marginTop: "48px" }}>
           <div style={{ maxWidth: "960px", margin: "0 auto", padding: "24px 32px", borderTop: "1px solid #d0d0d0", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
             <div style={{ fontSize: "12px", color: "#888" }}>
-              © {new Date().getFullYear()} Vettit Pty Ltd · All rights reserved
+              © {new Date().getFullYear()} Vettit.com.au · All rights reserved
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: "24px" }}>
               {footerLinks.map((item) => (

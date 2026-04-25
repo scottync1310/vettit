@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { isLicenceCovered } from "../../../lib/licences";
 
 const licenceOptions: Record<string, string[]> = {
@@ -19,6 +19,16 @@ const licenceOptions: Record<string, string[]> = {
   concretor: ["Concreting Licence", "Concrete Placing Boom PB"],
 };
 
+const tradeConditionalDocs: Record<string, string[]> = {
+  electrician: ["Electrical Contractor Licence"],
+  plumber: ["Plumbing Contractor Licence"],
+  gasfitter: ["Gas Fitting Contractor Licence"],
+  hvac: ["Gas Fitting Contractor Licence"],
+  demolition: ["Asbestos Removal Licence — Class A (friable)", "Asbestos Removal Licence — Class B (non-friable)"],
+  scaffolder: ["SafeWork High Risk Work Licence — Scaffolding/Rigging"],
+  crane: ["SafeWork High Risk Work Licence — Crane Operation"],
+};
+
 type ParseState = "idle" | "reading" | "verified" | "error" | "expired";
 
 type DocState = {
@@ -28,6 +38,8 @@ type DocState = {
   parsedInsurer?: string;
   parsedExpiry?: string;
   errorMsg?: string;
+  required: boolean;
+  note?: string;
 };
 
 type Worker = {
@@ -60,6 +72,22 @@ const mockParse = (fileName: string, onDone: (state: ParseState, insurer?: strin
   }, 2000);
 };
 
+const buildDocs = (trade: string, entityType: string): DocState[] => {
+  const docs: DocState[] = [
+    { name: "Public liability insurance", fileName: "", parseState: "idle", required: true, note: "Minimum $20M cover" },
+    { name: "Workers compensation insurance", fileName: "", parseState: "idle", required: entityType !== "sole_trader", note: "Required for all contractors with employees" },
+    { name: "Contractor licence", fileName: "", parseState: "idle", required: true, note: "State-issued building or trade contractor licence" },
+    { name: "Professional indemnity insurance", fileName: "", parseState: "idle", required: false, note: "Required for design, engineering and fire protection trades" },
+    { name: "Accident and illness insurance", fileName: "", parseState: "idle", required: entityType === "sole_trader", note: entityType === "sole_trader" ? "Required — sole traders are not covered by workers compensation" : "Recommended for sole traders and working directors" },
+  ];
+  if (trade && tradeConditionalDocs[trade]) {
+    tradeConditionalDocs[trade].forEach((name) => {
+      docs.push({ name, fileName: "", parseState: "idle", required: true });
+    });
+  }
+  return docs;
+};
+
 const emptyWorker: Omit<Worker, "id"> = {
   firstName: "", lastName: "", role: "", whiteCardFile: "",
   whiteCardState: "idle", citizen: true, heights: false, licences: [],
@@ -68,42 +96,43 @@ const emptyWorker: Omit<Worker, "id"> = {
 export default function AddContractorManually() {
   const [step, setStep] = useState(0);
   const [done, setDone] = useState(false);
-
+  const [mounted, setMounted] = useState(false);
+  const [entityType, setEntityType] = useState<"company" | "sole_trader">("company");
+  const [contractorStatement, setContractorStatement] = useState(false);
   const [company, setCompany] = useState({ name: "", abn: "", trade: "", contactFirst: "", contactLast: "", email: "", mobile: "" });
   const [selectedSites, setSelectedSites] = useState<string[]>([]);
-
-  const [companyDocs, setCompanyDocs] = useState<DocState[]>([
-    { name: "Public liability insurance", fileName: "", parseState: "idle" },
-    { name: "Workers compensation", fileName: "", parseState: "idle" },
-    { name: "Trade licence", fileName: "", parseState: "idle" },
-  ]);
-
+  const [companyDocs, setCompanyDocs] = useState<DocState[]>(buildDocs("", "company"));
   const [workers, setWorkers] = useState<Worker[]>([]);
   const [showAddWorker, setShowAddWorker] = useState(false);
   const [newWorker, setNewWorker] = useState<Omit<Worker, "id">>(emptyWorker);
 
-  const inputStyle: React.CSSProperties = {
-    width: "100%", padding: "8px 10px", border: "1px solid #d0d0d0",
-    fontSize: "13px", color: "#111", borderRadius: "2px", fontFamily: "Montserrat, sans-serif",
-  };
+  useEffect(() => { setMounted(true); }, []);
 
-  const label = (text: string, sub?: string) => (
+  const inputStyle: React.CSSProperties = { width: "100%", padding: "8px 10px", border: "1px solid #d0d0d0", fontSize: "13px", color: "#111", borderRadius: "2px", fontFamily: "Montserrat, sans-serif" };
+
+  const lbl = (text: string, sub?: string) => (
     <div style={{ marginBottom: "5px" }}>
       <div style={{ fontSize: "11px", fontWeight: 500, color: "#555" }}>{text}</div>
       {sub && <div style={{ fontSize: "11px", color: "#666", marginTop: "1px" }}>{sub}</div>}
     </div>
   );
 
-  const btnPrimary = (disabled: boolean): React.CSSProperties => ({
-    padding: "9px 24px", background: disabled ? "#aaa" : "#111", color: "#fff",
+  const btnPrimary = (disabled: boolean, green?: boolean): React.CSSProperties => ({
+    padding: "9px 24px", background: disabled ? "#aaa" : green ? "#3a7d44" : "#111", color: "#fff",
     border: "none", fontSize: "13px", fontWeight: 500, borderRadius: "2px",
     cursor: disabled ? "not-allowed" : "pointer", fontFamily: "Montserrat, sans-serif",
   });
 
-  const btnOutline: React.CSSProperties = {
-    padding: "9px 20px", border: "1px solid #d0d0d0", background: "#fff",
-    color: "#111", fontSize: "13px", borderRadius: "2px", cursor: "pointer",
-    fontFamily: "Montserrat, sans-serif",
+  const btnOutline: React.CSSProperties = { padding: "9px 20px", border: "1px solid #d0d0d0", background: "#fff", color: "#111", fontSize: "13px", borderRadius: "2px", cursor: "pointer", fontFamily: "Montserrat, sans-serif" };
+
+  const handleEntityChange = (newEntity: "company" | "sole_trader") => {
+    setEntityType(newEntity);
+    setCompanyDocs(buildDocs(company.trade, newEntity));
+  };
+
+  const handleTradeChange = (newTrade: string) => {
+    setCompany((prev) => ({ ...prev, trade: newTrade }));
+    setCompanyDocs(buildDocs(newTrade, entityType));
   };
 
   const handleCompanyFile = (name: string, e: React.ChangeEvent<HTMLInputElement>) => {
@@ -119,16 +148,11 @@ export default function AddContractorManually() {
     const file = e.target.files?.[0];
     if (!file) return;
     setNewWorker((prev) => ({ ...prev, whiteCardFile: file.name, whiteCardState: "reading" }));
-    mockParse(file.name, (state) => {
-      setNewWorker((prev) => ({ ...prev, whiteCardState: state }));
-    });
+    mockParse(file.name, (state) => { setNewWorker((prev) => ({ ...prev, whiteCardState: state })); });
   };
 
   const toggleLicence = (lic: string) => {
-    setNewWorker((prev) => ({
-      ...prev,
-      licences: prev.licences.includes(lic) ? prev.licences.filter((l) => l !== lic) : [...prev.licences, lic],
-    }));
+    setNewWorker((prev) => ({ ...prev, licences: prev.licences.includes(lic) ? prev.licences.filter((l) => l !== lic) : [...prev.licences, lic] }));
   };
 
   const addWorker = () => {
@@ -137,6 +161,9 @@ export default function AddContractorManually() {
     setNewWorker(emptyWorker);
     setShowAddWorker(false);
   };
+
+  const requiredDocsVerified = companyDocs.filter((d) => d.required).every((d) => d.parseState === "verified");
+  const canProceed = requiredDocsVerified && contractorStatement;
 
   const ParseStatus = ({ state, insurer, expiry, error }: { state: ParseState; insurer?: string; expiry?: string; error?: string }) => {
     if (state === "idle") return null;
@@ -151,7 +178,14 @@ export default function AddContractorManually() {
     <div style={{ border: doc.parseState === "verified" ? "1px solid #a5d6a7" : doc.parseState === "expired" || doc.parseState === "error" ? "1px solid #ef9a9a" : "1px solid #d0d0d0", borderRadius: "2px", overflow: "hidden", background: doc.parseState === "verified" ? "#f9fdf9" : "#fff", marginBottom: "8px" }}>
       <div style={{ padding: "12px 14px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <div style={{ flex: 1 }}>
-          <div style={{ fontSize: "13px", fontWeight: 500, color: doc.parseState === "verified" ? "#1b5e20" : "#111" }}>{doc.name}</div>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "3px" }}>
+            <div style={{ fontSize: "13px", fontWeight: 500, color: doc.parseState === "verified" ? "#1b5e20" : "#111" }}>{doc.name}</div>
+            {doc.required
+              ? <span style={{ fontSize: "10px", padding: "1px 6px", background: "#fff3e0", color: "#e65100", border: "1px solid #ffcc80", borderRadius: "2px", flexShrink: 0 }}>Required</span>
+              : <span style={{ fontSize: "10px", padding: "1px 6px", background: "#f5f5f5", color: "#888", border: "1px solid #e0e0e0", borderRadius: "2px", flexShrink: 0 }}>Optional</span>
+            }
+          </div>
+          {doc.note && <div style={{ fontSize: "11px", color: "#666", marginBottom: "2px" }}>{doc.note}</div>}
           <ParseStatus state={doc.parseState} insurer={doc.parsedInsurer} expiry={doc.parsedExpiry} error={doc.errorMsg} />
         </div>
         {doc.parseState === "verified" ? (
@@ -175,6 +209,8 @@ export default function AddContractorManually() {
 
   const steps = ["Company details", "Documents", "Workers", "Review"];
 
+  if (!mounted) return null;
+
   if (done) {
     return (
       <div style={{ maxWidth: "480px", margin: "80px auto", textAlign: "center", padding: "0 24px" }}>
@@ -186,23 +222,35 @@ export default function AddContractorManually() {
         <div style={{ border: "1px solid #ebebeb", borderRadius: "2px", padding: "14px 16px", marginBottom: "24px", textAlign: "left" }}>
           <div style={{ fontSize: "10px", fontWeight: 500, color: "#666", textTransform: "uppercase", letterSpacing: ".07em", marginBottom: "10px" }}>Summary</div>
           <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-            <div style={{ display: "grid", gridTemplateColumns: "140px 1fr", fontSize: "12px" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "160px 1fr", fontSize: "12px" }}>
               <div style={{ color: "#666" }}>Company</div>
               <div style={{ color: "#111", fontWeight: 500 }}>{company.name}</div>
             </div>
-            <div style={{ display: "grid", gridTemplateColumns: "140px 1fr", fontSize: "12px" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "160px 1fr", fontSize: "12px" }}>
+              <div style={{ color: "#666" }}>Entity type</div>
+              <div style={{ color: "#111" }}>{entityType === "sole_trader" ? "Sole trader / Working director" : "Company / Partnership"}</div>
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "160px 1fr", fontSize: "12px" }}>
+              <div style={{ color: "#666" }}>Trade</div>
+              <div style={{ color: "#111" }}>{company.trade || "Not specified"}</div>
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "160px 1fr", fontSize: "12px" }}>
               <div style={{ color: "#666" }}>Contact</div>
               <div style={{ color: "#111" }}>{company.contactFirst} {company.contactLast}</div>
             </div>
-            <div style={{ display: "grid", gridTemplateColumns: "140px 1fr", fontSize: "12px" }}>
-              <div style={{ color: "#666" }}>Sites</div>
+            <div style={{ display: "grid", gridTemplateColumns: "160px 1fr", fontSize: "12px" }}>
+              <div style={{ color: "#666" }}>Active on</div>
               <div style={{ color: "#111" }}>{selectedSites.join(", ")}</div>
             </div>
-            <div style={{ display: "grid", gridTemplateColumns: "140px 1fr", fontSize: "12px" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "160px 1fr", fontSize: "12px" }}>
               <div style={{ color: "#666" }}>Documents</div>
               <div style={{ color: "#111" }}>{companyDocs.filter((d) => d.parseState === "verified").length} of {companyDocs.length} verified</div>
             </div>
-            <div style={{ display: "grid", gridTemplateColumns: "140px 1fr", fontSize: "12px" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "160px 1fr", fontSize: "12px" }}>
+              <div style={{ color: "#666" }}>Contractor Statement</div>
+              <div style={{ color: "#3a7d44", fontWeight: 500 }}>✓ Declared and date stamped</div>
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "160px 1fr", fontSize: "12px" }}>
               <div style={{ color: "#666" }}>Workers</div>
               <div style={{ color: "#111" }}>{workers.length} added</div>
             </div>
@@ -248,37 +296,57 @@ export default function AddContractorManually() {
           <div>
             <div style={{ border: "1px solid #d0d0d0", borderRadius: "2px", overflow: "hidden", marginBottom: "16px" }}>
               <div style={{ padding: "10px 14px", background: "#fafafa", borderBottom: "1px solid #d0d0d0" }}>
+                <div style={{ fontSize: "10px", fontWeight: 500, color: "#666", textTransform: "uppercase", letterSpacing: ".08em" }}>Business structure</div>
+              </div>
+              <div style={{ padding: "12px 14px", display: "flex", gap: "16px" }}>
+                <label style={{ display: "flex", alignItems: "center", gap: "6px", cursor: "pointer", fontSize: "13px", color: "#111" }}>
+                  <input type="radio" name="entity" checked={entityType === "company"} onChange={() => handleEntityChange("company")} style={{ accentColor: "#111" }} />
+                  Company / Partnership
+                </label>
+                <label style={{ display: "flex", alignItems: "center", gap: "6px", cursor: "pointer", fontSize: "13px", color: "#111" }}>
+                  <input type="radio" name="entity" checked={entityType === "sole_trader"} onChange={() => handleEntityChange("sole_trader")} style={{ accentColor: "#111" }} />
+                  Sole trader / Working director
+                </label>
+              </div>
+              {entityType === "sole_trader" && (
+                <div style={{ margin: "0 14px 12px", padding: "10px 12px", background: "#fff8e1", border: "1px solid #ffe082", borderRadius: "2px", fontSize: "12px", color: "#7c4e00", lineHeight: 1.6 }}>
+                  Sole traders are not covered by their own workers compensation policy. Accident and illness insurance is required.
+                </div>
+              )}
+            </div>
+
+            <div style={{ border: "1px solid #d0d0d0", borderRadius: "2px", overflow: "hidden", marginBottom: "16px" }}>
+              <div style={{ padding: "10px 14px", background: "#fafafa", borderBottom: "1px solid #d0d0d0" }}>
                 <div style={{ fontSize: "10px", fontWeight: 500, color: "#666", textTransform: "uppercase", letterSpacing: ".08em" }}>Company details</div>
               </div>
               <div style={{ padding: "16px", display: "flex", flexDirection: "column", gap: "14px" }}>
                 <div>
-                  {label("Company name")}
+                  {lbl("Company name")}
                   <input value={company.name} onChange={(e) => setCompany({ ...company, name: e.target.value })} placeholder="e.g. Rapid Demo Co Pty Ltd" style={inputStyle} />
                 </div>
                 <div>
-                  {label("ABN", "Optional")}
+                  {lbl("ABN", "Optional")}
                   <input value={company.abn} onChange={(e) => setCompany({ ...company, abn: e.target.value })} placeholder="e.g. 51 824 753 556" style={inputStyle} />
                 </div>
                 <div>
-                  {label("Trade")}
-                  <select value={company.trade} onChange={(e) => setCompany({ ...company, trade: e.target.value })} style={{ ...inputStyle, background: "#fff" }}>
+                  {lbl("Trade", "Selecting a trade adds the relevant licence documents on the next step automatically")}
+                  <select value={company.trade} onChange={(e) => handleTradeChange(e.target.value)} style={{ ...inputStyle, background: "#fff" }}>
                     <option value="">Select trade...</option>
-                    <option>Plumbing</option>
-                    <option>Electrical</option>
-                    <option>Carpentry</option>
-                    <option>Painting</option>
-                    <option>Tiling</option>
-                    <option>Concreting</option>
-                    <option>Demolition</option>
-                    <option>Scaffolding</option>
-                    <option>HVAC</option>
-                    <option>Gas Fitting</option>
-                    <option>Labourer</option>
-                    <option>Structural Steel</option>
-                    <option>Framing</option>
-                    <option>Roofing</option>
-                    <option>Crane Operation</option>
-                    <option>Other</option>
+                    <option value="plumber">Plumbing</option>
+                    <option value="electrician">Electrical</option>
+                    <option value="carpentry">Carpentry</option>
+                    <option value="painting">Painting</option>
+                    <option value="tiling">Tiling</option>
+                    <option value="concretor">Concreting</option>
+                    <option value="demolition">Demolition</option>
+                    <option value="scaffolder">Scaffolding / Rigging</option>
+                    <option value="hvac">HVAC</option>
+                    <option value="gasfitter">Gas Fitting</option>
+                    <option value="labourer">Labourer</option>
+                    <option value="crane">Crane Operation</option>
+                    <option value="forklift">Forklift / Plant Operation</option>
+                    <option value="heavyvehicle">Heavy Vehicle</option>
+                    <option value="other">Other</option>
                   </select>
                 </div>
               </div>
@@ -292,20 +360,20 @@ export default function AddContractorManually() {
               <div style={{ padding: "16px", display: "flex", flexDirection: "column", gap: "14px" }}>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
                   <div>
-                    {label("First name")}
+                    {lbl("First name")}
                     <input value={company.contactFirst} onChange={(e) => setCompany({ ...company, contactFirst: e.target.value })} placeholder="Tom" style={inputStyle} />
                   </div>
                   <div>
-                    {label("Last name")}
+                    {lbl("Last name")}
                     <input value={company.contactLast} onChange={(e) => setCompany({ ...company, contactLast: e.target.value })} placeholder="Richards" style={inputStyle} />
                   </div>
                 </div>
                 <div>
-                  {label("Email")}
+                  {lbl("Email")}
                   <input value={company.email} onChange={(e) => setCompany({ ...company, email: e.target.value })} placeholder="tom@rapiddemo.com.au" style={inputStyle} />
                 </div>
                 <div>
-                  {label("Mobile")}
+                  {lbl("Mobile")}
                   <input value={company.mobile} onChange={(e) => setCompany({ ...company, mobile: e.target.value })} placeholder="0400 000 000" style={inputStyle} />
                 </div>
               </div>
@@ -337,15 +405,46 @@ export default function AddContractorManually() {
           <div>
             <div style={{ marginBottom: "14px" }}>
               <div style={{ fontSize: "10px", fontWeight: 500, color: "#666", textTransform: "uppercase", letterSpacing: ".08em" }}>Company documents</div>
-              <div style={{ fontSize: "11px", color: "#666", marginTop: "3px" }}>Upload each document — Vettit reads and verifies automatically</div>
+              <div style={{ fontSize: "11px", color: "#666", marginTop: "3px" }}>
+                {company.trade ? `Documents required for ${company.trade} — upload each one` : "Upload each document — Vettit reads and verifies automatically"}
+              </div>
             </div>
+
             {companyDocs.map((doc) => (
               <DocUploadCard key={doc.name} doc={doc} onChange={(e) => handleCompanyFile(doc.name, e)} />
             ))}
+
+            <div style={{ border: contractorStatement ? "1px solid #a5d6a7" : "1px solid #d0d0d0", borderRadius: "2px", overflow: "hidden", marginTop: "16px", marginBottom: "8px", background: contractorStatement ? "#f9fdf9" : "#fff" }}>
+              <div style={{ padding: "10px 14px", background: "#fafafa", borderBottom: "1px solid #d0d0d0" }}>
+                <div style={{ fontSize: "12px", fontWeight: 600, color: "#111" }}>Contractor Statement — Statutory Declaration</div>
+                <div style={{ fontSize: "11px", color: "#666", marginTop: "2px" }}>Required by law before payment can be made</div>
+              </div>
+              <div style={{ padding: "14px" }}>
+                <div style={{ fontSize: "12px", color: "#333", lineHeight: 1.8, marginBottom: "14px", padding: "12px 14px", background: "#f9f9f9", borderRadius: "2px", border: "1px solid #ebebeb" }}>
+                  I declare that as at today's date: all workers compensation insurance premiums have been paid in full; all wages and entitlements payable to workers engaged under this contract have been paid in full; all superannuation contributions required by law have been paid; and all payroll tax obligations have been met. I understand that making a false or misleading statutory declaration is an offence under Australian law.
+                </div>
+                <label style={{ display: "flex", alignItems: "flex-start", gap: "10px", cursor: requiredDocsVerified ? "pointer" : "not-allowed", opacity: requiredDocsVerified ? 1 : 0.5 }}>
+                  <input type="checkbox" checked={contractorStatement} disabled={!requiredDocsVerified} onChange={(e) => setContractorStatement(e.target.checked)} style={{ accentColor: "#3a7d44", width: "16px", height: "16px", marginTop: "2px", flexShrink: 0 }} />
+                  <div style={{ fontSize: "13px", color: "#111", fontWeight: contractorStatement ? 500 : 400 }}>
+                    I confirm the above declaration is true and correct as at {new Date().toLocaleDateString("en-AU", { day: "numeric", month: "long", year: "numeric" })}
+                  </div>
+                </label>
+                {!requiredDocsVerified && <div style={{ fontSize: "11px", color: "#888", marginTop: "8px" }}>Upload all required documents above before confirming this declaration</div>}
+                {contractorStatement && <div style={{ fontSize: "11px", color: "#3a7d44", marginTop: "8px", fontWeight: 500 }}>✓ Declaration recorded — date and time stamped</div>}
+              </div>
+            </div>
+
             <div style={{ display: "flex", justifyContent: "space-between", marginTop: "20px" }}>
               <button onClick={() => setStep(0)} style={btnOutline}>← Back</button>
-              <button onClick={() => setStep(2)} style={btnPrimary(false)}>Next — add workers →</button>
+              <button onClick={() => setStep(2)} disabled={!canProceed} style={btnPrimary(!canProceed)}>
+                Next — add workers →
+              </button>
             </div>
+            {!canProceed && (
+              <div style={{ fontSize: "11px", color: "#c0392b", textAlign: "right", marginTop: "6px" }}>
+                {!requiredDocsVerified ? "Upload all required documents to continue" : "Confirm the Contractor Statement to continue"}
+              </div>
+            )}
           </div>
         )}
 
@@ -379,16 +478,16 @@ export default function AddContractorManually() {
                 <div style={{ padding: "14px", display: "flex", flexDirection: "column", gap: "12px" }}>
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
                     <div>
-                      {label("First name")}
+                      {lbl("First name")}
                       <input value={newWorker.firstName} onChange={(e) => setNewWorker({ ...newWorker, firstName: e.target.value })} placeholder="Dave" style={inputStyle} />
                     </div>
                     <div>
-                      {label("Last name")}
+                      {lbl("Last name")}
                       <input value={newWorker.lastName} onChange={(e) => setNewWorker({ ...newWorker, lastName: e.target.value })} placeholder="Smith" style={inputStyle} />
                     </div>
                   </div>
                   <div>
-                    {label("Role on site")}
+                    {lbl("Role on site")}
                     <select value={newWorker.role} onChange={(e) => setNewWorker({ ...newWorker, role: e.target.value, licences: [] })} style={{ ...inputStyle, background: "#fff" }}>
                       <option value="">Select role...</option>
                       <option value="supervisor">Supervisor / Manager</option>
@@ -420,7 +519,7 @@ export default function AddContractorManually() {
                     </label>
                   </div>
                   <div>
-                    {label("White Card")}
+                    {lbl("White Card")}
                     <div style={{ border: newWorker.whiteCardState === "verified" ? "1px solid #a5d6a7" : "1px solid #d0d0d0", borderRadius: "2px", padding: "10px 12px", background: newWorker.whiteCardState === "verified" ? "#f9fdf9" : "#fff", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                       <div style={{ fontSize: "12px", color: "#555" }}>{newWorker.whiteCardFile || "No file selected"}</div>
                       {newWorker.whiteCardState !== "verified" && newWorker.whiteCardState !== "reading" && (
@@ -434,7 +533,7 @@ export default function AddContractorManually() {
                   </div>
                   {licenceOptions[newWorker.role] && (
                     <div>
-                      {label("Licences held")}
+                      {lbl("Licences held")}
                       <div style={{ border: "1px solid #d0d0d0", borderRadius: "2px", overflow: "hidden" }}>
                         {licenceOptions[newWorker.role].map((lic, i) => {
                           const coveredBy = isLicenceCovered(lic, newWorker.licences);
@@ -478,19 +577,23 @@ export default function AddContractorManually() {
               <div style={{ border: "1px solid #d0d0d0", borderRadius: "2px", overflow: "hidden", marginBottom: "12px" }}>
                 <div style={{ padding: "10px 14px", background: "#fafafa", borderBottom: "1px solid #d0d0d0", fontSize: "10px", fontWeight: 500, color: "#666", textTransform: "uppercase", letterSpacing: ".07em" }}>Company</div>
                 <div style={{ padding: "12px 14px", display: "flex", flexDirection: "column", gap: "6px" }}>
-                  <div style={{ display: "grid", gridTemplateColumns: "140px 1fr", fontSize: "12px" }}>
+                  <div style={{ display: "grid", gridTemplateColumns: "160px 1fr", fontSize: "12px" }}>
                     <div style={{ color: "#666" }}>Company name</div>
                     <div style={{ color: "#111", fontWeight: 500 }}>{company.name}</div>
                   </div>
-                  <div style={{ display: "grid", gridTemplateColumns: "140px 1fr", fontSize: "12px" }}>
-                    <div style={{ color: "#666" }}>Trade</div>
-                    <div style={{ color: "#111" }}>{company.trade}</div>
+                  <div style={{ display: "grid", gridTemplateColumns: "160px 1fr", fontSize: "12px" }}>
+                    <div style={{ color: "#666" }}>Entity type</div>
+                    <div style={{ color: "#111" }}>{entityType === "sole_trader" ? "Sole trader / Working director" : "Company / Partnership"}</div>
                   </div>
-                  <div style={{ display: "grid", gridTemplateColumns: "140px 1fr", fontSize: "12px" }}>
+                  <div style={{ display: "grid", gridTemplateColumns: "160px 1fr", fontSize: "12px" }}>
+                    <div style={{ color: "#666" }}>Trade</div>
+                    <div style={{ color: "#111" }}>{company.trade || "Not specified"}</div>
+                  </div>
+                  <div style={{ display: "grid", gridTemplateColumns: "160px 1fr", fontSize: "12px" }}>
                     <div style={{ color: "#666" }}>Contact</div>
                     <div style={{ color: "#111" }}>{company.contactFirst} {company.contactLast} · {company.email} · {company.mobile}</div>
                   </div>
-                  <div style={{ display: "grid", gridTemplateColumns: "140px 1fr", fontSize: "12px" }}>
+                  <div style={{ display: "grid", gridTemplateColumns: "160px 1fr", fontSize: "12px" }}>
                     <div style={{ color: "#666" }}>Active on</div>
                     <div style={{ color: "#111" }}>{selectedSites.join(", ")}</div>
                   </div>
@@ -503,11 +606,15 @@ export default function AddContractorManually() {
                   {companyDocs.map((doc) => (
                     <div key={doc.name} style={{ display: "flex", justifyContent: "space-between", fontSize: "12px" }}>
                       <div style={{ color: "#555" }}>{doc.name}</div>
-                      <div style={{ color: doc.parseState === "verified" ? "#3a7d44" : "#c0392b", fontWeight: 500 }}>
-                        {doc.parseState === "verified" ? `Verified · expires ${doc.parsedExpiry}` : "Not uploaded"}
+                      <div style={{ color: doc.parseState === "verified" ? "#3a7d44" : doc.required ? "#c0392b" : "#888", fontWeight: 500 }}>
+                        {doc.parseState === "verified" ? `Verified · expires ${doc.parsedExpiry}` : doc.required ? "Not uploaded" : "Not provided"}
                       </div>
                     </div>
                   ))}
+                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: "12px", marginTop: "4px", paddingTop: "8px", borderTop: "1px solid #f0f0f0" }}>
+                    <div style={{ color: "#555" }}>Contractor Statement</div>
+                    <div style={{ color: "#3a7d44", fontWeight: 500 }}>✓ Declared and date stamped</div>
+                  </div>
                 </div>
               </div>
 
