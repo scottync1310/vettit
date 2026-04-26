@@ -282,6 +282,12 @@ export default function ContractorDetail() {
   const [showArchiveModal, setShowArchiveModal] = useState(false);
   const [archived, setArchived] = useState(false);
   const [archivedSites, setArchivedSites] = useState<string[]>([]);
+  const [reminderSent, setReminderSent] = useState(false);
+
+  const sendReminder = () => {
+    setReminderSent(true);
+    setTimeout(() => setReminderSent(false), 3000);
+  };
 
   const toggleLicence = (lic: string) => {
     setNewWorker((prev) => ({
@@ -400,8 +406,10 @@ export default function ContractorDetail() {
           <StatusBadge status={contractor.status} />
         </div>
         <div style={{ display: "flex", gap: "8px" }}>
-          <button style={{ padding: "6px 12px", border: "1px solid #d0d0d0", background: "#fff", color: "#111", fontSize: "12px", borderRadius: "2px", cursor: "pointer", fontFamily: "Montserrat, sans-serif" }}>Resend reminder</button>
-          <button onClick={() => setShowArchiveModal(true)} style={{ padding: "6px 12px", border: "1px solid #d0d0d0", background: "#fff", color: "#333", fontSize: "12px", borderRadius: "2px", cursor: "pointer", fontFamily: "Montserrat, sans-serif" }}>Archive contractor</button>
+          <button onClick={sendReminder} style={{ padding: "6px 12px", border: "1px solid #111", background: reminderSent ? "#3a7d44" : "#111", color: "#fff", fontSize: "12px", borderRadius: "2px", cursor: "pointer", fontFamily: "Montserrat, sans-serif", transition: "background 0.2s" }}>
+            {reminderSent ? "✓ Reminder sent" : "Resend reminder"}
+          </button>
+          <button onClick={() => setShowArchiveModal(true)} style={{ padding: "6px 12px", border: "1px solid #111", background: "#111", color: "#fff", fontSize: "12px", borderRadius: "2px", cursor: "pointer", fontFamily: "Montserrat, sans-serif" }}>Archive contractor</button>
         </div>
       </div>
 
@@ -450,7 +458,9 @@ export default function ContractorDetail() {
           <div style={{ fontSize: "12px", color: "#b71c1c" }}>
             Autopilot has failed — contractor unresponsive after 3 reminders. <strong>{assignedTo}</strong> is responsible for follow-up.
           </div>
-          <button style={{ padding: "5px 12px", border: "1px solid #b71c1c", background: "#fff", color: "#b71c1c", fontSize: "11px", borderRadius: "2px", cursor: "pointer", fontFamily: "Montserrat, sans-serif" }}>Send manual reminder</button>
+          <button onClick={sendReminder} style={{ padding: "5px 12px", border: reminderSent ? "1px solid #3a7d44" : "1px solid #b71c1c", background: "#fff", color: reminderSent ? "#3a7d44" : "#b71c1c", fontSize: "11px", borderRadius: "2px", cursor: "pointer", fontFamily: "Montserrat, sans-serif" }}>
+            {reminderSent ? "✓ Sent" : "Send manual reminder"}
+          </button>
         </div>
       )}
 
@@ -702,7 +712,7 @@ export default function ContractorDetail() {
                   <span style={{ fontSize: "11px", padding: "3px 8px", background: sub.status === "pending" ? "#f5f5f5" : "#e8f5e9", color: sub.status === "pending" ? "#555" : "#1b5e20", border: `1px solid ${sub.status === "pending" ? "#ddd" : "#a5d6a7"}`, borderRadius: "2px", fontWeight: 500 }}>
                     {sub.status === "pending" ? "Invite sent" : "Compliant"}
                   </span>
-                  <button style={{ padding: "4px 10px", border: "1px solid #d0d0d0", background: "#fff", color: "#111", fontSize: "11px", borderRadius: "2px", cursor: "pointer", fontFamily: "Montserrat, sans-serif" }}>View</button>
+                  <button style={{ padding: "4px 10px", border: "1px solid #111", background: "#111", color: "#fff", fontSize: "11px", borderRadius: "2px", cursor: "pointer", fontFamily: "Montserrat, sans-serif" }}>View</button>
                 </div>
               </div>
               <div style={{ padding: "10px 14px" }}>

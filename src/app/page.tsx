@@ -8,7 +8,7 @@ const pendingSubDeclarations = [
   { id: 2, declaredBy: "ABC Plumbing", subName: "Brisbane Drainage Co", subTrade: "Drainage", subContact: "Paul Harris", subEmail: "paul@brisbanedrainage.com.au", site: "Bulimba Apartments", declaredDate: "Yesterday, 2:30pm" },
 ];
 
-const contractors = [
+const initialContractors = [
   { name: "ABC Plumbing", trade: "Plumbing", invited: "14 Mar", docs: "4 docs", status: "compliant" as const, issue: "—", sites: [{ name: "Paddington" }, { name: "Bulimba" }], archived: false },
   { name: "XYZ Electrical", trade: "Electrical", invited: "2 Mar", docs: "4 docs", status: "expiring" as const, issue: "Liability expires in 5 days", sites: [{ name: "Paddington" }, { name: "Newstead" }], archived: false },
   { name: "Rapid Demo Co", trade: "Demolition", invited: "10 Mar", docs: "2 of 4 docs", status: "non-compliant" as const, issue: "SWMS missing — Newstead", sites: [{ name: "Paddington" }, { name: "Newstead" }], archived: false },
@@ -33,6 +33,7 @@ const tabs: Tab[] = [
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState("All");
   const [declarations, setDeclarations] = useState(pendingSubDeclarations);
+  const [contractors, setContractors] = useState(initialContractors);
 
   const active = contractors.filter((c) => !c.archived);
   const archived = contractors.filter((c) => c.archived);
@@ -50,6 +51,10 @@ export default function Dashboard() {
     : active.filter((c) => c.status === tabs.find((t) => t.label === activeTab)?.status);
 
   const dismiss = (id: number) => setDeclarations((prev) => prev.filter((d) => d.id !== id));
+
+  const unarchive = (name: string) => {
+    setContractors((prev) => prev.map((c) => c.name === name ? { ...c, archived: false } : c));
+  };
 
   return (
     <div style={{ fontFamily: "Montserrat, sans-serif" }}>
@@ -116,50 +121,71 @@ export default function Dashboard() {
       </div>
 
       <div style={{ margin: "20px 32px", border: "1px solid #d0d0d0", borderRadius: "2px", overflow: "hidden" }}>
-        <table style={{ width: "100%", borderCollapse: "collapse", tableLayout: "fixed" }}>
-          <thead>
-            <tr style={{ background: "#fafafa" }}>
-              <th style={{ width: "28%", fontSize: "11px", fontWeight: 700, color: "#111", textAlign: "left", padding: "10px 16px", borderBottom: "1px solid #d0d0d0" }}>Contractor</th>
-              <th style={{ width: "14%", fontSize: "11px", fontWeight: 700, color: "#111", textAlign: "left", padding: "10px 16px", borderBottom: "1px solid #d0d0d0" }}>Status</th>
-              <th style={{ width: "26%", fontSize: "11px", fontWeight: 700, color: "#111", textAlign: "left", padding: "10px 16px", borderBottom: "1px solid #d0d0d0" }}>{activeTab === "Archived" ? "Last active" : "Issue"}</th>
-              <th style={{ width: "22%", fontSize: "11px", fontWeight: 700, color: "#111", textAlign: "left", padding: "10px 16px", borderBottom: "1px solid #d0d0d0" }}>Sites</th>
-              <th style={{ width: "10%", fontSize: "11px", fontWeight: 700, color: "#111", textAlign: "left", padding: "10px 16px", borderBottom: "1px solid #d0d0d0" }}></th>
-            </tr>
-          </thead>
-          <tbody>
-            {filtered.length === 0 ? (
-              <tr><td colSpan={5} style={{ padding: "32px", textAlign: "center", fontSize: "13px", color: "#555" }}>No contractors in this category</td></tr>
-            ) : (
-              filtered.map((c, i) => (
-                <tr key={c.name} style={{ borderBottom: i < filtered.length - 1 ? "1px solid #ebebeb" : "none", opacity: c.archived ? 0.7 : 1 }}>
-                  <td style={{ padding: "11px 16px" }}>
-                    <div style={{ fontWeight: 500, fontSize: "13px", color: "#111" }}>{c.name}</div>
-                    <div style={{ fontSize: "11px", color: "#555", marginTop: "2px" }}>{c.trade} · Invited {c.invited} · {c.docs}</div>
-                  </td>
-                  <td style={{ padding: "11px 16px" }}>
-                    {c.archived
-                      ? <span style={{ fontSize: "11px", padding: "2px 8px", background: "#d1eaff", color: "#008cff", border: "1px solid #91bcf5", borderRadius: "2px" }}>Archived</span>
-                      : <StatusBadge status={c.status} />
-                    }
-                  </td>
-                  <td style={{ padding: "11px 16px", fontSize: "12px", color: c.status === "non-compliant" ? "#b71c1c" : c.status === "expiring" ? "#7c4e00" : "#888" }}>
-                    {c.archived ? `Archived ${c.invited}` : c.issue}
-                  </td>
-                  <td style={{ padding: "11px 16px" }}>
-                    {c.sites.map((s) => (
-                      <SiteTag key={s.name} name={s.name} fail={false} />
-                    ))}
-                  </td>
-                  <td style={{ padding: "11px 16px" }}>
-                    <a href="/contractor" style={{ display: "inline-block", fontSize: "11px", padding: "5px 10px", background: "#3a7d44", color: "#fff", borderRadius: "2px", textDecoration: "none", fontWeight: 500, fontFamily: "Montserrat, sans-serif" }}>
-                      View
-                    </a>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+        {active.length === 0 && activeTab === "All" ? (
+          <div style={{ padding: "64px 32px", textAlign: "center" }}>
+            <div style={{ fontSize: "32px", marginBottom: "16px" }}>📋</div>
+            <div style={{ fontSize: "15px", fontWeight: 600, color: "#111", marginBottom: "8px" }}>No active contractors</div>
+            <div style={{ fontSize: "13px", color: "#555", lineHeight: 1.7, marginBottom: "24px" }}>
+              All contractors have been archived or you haven't invited anyone yet.<br />
+              Invite your first contractor to get started.
+            </div>
+            <a href="/contractor/invite" style={{ display: "inline-block", padding: "9px 24px", background: "#111", color: "#fff", fontSize: "13px", fontWeight: 500, textDecoration: "none", borderRadius: "2px", fontFamily: "Montserrat, sans-serif" }}>
+              Invite a contractor
+            </a>
+          </div>
+        ) : (
+          <table style={{ width: "100%", borderCollapse: "collapse", tableLayout: "fixed" }}>
+            <thead>
+              <tr style={{ background: "#fafafa" }}>
+                <th style={{ width: "28%", fontSize: "11px", fontWeight: 700, color: "#111", textAlign: "left", padding: "10px 16px", borderBottom: "1px solid #d0d0d0" }}>Contractor</th>
+                <th style={{ width: "14%", fontSize: "11px", fontWeight: 700, color: "#111", textAlign: "left", padding: "10px 16px", borderBottom: "1px solid #d0d0d0" }}>Status</th>
+                <th style={{ width: "26%", fontSize: "11px", fontWeight: 700, color: "#111", textAlign: "left", padding: "10px 16px", borderBottom: "1px solid #d0d0d0" }}>{activeTab === "Archived" ? "Last active" : "Issue"}</th>
+                <th style={{ width: "22%", fontSize: "11px", fontWeight: 700, color: "#111", textAlign: "left", padding: "10px 16px", borderBottom: "1px solid #d0d0d0" }}>Sites</th>
+                <th style={{ width: "10%", fontSize: "11px", fontWeight: 700, color: "#111", textAlign: "left", padding: "10px 16px", borderBottom: "1px solid #d0d0d0" }}></th>
+              </tr>
+            </thead>
+            <tbody>
+              {filtered.length === 0 ? (
+                <tr><td colSpan={5} style={{ padding: "32px", textAlign: "center", fontSize: "13px", color: "#555" }}>No contractors in this category</td></tr>
+              ) : (
+                filtered.map((c, i) => (
+                  <tr key={c.name} style={{ borderBottom: i < filtered.length - 1 ? "1px solid #ebebeb" : "none", opacity: c.archived ? 0.7 : 1 }}>
+                    <td style={{ padding: "11px 16px" }}>
+                      <div style={{ fontWeight: 500, fontSize: "13px", color: "#111" }}>{c.name}</div>
+                      <div style={{ fontSize: "11px", color: "#555", marginTop: "2px" }}>{c.trade} · Invited {c.invited} · {c.docs}</div>
+                    </td>
+                    <td style={{ padding: "11px 16px" }}>
+                      {c.archived
+                        ? <span style={{ fontSize: "11px", padding: "2px 8px", background: "#d1eaff", color: "#008cff", border: "1px solid #91bcf5", borderRadius: "2px" }}>Archived</span>
+                        : <StatusBadge status={c.status} />
+                      }
+                    </td>
+                    <td style={{ padding: "11px 16px", fontSize: "12px", color: c.status === "non-compliant" ? "#b71c1c" : c.status === "expiring" ? "#7c4e00" : "#888" }}>
+                      {c.archived ? `Archived ${c.invited}` : c.issue}
+                    </td>
+                    <td style={{ padding: "11px 16px" }}>
+                      {c.sites.map((s) => <SiteTag key={s.name} name={s.name} fail={false} />)}
+                    </td>
+                    <td style={{ padding: "11px 16px" }}>
+                      {c.archived ? (
+                        <button
+                          onClick={() => unarchive(c.name)}
+                          style={{ display: "inline-block", fontSize: "11px", padding: "5px 10px", background: "#fff", color: "#008cff", border: "1px solid #91bcf5", borderRadius: "2px", cursor: "pointer", fontWeight: 500, fontFamily: "Montserrat, sans-serif" }}
+                        >
+                          Unarchive
+                        </button>
+                      ) : (
+                        <a href="/contractor" style={{ display: "inline-block", fontSize: "11px", padding: "5px 10px", background: "#3a7d44", color: "#fff", borderRadius: "2px", textDecoration: "none", fontWeight: 500, fontFamily: "Montserrat, sans-serif" }}>
+                          View
+                        </a>
+                      )}
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        )}
       </div>
 
     </div>
