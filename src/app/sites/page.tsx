@@ -119,7 +119,7 @@ export default function Sites() {
 
       <div style={{ padding: "14px 32px", borderBottom: "1px solid #d0d0d0", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <div>
-          <div style={{ fontSize: "14px", fontWeight: 600, color: "#111" }}>Sites</div>
+          <div style={{ fontSize: "14px", fontWeight: 700, color: "#111" }}>SITES</div>
           <div style={{ fontSize: "12px", color: "#555", marginTop: "2px" }}>Select a site to view contractor compliance status</div>
         </div>
         <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
