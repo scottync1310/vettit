@@ -24,7 +24,11 @@ const tradeConditionalDocs: Record<string, { name: string; note: string }[]> = {
   electrician: [{ name: "Electrical Contractor Licence", note: "Required for all electrical trades" }],
   plumber: [{ name: "Plumbing Contractor Licence", note: "Required for all plumbing trades" }],
   gasfitter: [{ name: "Gas Fitting Contractor Licence", note: "Required for gas fitting trades" }],
-  hvac: [{ name: "Gas Fitting Contractor Licence", note: "Required for HVAC trades involving gas" }],
+  hvac: [
+    { name: "Refrigeration and Air Conditioning Licence", note: "Required for all HVAC trades — issued by state licensing authority" },
+    { name: "Gas Fitting Contractor Licence", note: "Required only if work involves gas-fired equipment" },
+    { name: "Electrical Contractor Licence", note: "Required only if work involves electrical connections" },
+  ],
   demolition: [
     { name: "Asbestos Removal Licence — Class A (friable)", note: "Required for friable asbestos removal" },
     { name: "Asbestos Removal Licence — Class B (non-friable)", note: "Required for non-friable asbestos removal" },
@@ -100,6 +104,13 @@ export default function InviteContractor() {
     </div>
   );
 
+  const SectionHead = ({ text, sub }: { text: string; sub?: string }) => (
+    <div style={{ padding: "12px 16px", background: "#fafafa", borderBottom: "1px solid #d0d0d0" }}>
+      <div style={{ fontSize: "12px", fontWeight: 700, color: "#111", textTransform: "uppercase" as const, letterSpacing: ".08em" }}>{text}</div>
+      {sub && <div style={{ fontSize: "11px", color: "#666", marginTop: "2px" }}>{sub}</div>}
+    </div>
+  );
+
   const DocRow = ({ name, note, checked, onChange, last }: { name: string; note?: string; checked: boolean; onChange: () => void; last?: boolean }) => (
     <label style={{ display: "flex", alignItems: "flex-start", gap: "10px", padding: "10px 16px", borderBottom: last ? "none" : "1px solid #f0f0f0", cursor: "pointer", background: checked ? "#fafffe" : "#fff" }}>
       <input type="checkbox" checked={checked} onChange={onChange} style={{ accentColor: "#111", width: "14px", height: "14px", marginTop: "2px", flexShrink: 0 }} />
@@ -119,7 +130,7 @@ export default function InviteContractor() {
         <div style={{ fontSize: "16px", fontWeight: 500, color: "#111", marginBottom: "8px" }}>Invite sent to {companyName}</div>
         <div style={{ fontSize: "13px", color: "#555", lineHeight: 1.7, marginBottom: "24px" }}>
           {contactFirst} will receive a secure link to submit their compliance documents.<br />
-          Vettit will send automated reminders on day 2, 5 and 7 if incomplete.
+          Reminders will be sent per your <a href="/settings#notifications" style={{ color: "#111", fontWeight: 500 }}>notification settings</a>.
           {subcontractors.length > 0 && <><br />Invites also sent to {subcontractors.length} subcontractor{subcontractors.length > 1 ? "s" : ""}.</>}
         </div>
         <div style={{ border: "1px solid #ebebeb", borderRadius: "2px", padding: "14px 16px", marginBottom: "24px", textAlign: "left" }}>
@@ -142,8 +153,8 @@ export default function InviteContractor() {
     <div>
       <div style={{ padding: "14px 32px", borderBottom: "1px solid #d0d0d0", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <div>
-          <div style={{ fontSize: "14px", fontWeight: 500, color: "#111" }}>Invite a contractor</div>
-          <div style={{ fontSize: "12px", color: "#555", marginTop: "2px" }}>One email sent — Vettit handles all follow-up automatically</div>
+          <div style={{ fontSize: "14px", fontWeight: 600, color: "#111" }}>INVITE A CONTRACTOR</div>
+          <div style={{ fontSize: "12px", color: "#555", marginTop: "2px" }}>One email sent — Vettit handles all the follow-ups automatically</div>
         </div>
         <a href="/" style={{ fontSize: "12px", color: "#555", textDecoration: "none" }}>← Back to dashboard</a>
       </div>
@@ -151,9 +162,7 @@ export default function InviteContractor() {
       <div style={{ maxWidth: "600px", margin: "0 auto", padding: "32px 24px 64px" }}>
 
         <div style={{ border: "1px solid #d0d0d0", borderRadius: "2px", overflow: "hidden", marginBottom: "20px" }}>
-          <div style={{ padding: "10px 16px", background: "#fafafa", borderBottom: "1px solid #d0d0d0" }}>
-            <div style={{ fontSize: "10px", fontWeight: 600, color: "#666", textTransform: "uppercase", letterSpacing: ".08em" }}>Company details</div>
-          </div>
+          <SectionHead text="Company details" />
           <div style={{ padding: "16px", display: "flex", flexDirection: "column", gap: "14px" }}>
             <div>
               {lbl("Company name")}
@@ -186,10 +195,7 @@ export default function InviteContractor() {
         </div>
 
         <div style={{ border: "1px solid #d0d0d0", borderRadius: "2px", overflow: "hidden", marginBottom: "20px" }}>
-          <div style={{ padding: "10px 16px", background: "#fafafa", borderBottom: "1px solid #d0d0d0" }}>
-            <div style={{ fontSize: "10px", fontWeight: 600, color: "#666", textTransform: "uppercase", letterSpacing: ".08em" }}>Contact person</div>
-            <div style={{ fontSize: "11px", color: "#666", marginTop: "2px" }}>Receives the invite — added automatically as first worker</div>
-          </div>
+          <SectionHead text="Contact person" sub="Receives the invite — added automatically as first worker" />
           <div style={{ padding: "16px", display: "flex", flexDirection: "column", gap: "14px" }}>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
               <div>
@@ -209,29 +215,11 @@ export default function InviteContractor() {
               {lbl("Mobile")}
               <input type="tel" placeholder="0400 000 000" style={inputStyle} />
             </div>
-            <div>
-              {lbl("Role on site")}
-              <select style={{ ...inputStyle, background: "#fff" }}>
-                <option value="">Select role...</option>
-                <option>Supervisor / Manager</option>
-                <option>Labourer</option>
-                <option>Plumber</option>
-                <option>Electrician</option>
-                <option>Scaffolder / Rigger</option>
-                <option>Crane Operator</option>
-                <option>Forklift / Plant Operator</option>
-                <option>EWP / Hoist Operator</option>
-                <option>Demolition / Asbestos</option>
-                <option>Heavy Vehicle Driver</option>
-              </select>
-            </div>
           </div>
         </div>
 
         <div style={{ border: "1px solid #d0d0d0", borderRadius: "2px", overflow: "hidden", marginBottom: "20px" }}>
-          <div style={{ padding: "10px 16px", background: "#fafafa", borderBottom: "1px solid #d0d0d0" }}>
-            <div style={{ fontSize: "10px", fontWeight: 600, color: "#666", textTransform: "uppercase", letterSpacing: ".08em" }}>Vetting for which sites</div>
-          </div>
+          <SectionHead text="Vetting for which sites" />
           <div>
             {sites.map((s, i) => (
               <label key={s.name} style={{ display: "flex", alignItems: "center", gap: "10px", padding: "10px 16px", borderBottom: i < sites.length - 1 ? "1px solid #ebebeb" : "none", cursor: "pointer", background: selectedSites.includes(s.name) ? "#f5f5f5" : "#fff" }}>
@@ -246,10 +234,7 @@ export default function InviteContractor() {
         </div>
 
         <div style={{ border: "1px solid #d0d0d0", borderRadius: "2px", overflow: "hidden", marginBottom: "20px" }}>
-          <div style={{ padding: "10px 16px", background: "#fafafa", borderBottom: "1px solid #d0d0d0" }}>
-            <div style={{ fontSize: "10px", fontWeight: 600, color: "#666", textTransform: "uppercase", letterSpacing: ".08em" }}>Company documents required</div>
-            <div style={{ fontSize: "11px", color: "#666", marginTop: "2px" }}>Tick what you require from this contractor</div>
-          </div>
+          <SectionHead text="Company documents required" sub="Tick what you require from this contractor" />
           {companyDocOptions.map((doc, i) => (
             <DocRow key={doc.name} name={doc.name} note={doc.note} checked={selectedDocs.includes(doc.name)} onChange={() => toggleDoc(doc.name)} last={i === companyDocOptions.length - 1} />
           ))}
@@ -257,10 +242,7 @@ export default function InviteContractor() {
 
         {conditionalDocs.length > 0 && (
           <div style={{ border: "1px solid #d0d0d0", borderRadius: "2px", overflow: "hidden", marginBottom: "20px" }}>
-            <div style={{ padding: "10px 16px", background: "#fafafa", borderBottom: "1px solid #d0d0d0" }}>
-              <div style={{ fontSize: "10px", fontWeight: 600, color: "#666", textTransform: "uppercase", letterSpacing: ".08em" }}>Trade-specific licences</div>
-              <div style={{ fontSize: "11px", color: "#666", marginTop: "2px" }}>Added automatically based on the trade selected above</div>
-            </div>
+            <SectionHead text="Trade-specific licences" sub="Added automatically based on the trade selected above — untick any that do not apply" />
             {conditionalDocs.map((doc, i) => (
               <DocRow key={doc.name} name={doc.name} note={doc.note} checked={selectedDocs.includes(doc.name)} onChange={() => toggleDoc(doc.name)} last={i === conditionalDocs.length - 1} />
             ))}
@@ -268,10 +250,7 @@ export default function InviteContractor() {
         )}
 
         <div style={{ border: "1px solid #d0d0d0", borderRadius: "2px", overflow: "hidden", marginBottom: "20px" }}>
-          <div style={{ padding: "10px 16px", background: "#fafafa", borderBottom: "1px solid #d0d0d0" }}>
-            <div style={{ fontSize: "10px", fontWeight: 600, color: "#666", textTransform: "uppercase", letterSpacing: ".08em" }}>Site documents required</div>
-            <div style={{ fontSize: "11px", color: "#666", marginTop: "2px" }}>Required per site — collected for each engagement</div>
-          </div>
+          <SectionHead text="Site documents required" sub="Required per site — collected for each engagement" />
           {siteDocOptions.map((doc, i) => (
             <DocRow key={doc.name} name={doc.name} note={doc.note} checked={selectedDocs.includes(doc.name)} onChange={() => toggleDoc(doc.name)} last={i === siteDocOptions.length - 1} />
           ))}
@@ -285,10 +264,7 @@ export default function InviteContractor() {
         </div>
 
         <div style={{ border: "1px solid #d0d0d0", borderRadius: "2px", overflow: "hidden", marginBottom: "32px" }}>
-          <div style={{ padding: "10px 16px", background: "#fafafa", borderBottom: "1px solid #d0d0d0" }}>
-            <div style={{ fontSize: "10px", fontWeight: 600, color: "#666", textTransform: "uppercase", letterSpacing: ".08em" }}>Subcontractors</div>
-            <div style={{ fontSize: "11px", color: "#666", marginTop: "2px" }}>Does this contractor bring subbies on site? Add them here and Vettit will invite them separately</div>
-          </div>
+          <SectionHead text="Subcontractors" sub="Does this contractor bring subbies on site? Add them here and Vettit will invite them separately" />
           <div style={{ padding: "12px 16px" }}>
             <label style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 12px", border: "1px solid #d0d0d0", borderRadius: "2px", cursor: "pointer", marginBottom: hasSubs ? "12px" : "0" }}>
               <div style={{ fontSize: "13px", color: "#111" }}>This contractor brings subcontractors on site</div>
@@ -357,7 +333,7 @@ export default function InviteContractor() {
             Send invite{subcontractors.length > 0 ? `s — ${subcontractors.length + 1} emails going out` : " — Vettit handles the rest"}
           </button>
           <div style={{ fontSize: "11px", color: "#666", textAlign: "center" }}>
-            Reminders sent automatically on day 2, 5 and 7 if incomplete
+            Reminders sent per your <a href="/settings#notifications" style={{ color: "#111", fontWeight: 500, textDecoration: "none" }}>notification settings</a>
           </div>
         </div>
 

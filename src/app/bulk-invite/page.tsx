@@ -12,12 +12,7 @@ type ContractorRow = {
   error?: string;
 };
 
-const sampleCSV = `Company Name,Contact Name,Email,Mobile,Trade
-ABC Plumbing,Dave Smith,dave@abcplumbing.com.au,0400 111 222,Plumbing
-XYZ Electrical,Mike Jones,mike@xyzelectrical.com.au,0400 333 444,Electrical
-SEQ Concreting,Paul Brown,paul@seqconcreting.com.au,0400 555 666,Concreting
-Brisbane Frames,Tom White,tom@brisframes.com.au,0400 777 888,Framing
-North Build Co,Steve Green,,0400 999 000,Labourer`;
+const sampleCSV = `ABC Plumbing,  Dave Smith,  dave@abcplumbing.com.au,  0400 111 222,  Plumbing`;
 
 const sites = [
   { name: "Paddington Townhouses", sub: "Stage 2 — active" },
@@ -95,7 +90,7 @@ export default function BulkInvite() {
     <div>
       <div style={{ padding: "14px 32px", borderBottom: "1px solid #d0d0d0", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <div>
-          <div style={{ fontSize: "14px", fontWeight: 500, color: "#111" }}>Bulk invite</div>
+          <div style={{ fontSize: "14px", fontWeight: 600, color: "#111" }}>BULK INVITE</div>
           <div style={{ fontSize: "12px", color: "#555", marginTop: "2px" }}>Upload a CSV to invite multiple contractors at once</div>
         </div>
         <a href="/" style={{ fontSize: "12px", color: "#555", textDecoration: "none" }}>← Back to dashboard</a>

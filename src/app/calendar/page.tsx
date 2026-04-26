@@ -76,7 +76,7 @@ export default function Calendar() {
     <div>
       <div style={{ padding: "14px 32px", borderBottom: "1px solid #d0d0d0", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <div>
-          <div style={{ fontSize: "14px", fontWeight: 500, color: "#111" }}>Expiry calendar</div>
+          <div style={{ fontSize: "14px", fontWeight: 600, color: "#111" }}>EXPIRY CALENDER</div>
           <div style={{ fontSize: "12px", color: "#333", marginTop: "2px" }}>Monthly view of all upcoming document expirations</div>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>

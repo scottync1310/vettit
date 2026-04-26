@@ -67,15 +67,15 @@ export default function Nav() {
               {showDropdown && (
                 <div style={{ position: "absolute", top: "100%", left: "50%", transform: "translateX(-50%)", background: "#fff", border: "1px solid #d0d0d0", borderRadius: "2px", zIndex: 100, minWidth: "220px", boxShadow: "0 4px 16px rgba(0,0,0,0.1)", overflow: "hidden" }}>
                   <a href="/contractor/invite" onClick={() => setShowDropdown(false)} style={{ display: "block", padding: "12px 16px", cursor: "pointer", textDecoration: "none", borderBottom: "1px solid #ebebeb" }}>
-                    <div style={{ fontSize: "13px", fontWeight: 500, color: "#111", marginBottom: "2px" }}>Invite contractor</div>
+                    <div style={{ fontSize: "13px", fontWeight: 600, color: "#111", marginBottom: "2px" }}>INVITE CONTRACTOR</div>
                     <div style={{ fontSize: "11px", color: "#666" }}>Send magic link — they upload their own docs</div>
                   </a>
                   <a href="/contractor/add" onClick={() => setShowDropdown(false)} style={{ display: "block", padding: "12px 16px", cursor: "pointer", textDecoration: "none", borderBottom: "1px solid #ebebeb" }}>
-                    <div style={{ fontSize: "13px", fontWeight: 500, color: "#111", marginBottom: "2px" }}>Add manually</div>
+                    <div style={{ fontSize: "13px", fontWeight: 600, color: "#111", marginBottom: "2px" }}>ADD MANUALLY</div>
                     <div style={{ fontSize: "11px", color: "#666" }}>Builder uploads docs on the contractor behalf</div>
                   </a>
                   <a href="/bulk-invite" onClick={() => setShowDropdown(false)} style={{ display: "block", padding: "12px 16px", cursor: "pointer", textDecoration: "none" }}>
-                    <div style={{ fontSize: "13px", fontWeight: 500, color: "#111", marginBottom: "2px" }}>Bulk invite</div>
+                    <div style={{ fontSize: "13px", fontWeight: 600, color: "#111", marginBottom: "2px" }}>BULK INVITE</div>
                     <div style={{ fontSize: "11px", color: "#666" }}>Upload a CSV to invite multiple contractors at once</div>
                   </a>
                 </div>

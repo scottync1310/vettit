@@ -66,7 +66,7 @@ export default function Vault() {
     <div>
       <div style={{ padding: "14px 32px", borderBottom: "1px solid #d0d0d0", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <div>
-          <div style={{ fontSize: "14px", fontWeight: 500, color: "#111" }}>Document vault</div>
+          <div style={{ fontSize: "14px", fontWeight: 600, color: "#111" }}>DOCUMENT VAULT</div>
           <div style={{ fontSize: "12px", color: "#333", marginTop: "2px" }}>Every document uploaded by every contractor — searchable and downloadable</div>
         </div>
         <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
