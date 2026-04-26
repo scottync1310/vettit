@@ -21,20 +21,55 @@ const siteDocOptions = [
 ];
 
 const tradeConditionalDocs: Record<string, { name: string; note: string }[]> = {
-  electrician: [{ name: "Electrical Contractor Licence", note: "Required for all electrical trades" }],
-  plumber: [{ name: "Plumbing Contractor Licence", note: "Required for all plumbing trades" }],
-  gasfitter: [{ name: "Gas Fitting Contractor Licence", note: "Required for gas fitting trades" }],
-  hvac: [
-    { name: "Refrigeration and Air Conditioning Licence", note: "Required for all HVAC trades — issued by state licensing authority" },
-    { name: "Gas Fitting Contractor Licence", note: "Required only if work involves gas-fired equipment" },
-    { name: "Electrical Contractor Licence", note: "Required only if work involves electrical connections" },
+  bricklayer: [{ name: "Contractor Licence — Bricklaying", note: "Required for all bricklaying trades" }],
+  cabinetmaker: [{ name: "Contractor Licence — Joinery and Cabinetmaking", note: "Required in NSW and QLD" }],
+  carpenter: [{ name: "Contractor Licence — Carpentry", note: "Required for all carpentry trades" }],
+  ceilingfixer: [{ name: "Contractor Licence — Plastering", note: "Ceiling fixing covered under plastering licence" }],
+  concreting: [{ name: "Contractor Licence — Concreting", note: "Required for all concreting trades" }],
+  crane: [
+    { name: "High Risk Work Licence — Crane Operation", note: "Class as applicable — C0, C1, C2, C6, CB, CN, CS, CT, CV" },
   ],
+  damproofer: [{ name: "Contractor Licence — Waterproofing", note: "Damp proofing covered under waterproofing licence" }],
   demolition: [
+    { name: "Contractor Licence — Demolition", note: "Required for all demolition trades" },
     { name: "Asbestos Removal Licence — Class A (friable)", note: "Required for friable asbestos removal" },
     { name: "Asbestos Removal Licence — Class B (non-friable)", note: "Required for non-friable asbestos removal" },
   ],
-  scaffolder: [{ name: "SafeWork High Risk Work Licence — Scaffolding/Rigging", note: "Required for scaffolding and rigging trades" }],
-  crane: [{ name: "SafeWork High Risk Work Licence — Crane Operation", note: "Required for crane operators" }],
+  electrician: [{ name: "Contractor Licence — Electrical", note: "Grade A, Grade B or Provisional — issued by state authority" }],
+  elevatorinstaller: [{ name: "Contractor Licence — Mechanical Services (Lifts)", note: "Required for all lift installation trades" }],
+  excavator: [{ name: "High Risk Work Licence — Excavator", note: "Class EW (wheeled) or ET (tracked) as applicable" }],
+  facadeengineer: [{ name: "Engineering Registration — Structural/Façade", note: "Required for all façade engineering work" }],
+  fencer: [{ name: "Contractor Licence — Fencing", note: "Required for all fencing trades" }],
+  fireprotection: [{ name: "Contractor Licence — Fire Protection", note: "Required for all fire protection trades" }],
+  floorlayer: [{ name: "Contractor Licence — Floor Covering", note: "Required for all floor laying trades" }],
+  gasfitter: [
+    { name: "Contractor Licence — Gas Fitting", note: "Type A (natural gas and LP gas) or Type B (LP gas only)" },
+  ],
+  glazier: [{ name: "Contractor Licence — Glazing", note: "Required for all glazing trades" }],
+  heavyvehicle: [{ name: "Driver Licence — Heavy Vehicle", note: "Class LR, MR, HR, HC or MC as applicable" }],
+  hvac: [
+    { name: "Contractor Licence — Refrigeration and Air Conditioning", note: "Required for all HVAC trades — issued by state licensing authority" },
+    { name: "Contractor Licence — Gas Fitting", note: "Required only if work involves gas-fired equipment" },
+    { name: "Contractor Licence — Electrical", note: "Required only if work involves electrical connections" },
+  ],
+  joiner: [{ name: "Contractor Licence — Joinery", note: "Required for all joinery trades" }],
+  landscaper: [{ name: "Contractor Licence — Landscaping", note: "Required for hard landscaping — retaining walls, paving" }],
+  locksmith: [{ name: "Security Licence — Locksmith", note: "Required for all locksmith trades — issued by state police authority" }],
+  painter: [{ name: "Contractor Licence — Painting", note: "Required for all painting and decorating trades" }],
+  plasterer: [{ name: "Contractor Licence — Plastering", note: "Required for all plastering trades" }],
+  plumber: [
+    { name: "Contractor Licence — Plumbing", note: "Unrestricted, Restricted, Drainage, Gas Fitting or Irrigation as applicable" },
+  ],
+  pilingandfoundations: [],
+  refrigeration: [{ name: "Contractor Licence — Refrigeration and Air Conditioning", note: "Required for all refrigeration and air conditioning trades" }],
+  renderer: [{ name: "Contractor Licence — Rendering", note: "Required for all rendering trades" }],
+  rigger: [{ name: "High Risk Work Licence — Rigging", note: "Class DG (dogging), RB, RI or RA as applicable" }],
+  roofer: [{ name: "Contractor Licence — Roofing", note: "Required for all roofing trades" }],
+  scaffolder: [{ name: "High Risk Work Licence — Scaffolding", note: "Class SB (basic), SI (intermediate) or SA (advanced) as applicable" }],
+  stonemason: [{ name: "Contractor Licence — Stonemasonry", note: "Required for all stonemasonry trades" }],
+  swimmingpool: [{ name: "Contractor Licence — Swimming Pool and Spa", note: "Required for all swimming pool and spa construction" }],
+  tiler: [{ name: "Contractor Licence — Tiling", note: "Required for all tiling trades" }],
+  waterproofer: [{ name: "Contractor Licence — Waterproofing", note: "Required for all waterproofing trades" }],
 };
 
 type Subcontractor = {
@@ -69,7 +104,7 @@ export default function InviteContractor() {
 
   const handleTradeChange = (newTrade: string) => {
     setTrade(newTrade);
-    if (newTrade && tradeConditionalDocs[newTrade]) {
+    if (newTrade && tradeConditionalDocs[newTrade] && tradeConditionalDocs[newTrade].length > 0) {
       const newDocs = tradeConditionalDocs[newTrade].map((d) => d.name);
       setSelectedDocs((prev) => [...prev.filter((d) => !allTradeDocs.includes(d)), ...newDocs]);
     } else {
@@ -172,22 +207,48 @@ export default function InviteContractor() {
               {lbl("Trade category", "Selecting a trade adds the relevant licence documents automatically")}
               <select value={trade} onChange={(e) => handleTradeChange(e.target.value)} style={{ ...inputStyle, background: "#fff" }}>
                 <option value="">Select trade...</option>
-                <option value="plumber">Plumbing</option>
-                <option value="electrician">Electrical</option>
+                <option value="boilermaker">Boilermaker</option>
+                <option value="bricklayer">Bricklayer</option>
+                <option value="cabinetmaker">Cabinetmaker</option>
+                <option value="carpenter">Carpenter</option>
+                <option value="carpetlayer">Carpet Layer</option>
+                <option value="ceilingfixer">Ceiling Fixer</option>
                 <option value="concreting">Concreting</option>
-                <option value="framing">Framing</option>
-                <option value="scaffolder">Scaffolding / Rigging</option>
+                <option value="crane">Crane Operator</option>
+                <option value="damproofer">Damp Proofer</option>
                 <option value="demolition">Demolition</option>
-                <option value="crane">Crane Operation</option>
-                <option value="earthworks">Earthworks</option>
-                <option value="painting">Painting</option>
-                <option value="tiling">Tiling</option>
-                <option value="carpentry">Carpentry</option>
-                <option value="hvac">HVAC</option>
-                <option value="gasfitter">Gas Fitting</option>
-                <option value="structural">Structural Steel</option>
+                <option value="electrician">Electrician</option>
+                <option value="elevatorinstaller">Elevator Installer</option>
+                <option value="excavator">Excavator Operator</option>
+                <option value="facadeengineer">Façade Engineer</option>
+                <option value="fencer">Fencer</option>
+                <option value="fireprotection">Fire Protection</option>
+                <option value="floorlayer">Floor Layer</option>
+                <option value="formworker">Formworker</option>
+                <option value="gasfitter">Gas Fitter</option>
+                <option value="glazier">Glazier</option>
                 <option value="heavyvehicle">Heavy Vehicle</option>
-                <option value="labourer">Labourer</option>
+                <option value="hvac">HVAC</option>
+                <option value="insulation">Insulation</option>
+                <option value="joiner">Joiner</option>
+                <option value="landscaper">Landscaper</option>
+                <option value="locksmith">Locksmith</option>
+                <option value="painter">Painter and Decorator</option>
+                <option value="plasterer">Plasterer</option>
+                <option value="plumber">Plumber</option>
+                <option value="pilingandfoundations">Piling and Foundations</option>
+                <option value="refrigeration">Refrigeration and Air Conditioning Mechanic</option>
+                <option value="renderer">Renderer</option>
+                <option value="rigger">Rigger</option>
+                <option value="roofer">Roofer</option>
+                <option value="scaffolder">Scaffolder</option>
+                <option value="signwriter">Signwriter</option>
+                <option value="stonemason">Stonemason</option>
+                <option value="structural">Structural Steel</option>
+                <option value="swimmingpool">Swimming Pool Builder</option>
+                <option value="tiler">Tiler</option>
+                <option value="waterproofer">Waterproofer</option>
+                <option value="welder">Welder</option>
                 <option value="other">Other</option>
               </select>
             </div>

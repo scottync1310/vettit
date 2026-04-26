@@ -4,34 +4,81 @@ import { getCoveredLicences, isLicenceCovered } from "../../lib/licences";
 
 const licenceOptions: Record<string, string[]> = {
   plumber: ["Plumbing Licence — Unrestricted", "Plumbing Licence — Restricted", "Drainage Licence", "Gas Fitting Licence", "Irrigation Licence"],
-  electrician: ["Electrical Contractor Licence", "Electrical Worker Licence — Grade A (Unrestricted)", "Electrical Worker Licence — Grade B (Restricted)", "Electrical Worker Licence — Provisional", "Air Conditioning & Refrigeration Licence", "Aerial & Data Licence"],
+  electrician: ["Electrical Contractor Licence", "Electrical Worker Licence — Grade A (Unrestricted)", "Electrical Worker Licence — Grade B (Restricted)", "Electrical Worker Licence — Provisional"],
   scaffolder: ["Dogging DG", "Basic Rigging RB", "Intermediate Rigging RI", "Advanced Rigging RA", "Basic Scaffolding SB", "Intermediate Scaffolding SI", "Advanced Scaffolding SA"],
   crane: ["Slewing Mobile Crane C2 (up to 20t)", "Slewing Mobile Crane C6 (up to 60t)", "Slewing Mobile Crane C1 (up to 100t)", "Slewing Mobile Crane C0 (open/over 100t)", "Non-Slewing Mobile Crane CN", "Tower Crane CT", "Self-Erecting Tower Crane CS", "Vehicle Loading Crane CV", "Bridge and Gantry Crane CB"],
   forklift: ["Forklift Truck LF", "Order-Picking Forklift LO", "Reach Stacker RS", "Telehandler TV"],
   ewp: ["Boom-type EWP WP (11m+)", "Materials Hoist HM", "Personnel and Materials Hoist HP", "Concrete Placing Boom PB"],
   demolition: ["Demolition Licence", "Asbestos Removal Class A (friable)", "Asbestos Removal Class B (non-friable)"],
   heavyvehicle: ["Light Rigid LR", "Medium Rigid MR", "Heavy Rigid HR", "Heavy Combination HC", "Multi-Combination MC"],
-  carpentry: ["Carpentry & Joinery Licence", "Building & Construction Licence"],
-  hvac: ["Air Conditioning & Refrigeration Licence", "Gas Fitting Licence", "Electrical Worker Licence (Restricted — A/C)"],
+  hvac: ["Refrigeration and Air Conditioning Licence", "Gas Fitting Licence", "Electrical Worker Licence (Restricted — A/C)"],
   gasfitter: ["Gas Fitting Licence — Type A", "Gas Fitting Licence — Type B", "Gas Fitting Licence — LP Gas"],
-  painting: ["Painting & Decorating Licence", "Lead Paint Removal Certification"],
-  tiling: ["Wall & Floor Tiling Licence"],
-  concretor: ["Concreting Licence", "Concrete Placing Boom PB"],
+  painting: ["Contractor Licence — Painting", "Lead Paint Removal Certification"],
+  tiling: ["Contractor Licence — Tiling"],
+  concreting: ["Contractor Licence — Concreting"],
+  bricklayer: ["Contractor Licence — Bricklaying"],
+  cabinetmaker: ["Contractor Licence — Joinery and Cabinetmaking"],
+  carpenter: ["Contractor Licence — Carpentry"],
+  ceilingfixer: ["Contractor Licence — Plastering"],
+  damproofer: ["Contractor Licence — Waterproofing"],
+  elevatorinstaller: ["Contractor Licence — Mechanical Services (Lifts)"],
+  excavator: ["High Risk Work Licence — Excavator EW (wheeled)", "High Risk Work Licence — Excavator ET (tracked)"],
+  facadeengineer: ["Engineering Registration — Structural/Façade"],
+  fencer: ["Contractor Licence — Fencing"],
+  fireprotection: ["Contractor Licence — Fire Protection"],
+  floorlayer: ["Contractor Licence — Floor Covering"],
+  glazier: ["Contractor Licence — Glazing"],
+  joiner: ["Contractor Licence — Joinery"],
+  landscaper: ["Contractor Licence — Landscaping"],
+  locksmith: ["Security Licence — Locksmith"],
+  plasterer: ["Contractor Licence — Plastering"],
+  refrigeration: ["Contractor Licence — Refrigeration and Air Conditioning"],
+  renderer: ["Contractor Licence — Rendering"],
+  rigger: ["High Risk Work Licence — Dogging DG", "High Risk Work Licence — Basic Rigging RB", "High Risk Work Licence — Intermediate Rigging RI", "High Risk Work Licence — Advanced Rigging RA"],
+  roofer: ["Contractor Licence — Roofing"],
+  stonemason: ["Contractor Licence — Stonemasonry"],
+  swimmingpool: ["Contractor Licence — Swimming Pool and Spa"],
+  waterproofer: ["Contractor Licence — Waterproofing"],
 };
 
-// In production this comes from the magic link payload set by the builder at invite time
-// For demo purposes we hardcode electrician as the trade — this simulates what the builder selected
 const BUILDER_SELECTED_TRADE = "electrician";
 const BUILDER_SELECTED_ENTITY = "company";
 
 const tradeConditionalDocs: Record<string, string[]> = {
-  electrician: ["Electrical Contractor Licence"],
-  plumber: ["Plumbing Contractor Licence"],
-  gasfitter: ["Gas Fitting Contractor Licence"],
-  hvac: ["Gas Fitting Contractor Licence"],
-  demolition: ["Asbestos Removal Licence — Class A (friable)", "Asbestos Removal Licence — Class B (non-friable)"],
-  scaffolder: ["SafeWork High Risk Work Licence — Scaffolding/Rigging"],
-  crane: ["SafeWork High Risk Work Licence — Crane Operation"],
+  bricklayer: ["Contractor Licence — Bricklaying"],
+  cabinetmaker: ["Contractor Licence — Joinery and Cabinetmaking"],
+  carpenter: ["Contractor Licence — Carpentry"],
+  ceilingfixer: ["Contractor Licence — Plastering"],
+  concreting: ["Contractor Licence — Concreting"],
+  crane: ["High Risk Work Licence — Crane Operation"],
+  damproofer: ["Contractor Licence — Waterproofing"],
+  demolition: ["Contractor Licence — Demolition", "Asbestos Removal Licence — Class A (friable)", "Asbestos Removal Licence — Class B (non-friable)"],
+  electrician: ["Contractor Licence — Electrical"],
+  elevatorinstaller: ["Contractor Licence — Mechanical Services (Lifts)"],
+  excavator: ["High Risk Work Licence — Excavator"],
+  facadeengineer: ["Engineering Registration — Structural/Façade"],
+  fencer: ["Contractor Licence — Fencing"],
+  fireprotection: ["Contractor Licence — Fire Protection"],
+  floorlayer: ["Contractor Licence — Floor Covering"],
+  gasfitter: ["Contractor Licence — Gas Fitting"],
+  glazier: ["Contractor Licence — Glazing"],
+  heavyvehicle: ["Driver Licence — Heavy Vehicle"],
+  hvac: ["Contractor Licence — Refrigeration and Air Conditioning", "Contractor Licence — Gas Fitting", "Contractor Licence — Electrical"],
+  joiner: ["Contractor Licence — Joinery"],
+  landscaper: ["Contractor Licence — Landscaping"],
+  locksmith: ["Security Licence — Locksmith"],
+  painting: ["Contractor Licence — Painting"],
+  plasterer: ["Contractor Licence — Plastering"],
+  plumber: ["Contractor Licence — Plumbing"],
+  refrigeration: ["Contractor Licence — Refrigeration and Air Conditioning"],
+  renderer: ["Contractor Licence — Rendering"],
+  rigger: ["High Risk Work Licence — Rigging"],
+  roofer: ["Contractor Licence — Roofing"],
+  scaffolder: ["High Risk Work Licence — Scaffolding"],
+  stonemason: ["Contractor Licence — Stonemasonry"],
+  swimmingpool: ["Contractor Licence — Swimming Pool and Spa"],
+  tiling: ["Contractor Licence — Tiling"],
+  waterproofer: ["Contractor Licence — Waterproofing"],
 };
 
 const buildDocs = (trade: string, entityType: string) => {
@@ -278,21 +325,50 @@ export default function UploadPortal() {
     <select value={value} onChange={(e) => onChange(e.target.value)} style={inputStyle}>
       <option value="">Select role...</option>
       <option value="supervisor">Supervisor / Manager</option>
-      <option value="labourer">Labourer</option>
-      <option value="plumber">Plumber</option>
-      <option value="electrician">Electrician</option>
-      <option value="carpentry">Carpenter / Joiner</option>
-      <option value="painting">Painter</option>
-      <option value="tiling">Tiler</option>
-      <option value="concretor">Concretor</option>
-      <option value="hvac">HVAC Technician</option>
-      <option value="gasfitter">Gas Fitter</option>
-      <option value="scaffolder">Scaffolder / Rigger</option>
+      <option value="boilermaker">Boilermaker</option>
+      <option value="bricklayer">Bricklayer</option>
+      <option value="cabinetmaker">Cabinetmaker</option>
+      <option value="carpenter">Carpenter</option>
+      <option value="carpetlayer">Carpet Layer</option>
+      <option value="ceilingfixer">Ceiling Fixer</option>
+      <option value="concreting">Concreter</option>
       <option value="crane">Crane Operator</option>
-      <option value="forklift">Forklift / Plant Operator</option>
-      <option value="ewp">EWP / Hoist Operator</option>
+      <option value="damproofer">Damp Proofer</option>
       <option value="demolition">Demolition / Asbestos</option>
+      <option value="electrician">Electrician</option>
+      <option value="elevatorinstaller">Elevator Installer</option>
+      <option value="excavator">Excavator Operator</option>
+      <option value="ewp">EWP / Hoist Operator</option>
+      <option value="facadeengineer">Façade Engineer</option>
+      <option value="fencer">Fencer</option>
+      <option value="fireprotection">Fire Protection</option>
+      <option value="floorlayer">Floor Layer</option>
+      <option value="forklift">Forklift / Plant Operator</option>
+      <option value="formworker">Formworker</option>
+      <option value="gasfitter">Gas Fitter</option>
+      <option value="glazier">Glazier</option>
       <option value="heavyvehicle">Heavy Vehicle Driver</option>
+      <option value="hvac">HVAC Technician</option>
+      <option value="insulation">Insulation Installer</option>
+      <option value="joiner">Joiner</option>
+      <option value="labourer">Labourer</option>
+      <option value="landscaper">Landscaper</option>
+      <option value="locksmith">Locksmith</option>
+      <option value="painting">Painter and Decorator</option>
+      <option value="plasterer">Plasterer</option>
+      <option value="plumber">Plumber</option>
+      <option value="refrigeration">Refrigeration Mechanic</option>
+      <option value="renderer">Renderer</option>
+      <option value="rigger">Rigger</option>
+      <option value="roofer">Roofer</option>
+      <option value="scaffolder">Scaffolder</option>
+      <option value="signwriter">Signwriter</option>
+      <option value="stonemason">Stonemason</option>
+      <option value="structural">Structural Steel</option>
+      <option value="swimmingpool">Swimming Pool Builder</option>
+      <option value="tiling">Tiler</option>
+      <option value="waterproofer">Waterproofer</option>
+      <option value="welder">Welder</option>
     </select>
   );
 

@@ -4,29 +4,78 @@ import { isLicenceCovered } from "../../../lib/licences";
 
 const licenceOptions: Record<string, string[]> = {
   plumber: ["Plumbing Licence — Unrestricted", "Plumbing Licence — Restricted", "Drainage Licence", "Gas Fitting Licence", "Irrigation Licence"],
-  electrician: ["Electrical Contractor Licence", "Electrical Worker Licence — Grade A (Unrestricted)", "Electrical Worker Licence — Grade B (Restricted)", "Electrical Worker Licence — Provisional", "Air Conditioning & Refrigeration Licence", "Aerial & Data Licence"],
+  electrician: ["Electrical Contractor Licence", "Electrical Worker Licence — Grade A (Unrestricted)", "Electrical Worker Licence — Grade B (Restricted)", "Electrical Worker Licence — Provisional"],
   scaffolder: ["Dogging DG", "Basic Rigging RB", "Intermediate Rigging RI", "Advanced Rigging RA", "Basic Scaffolding SB", "Intermediate Scaffolding SI", "Advanced Scaffolding SA"],
   crane: ["Slewing Mobile Crane C2 (up to 20t)", "Slewing Mobile Crane C6 (up to 60t)", "Slewing Mobile Crane C1 (up to 100t)", "Slewing Mobile Crane C0 (open/over 100t)", "Non-Slewing Mobile Crane CN", "Tower Crane CT", "Self-Erecting Tower Crane CS", "Vehicle Loading Crane CV", "Bridge and Gantry Crane CB"],
   forklift: ["Forklift Truck LF", "Order-Picking Forklift LO", "Reach Stacker RS", "Telehandler TV"],
   ewp: ["Boom-type EWP WP (11m+)", "Materials Hoist HM", "Personnel and Materials Hoist HP", "Concrete Placing Boom PB"],
   demolition: ["Demolition Licence", "Asbestos Removal Class A (friable)", "Asbestos Removal Class B (non-friable)"],
   heavyvehicle: ["Light Rigid LR", "Medium Rigid MR", "Heavy Rigid HR", "Heavy Combination HC", "Multi-Combination MC"],
-  carpentry: ["Carpentry & Joinery Licence", "Building & Construction Licence"],
-  hvac: ["Air Conditioning & Refrigeration Licence", "Gas Fitting Licence", "Electrical Worker Licence (Restricted — A/C)"],
+  hvac: ["Refrigeration and Air Conditioning Licence", "Gas Fitting Licence", "Electrical Worker Licence (Restricted — A/C)"],
   gasfitter: ["Gas Fitting Licence — Type A", "Gas Fitting Licence — Type B", "Gas Fitting Licence — LP Gas"],
-  painting: ["Painting & Decorating Licence", "Lead Paint Removal Certification"],
-  tiling: ["Wall & Floor Tiling Licence"],
-  concretor: ["Concreting Licence", "Concrete Placing Boom PB"],
+  painting: ["Contractor Licence — Painting", "Lead Paint Removal Certification"],
+  tiling: ["Contractor Licence — Tiling"],
+  concreting: ["Contractor Licence — Concreting"],
+  bricklayer: ["Contractor Licence — Bricklaying"],
+  cabinetmaker: ["Contractor Licence — Joinery and Cabinetmaking"],
+  carpenter: ["Contractor Licence — Carpentry"],
+  ceilingfixer: ["Contractor Licence — Plastering"],
+  damproofer: ["Contractor Licence — Waterproofing"],
+  elevatorinstaller: ["Contractor Licence — Mechanical Services (Lifts)"],
+  excavator: ["High Risk Work Licence — Excavator EW (wheeled)", "High Risk Work Licence — Excavator ET (tracked)"],
+  facadeengineer: ["Engineering Registration — Structural/Façade"],
+  fencer: ["Contractor Licence — Fencing"],
+  fireprotection: ["Contractor Licence — Fire Protection"],
+  floorlayer: ["Contractor Licence — Floor Covering"],
+  glazier: ["Contractor Licence — Glazing"],
+  joiner: ["Contractor Licence — Joinery"],
+  landscaper: ["Contractor Licence — Landscaping"],
+  locksmith: ["Security Licence — Locksmith"],
+  plasterer: ["Contractor Licence — Plastering"],
+  refrigeration: ["Contractor Licence — Refrigeration and Air Conditioning"],
+  renderer: ["Contractor Licence — Rendering"],
+  rigger: ["High Risk Work Licence — Dogging DG", "High Risk Work Licence — Basic Rigging RB", "High Risk Work Licence — Intermediate Rigging RI", "High Risk Work Licence — Advanced Rigging RA"],
+  roofer: ["Contractor Licence — Roofing"],
+  stonemason: ["Contractor Licence — Stonemasonry"],
+  swimmingpool: ["Contractor Licence — Swimming Pool and Spa"],
+  waterproofer: ["Contractor Licence — Waterproofing"],
 };
 
 const tradeConditionalDocs: Record<string, string[]> = {
-  electrician: ["Electrical Contractor Licence"],
-  plumber: ["Plumbing Contractor Licence"],
-  gasfitter: ["Gas Fitting Contractor Licence"],
-  hvac: ["Gas Fitting Contractor Licence"],
-  demolition: ["Asbestos Removal Licence — Class A (friable)", "Asbestos Removal Licence — Class B (non-friable)"],
-  scaffolder: ["SafeWork High Risk Work Licence — Scaffolding/Rigging"],
-  crane: ["SafeWork High Risk Work Licence — Crane Operation"],
+  bricklayer: ["Contractor Licence — Bricklaying"],
+  cabinetmaker: ["Contractor Licence — Joinery and Cabinetmaking"],
+  carpenter: ["Contractor Licence — Carpentry"],
+  ceilingfixer: ["Contractor Licence — Plastering"],
+  concreting: ["Contractor Licence — Concreting"],
+  crane: ["High Risk Work Licence — Crane Operation"],
+  damproofer: ["Contractor Licence — Waterproofing"],
+  demolition: ["Contractor Licence — Demolition", "Asbestos Removal Licence — Class A (friable)", "Asbestos Removal Licence — Class B (non-friable)"],
+  electrician: ["Contractor Licence — Electrical"],
+  elevatorinstaller: ["Contractor Licence — Mechanical Services (Lifts)"],
+  excavator: ["High Risk Work Licence — Excavator"],
+  facadeengineer: ["Engineering Registration — Structural/Façade"],
+  fencer: ["Contractor Licence — Fencing"],
+  fireprotection: ["Contractor Licence — Fire Protection"],
+  floorlayer: ["Contractor Licence — Floor Covering"],
+  gasfitter: ["Contractor Licence — Gas Fitting"],
+  glazier: ["Contractor Licence — Glazing"],
+  heavyvehicle: ["Driver Licence — Heavy Vehicle"],
+  hvac: ["Contractor Licence — Refrigeration and Air Conditioning", "Contractor Licence — Gas Fitting", "Contractor Licence — Electrical"],
+  joiner: ["Contractor Licence — Joinery"],
+  landscaper: ["Contractor Licence — Landscaping"],
+  locksmith: ["Security Licence — Locksmith"],
+  painting: ["Contractor Licence — Painting"],
+  plasterer: ["Contractor Licence — Plastering"],
+  plumber: ["Contractor Licence — Plumbing"],
+  refrigeration: ["Contractor Licence — Refrigeration and Air Conditioning"],
+  renderer: ["Contractor Licence — Rendering"],
+  rigger: ["High Risk Work Licence — Rigging"],
+  roofer: ["Contractor Licence — Roofing"],
+  scaffolder: ["High Risk Work Licence — Scaffolding"],
+  stonemason: ["Contractor Licence — Stonemasonry"],
+  swimmingpool: ["Contractor Licence — Swimming Pool and Spa"],
+  tiling: ["Contractor Licence — Tiling"],
+  waterproofer: ["Contractor Licence — Waterproofing"],
 };
 
 type ParseState = "idle" | "reading" | "verified" | "error" | "expired";
@@ -222,37 +271,23 @@ export default function AddContractorManually() {
         <div style={{ border: "1px solid #ebebeb", borderRadius: "2px", padding: "14px 16px", marginBottom: "24px", textAlign: "left" }}>
           <div style={{ fontSize: "10px", fontWeight: 500, color: "#666", textTransform: "uppercase", letterSpacing: ".07em", marginBottom: "10px" }}>Summary</div>
           <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-            <div style={{ display: "grid", gridTemplateColumns: "160px 1fr", fontSize: "12px" }}>
-              <div style={{ color: "#666" }}>Company</div>
-              <div style={{ color: "#111", fontWeight: 500 }}>{company.name}</div>
-            </div>
-            <div style={{ display: "grid", gridTemplateColumns: "160px 1fr", fontSize: "12px" }}>
-              <div style={{ color: "#666" }}>Entity type</div>
-              <div style={{ color: "#111" }}>{entityType === "sole_trader" ? "Sole trader / Working director" : "Company / Partnership"}</div>
-            </div>
-            <div style={{ display: "grid", gridTemplateColumns: "160px 1fr", fontSize: "12px" }}>
-              <div style={{ color: "#666" }}>Trade</div>
-              <div style={{ color: "#111" }}>{company.trade || "Not specified"}</div>
-            </div>
-            <div style={{ display: "grid", gridTemplateColumns: "160px 1fr", fontSize: "12px" }}>
-              <div style={{ color: "#666" }}>Contact</div>
-              <div style={{ color: "#111" }}>{company.contactFirst} {company.contactLast}</div>
-            </div>
-            <div style={{ display: "grid", gridTemplateColumns: "160px 1fr", fontSize: "12px" }}>
-              <div style={{ color: "#666" }}>Active on</div>
-              <div style={{ color: "#111" }}>{selectedSites.join(", ")}</div>
-            </div>
-            <div style={{ display: "grid", gridTemplateColumns: "160px 1fr", fontSize: "12px" }}>
-              <div style={{ color: "#666" }}>Documents</div>
-              <div style={{ color: "#111" }}>{companyDocs.filter((d) => d.parseState === "verified").length} of {companyDocs.length} verified</div>
-            </div>
+            {[
+              ["Company", company.name],
+              ["Entity type", entityType === "sole_trader" ? "Sole trader / Working director" : "Company / Partnership"],
+              ["Trade", company.trade || "Not specified"],
+              ["Contact", `${company.contactFirst} ${company.contactLast}`],
+              ["Active on", selectedSites.join(", ")],
+              ["Documents", `${companyDocs.filter((d) => d.parseState === "verified").length} of ${companyDocs.length} verified`],
+              ["Workers", `${workers.length} added`],
+            ].map(([label, value]) => (
+              <div key={label} style={{ display: "grid", gridTemplateColumns: "160px 1fr", fontSize: "12px" }}>
+                <div style={{ color: "#666" }}>{label}</div>
+                <div style={{ color: "#111", fontWeight: label === "Company" ? 500 : 400 }}>{value}</div>
+              </div>
+            ))}
             <div style={{ display: "grid", gridTemplateColumns: "160px 1fr", fontSize: "12px" }}>
               <div style={{ color: "#666" }}>Contractor Statement</div>
               <div style={{ color: "#3a7d44", fontWeight: 500 }}>✓ Declared and date stamped</div>
-            </div>
-            <div style={{ display: "grid", gridTemplateColumns: "160px 1fr", fontSize: "12px" }}>
-              <div style={{ color: "#666" }}>Workers</div>
-              <div style={{ color: "#111" }}>{workers.length} added</div>
             </div>
           </div>
         </div>
@@ -296,7 +331,7 @@ export default function AddContractorManually() {
           <div>
             <div style={{ border: "1px solid #d0d0d0", borderRadius: "2px", overflow: "hidden", marginBottom: "16px" }}>
               <div style={{ padding: "10px 14px", background: "#fafafa", borderBottom: "1px solid #d0d0d0" }}>
-                <div style={{ fontSize: "10px", fontWeight: 500, color: "#666", textTransform: "uppercase", letterSpacing: ".08em" }}>Business structure</div>
+                <div style={{ fontSize: "10px", fontWeight: 700, color: "#111", textTransform: "uppercase", letterSpacing: ".08em" }}>Business structure</div>
               </div>
               <div style={{ padding: "12px 14px", display: "flex", gap: "16px" }}>
                 <label style={{ display: "flex", alignItems: "center", gap: "6px", cursor: "pointer", fontSize: "13px", color: "#111" }}>
@@ -317,7 +352,7 @@ export default function AddContractorManually() {
 
             <div style={{ border: "1px solid #d0d0d0", borderRadius: "2px", overflow: "hidden", marginBottom: "16px" }}>
               <div style={{ padding: "10px 14px", background: "#fafafa", borderBottom: "1px solid #d0d0d0" }}>
-                <div style={{ fontSize: "10px", fontWeight: 500, color: "#666", textTransform: "uppercase", letterSpacing: ".08em" }}>Company details</div>
+                <div style={{ fontSize: "10px", fontWeight: 700, color: "#111", textTransform: "uppercase", letterSpacing: ".08em" }}>Company details</div>
               </div>
               <div style={{ padding: "16px", display: "flex", flexDirection: "column", gap: "14px" }}>
                 <div>
@@ -332,20 +367,48 @@ export default function AddContractorManually() {
                   {lbl("Trade", "Selecting a trade adds the relevant licence documents on the next step automatically")}
                   <select value={company.trade} onChange={(e) => handleTradeChange(e.target.value)} style={{ ...inputStyle, background: "#fff" }}>
                     <option value="">Select trade...</option>
-                    <option value="plumber">Plumbing</option>
-                    <option value="electrician">Electrical</option>
-                    <option value="carpentry">Carpentry</option>
-                    <option value="painting">Painting</option>
-                    <option value="tiling">Tiling</option>
-                    <option value="concretor">Concreting</option>
+                    <option value="boilermaker">Boilermaker</option>
+                    <option value="bricklayer">Bricklayer</option>
+                    <option value="cabinetmaker">Cabinetmaker</option>
+                    <option value="carpenter">Carpenter</option>
+                    <option value="carpetlayer">Carpet Layer</option>
+                    <option value="ceilingfixer">Ceiling Fixer</option>
+                    <option value="concreting">Concreting</option>
+                    <option value="crane">Crane Operator</option>
+                    <option value="damproofer">Damp Proofer</option>
                     <option value="demolition">Demolition</option>
-                    <option value="scaffolder">Scaffolding / Rigging</option>
-                    <option value="hvac">HVAC</option>
-                    <option value="gasfitter">Gas Fitting</option>
-                    <option value="labourer">Labourer</option>
-                    <option value="crane">Crane Operation</option>
-                    <option value="forklift">Forklift / Plant Operation</option>
+                    <option value="electrician">Electrician</option>
+                    <option value="elevatorinstaller">Elevator Installer</option>
+                    <option value="excavator">Excavator Operator</option>
+                    <option value="facadeengineer">Façade Engineer</option>
+                    <option value="fencer">Fencer</option>
+                    <option value="fireprotection">Fire Protection</option>
+                    <option value="floorlayer">Floor Layer</option>
+                    <option value="formworker">Formworker</option>
+                    <option value="gasfitter">Gas Fitter</option>
+                    <option value="glazier">Glazier</option>
                     <option value="heavyvehicle">Heavy Vehicle</option>
+                    <option value="hvac">HVAC</option>
+                    <option value="insulation">Insulation</option>
+                    <option value="joiner">Joiner</option>
+                    <option value="landscaper">Landscaper</option>
+                    <option value="locksmith">Locksmith</option>
+                    <option value="painting">Painter and Decorator</option>
+                    <option value="plasterer">Plasterer</option>
+                    <option value="plumber">Plumber</option>
+                    <option value="pilingandfoundations">Piling and Foundations</option>
+                    <option value="refrigeration">Refrigeration and Air Conditioning Mechanic</option>
+                    <option value="renderer">Renderer</option>
+                    <option value="rigger">Rigger</option>
+                    <option value="roofer">Roofer</option>
+                    <option value="scaffolder">Scaffolder</option>
+                    <option value="signwriter">Signwriter</option>
+                    <option value="stonemason">Stonemason</option>
+                    <option value="structural">Structural Steel</option>
+                    <option value="swimmingpool">Swimming Pool Builder</option>
+                    <option value="tiling">Tiler</option>
+                    <option value="waterproofer">Waterproofer</option>
+                    <option value="welder">Welder</option>
                     <option value="other">Other</option>
                   </select>
                 </div>
@@ -354,7 +417,7 @@ export default function AddContractorManually() {
 
             <div style={{ border: "1px solid #d0d0d0", borderRadius: "2px", overflow: "hidden", marginBottom: "16px" }}>
               <div style={{ padding: "10px 14px", background: "#fafafa", borderBottom: "1px solid #d0d0d0" }}>
-                <div style={{ fontSize: "10px", fontWeight: 500, color: "#666", textTransform: "uppercase", letterSpacing: ".08em" }}>Contact person</div>
+                <div style={{ fontSize: "10px", fontWeight: 700, color: "#111", textTransform: "uppercase", letterSpacing: ".08em" }}>Contact person</div>
                 <div style={{ fontSize: "11px", color: "#666", marginTop: "2px" }}>Added automatically as first worker</div>
               </div>
               <div style={{ padding: "16px", display: "flex", flexDirection: "column", gap: "14px" }}>
@@ -381,7 +444,7 @@ export default function AddContractorManually() {
 
             <div style={{ border: "1px solid #d0d0d0", borderRadius: "2px", overflow: "hidden", marginBottom: "24px" }}>
               <div style={{ padding: "10px 14px", background: "#fafafa", borderBottom: "1px solid #d0d0d0" }}>
-                <div style={{ fontSize: "10px", fontWeight: 500, color: "#666", textTransform: "uppercase", letterSpacing: ".08em" }}>Active on which sites</div>
+                <div style={{ fontSize: "10px", fontWeight: 700, color: "#111", textTransform: "uppercase", letterSpacing: ".08em" }}>Active on which sites</div>
               </div>
               <div>
                 {sites.map((s, i) => (
@@ -404,7 +467,7 @@ export default function AddContractorManually() {
         {step === 1 && (
           <div>
             <div style={{ marginBottom: "14px" }}>
-              <div style={{ fontSize: "10px", fontWeight: 500, color: "#666", textTransform: "uppercase", letterSpacing: ".08em" }}>Company documents</div>
+              <div style={{ fontSize: "10px", fontWeight: 700, color: "#111", textTransform: "uppercase", letterSpacing: ".08em" }}>Company documents</div>
               <div style={{ fontSize: "11px", color: "#666", marginTop: "3px" }}>
                 {company.trade ? `Documents required for ${company.trade} — upload each one` : "Upload each document — Vettit reads and verifies automatically"}
               </div>
@@ -416,12 +479,12 @@ export default function AddContractorManually() {
 
             <div style={{ border: contractorStatement ? "1px solid #a5d6a7" : "1px solid #d0d0d0", borderRadius: "2px", overflow: "hidden", marginTop: "16px", marginBottom: "8px", background: contractorStatement ? "#f9fdf9" : "#fff" }}>
               <div style={{ padding: "10px 14px", background: "#fafafa", borderBottom: "1px solid #d0d0d0" }}>
-                <div style={{ fontSize: "12px", fontWeight: 600, color: "#111" }}>Contractor Statement — Statutory Declaration</div>
+                <div style={{ fontSize: "12px", fontWeight: 700, color: "#111" }}>Contractor Statement — Statutory Declaration</div>
                 <div style={{ fontSize: "11px", color: "#666", marginTop: "2px" }}>Required by law before payment can be made</div>
               </div>
               <div style={{ padding: "14px" }}>
                 <div style={{ fontSize: "12px", color: "#333", lineHeight: 1.8, marginBottom: "14px", padding: "12px 14px", background: "#f9f9f9", borderRadius: "2px", border: "1px solid #ebebeb" }}>
-                  I declare that as at today's date: all workers compensation insurance premiums have been paid in full; all wages and entitlements payable to workers engaged under this contract have been paid in full; all superannuation contributions required by law have been paid; and all payroll tax obligations have been met. I understand that making a false or misleading statutory declaration is an offence under Australian law.
+                  I declare that as at today's date: all workers compensation insurance premiums have been paid in full; all wages and entitlements payable to workers engaged under this contract have been paid in full; all superannuation contributions required by law have been paid; and all payroll tax obligations have been met.
                 </div>
                 <label style={{ display: "flex", alignItems: "flex-start", gap: "10px", cursor: requiredDocsVerified ? "pointer" : "not-allowed", opacity: requiredDocsVerified ? 1 : 0.5 }}>
                   <input type="checkbox" checked={contractorStatement} disabled={!requiredDocsVerified} onChange={(e) => setContractorStatement(e.target.checked)} style={{ accentColor: "#3a7d44", width: "16px", height: "16px", marginTop: "2px", flexShrink: 0 }} />
@@ -451,7 +514,7 @@ export default function AddContractorManually() {
         {step === 2 && (
           <div>
             <div style={{ marginBottom: "14px" }}>
-              <div style={{ fontSize: "10px", fontWeight: 500, color: "#666", textTransform: "uppercase", letterSpacing: ".08em" }}>Workers on site</div>
+              <div style={{ fontSize: "10px", fontWeight: 700, color: "#111", textTransform: "uppercase", letterSpacing: ".08em" }}>Workers on site</div>
               <div style={{ fontSize: "11px", color: "#666", marginTop: "3px" }}>Add each worker and upload their White Card and licences</div>
             </div>
 
@@ -491,15 +554,48 @@ export default function AddContractorManually() {
                     <select value={newWorker.role} onChange={(e) => setNewWorker({ ...newWorker, role: e.target.value, licences: [] })} style={{ ...inputStyle, background: "#fff" }}>
                       <option value="">Select role...</option>
                       <option value="supervisor">Supervisor / Manager</option>
-                      <option value="labourer">Labourer</option>
-                      <option value="plumber">Plumber</option>
-                      <option value="electrician">Electrician</option>
-                      <option value="carpentry">Carpenter</option>
-                      <option value="scaffolder">Scaffolder / Rigger</option>
+                      <option value="boilermaker">Boilermaker</option>
+                      <option value="bricklayer">Bricklayer</option>
+                      <option value="cabinetmaker">Cabinetmaker</option>
+                      <option value="carpenter">Carpenter</option>
+                      <option value="carpetlayer">Carpet Layer</option>
+                      <option value="ceilingfixer">Ceiling Fixer</option>
+                      <option value="concreting">Concreter</option>
                       <option value="crane">Crane Operator</option>
-                      <option value="forklift">Forklift Operator</option>
+                      <option value="damproofer">Damp Proofer</option>
                       <option value="demolition">Demolition / Asbestos</option>
+                      <option value="electrician">Electrician</option>
+                      <option value="elevatorinstaller">Elevator Installer</option>
+                      <option value="excavator">Excavator Operator</option>
+                      <option value="facadeengineer">Façade Engineer</option>
+                      <option value="fencer">Fencer</option>
+                      <option value="fireprotection">Fire Protection</option>
+                      <option value="floorlayer">Floor Layer</option>
+                      <option value="formworker">Formworker</option>
+                      <option value="gasfitter">Gas Fitter</option>
+                      <option value="glazier">Glazier</option>
                       <option value="heavyvehicle">Heavy Vehicle Driver</option>
+                      <option value="hvac">HVAC Technician</option>
+                      <option value="insulation">Insulation Installer</option>
+                      <option value="joiner">Joiner</option>
+                      <option value="landscaper">Landscaper</option>
+                      <option value="labourer">Labourer</option>
+                      <option value="locksmith">Locksmith</option>
+                      <option value="painting">Painter and Decorator</option>
+                      <option value="plasterer">Plasterer</option>
+                      <option value="plumber">Plumber</option>
+                      <option value="refrigeration">Refrigeration Mechanic</option>
+                      <option value="renderer">Renderer</option>
+                      <option value="rigger">Rigger</option>
+                      <option value="roofer">Roofer</option>
+                      <option value="scaffolder">Scaffolder</option>
+                      <option value="signwriter">Signwriter</option>
+                      <option value="stonemason">Stonemason</option>
+                      <option value="structural">Structural Steel</option>
+                      <option value="swimmingpool">Swimming Pool Builder</option>
+                      <option value="tiling">Tiler</option>
+                      <option value="waterproofer">Waterproofer</option>
+                      <option value="welder">Welder</option>
                     </select>
                   </div>
                   <div style={{ border: "1px solid #d0d0d0", borderRadius: "2px", overflow: "hidden" }}>
@@ -572,36 +668,28 @@ export default function AddContractorManually() {
         {step === 3 && (
           <div>
             <div style={{ marginBottom: "20px" }}>
-              <div style={{ fontSize: "10px", fontWeight: 500, color: "#666", textTransform: "uppercase", letterSpacing: ".08em", marginBottom: "12px" }}>Review before saving</div>
+              <div style={{ fontSize: "10px", fontWeight: 700, color: "#111", textTransform: "uppercase", letterSpacing: ".08em", marginBottom: "12px" }}>Review before saving</div>
 
               <div style={{ border: "1px solid #d0d0d0", borderRadius: "2px", overflow: "hidden", marginBottom: "12px" }}>
-                <div style={{ padding: "10px 14px", background: "#fafafa", borderBottom: "1px solid #d0d0d0", fontSize: "10px", fontWeight: 500, color: "#666", textTransform: "uppercase", letterSpacing: ".07em" }}>Company</div>
+                <div style={{ padding: "10px 14px", background: "#fafafa", borderBottom: "1px solid #d0d0d0", fontSize: "10px", fontWeight: 700, color: "#111", textTransform: "uppercase", letterSpacing: ".07em" }}>Company</div>
                 <div style={{ padding: "12px 14px", display: "flex", flexDirection: "column", gap: "6px" }}>
-                  <div style={{ display: "grid", gridTemplateColumns: "160px 1fr", fontSize: "12px" }}>
-                    <div style={{ color: "#666" }}>Company name</div>
-                    <div style={{ color: "#111", fontWeight: 500 }}>{company.name}</div>
-                  </div>
-                  <div style={{ display: "grid", gridTemplateColumns: "160px 1fr", fontSize: "12px" }}>
-                    <div style={{ color: "#666" }}>Entity type</div>
-                    <div style={{ color: "#111" }}>{entityType === "sole_trader" ? "Sole trader / Working director" : "Company / Partnership"}</div>
-                  </div>
-                  <div style={{ display: "grid", gridTemplateColumns: "160px 1fr", fontSize: "12px" }}>
-                    <div style={{ color: "#666" }}>Trade</div>
-                    <div style={{ color: "#111" }}>{company.trade || "Not specified"}</div>
-                  </div>
-                  <div style={{ display: "grid", gridTemplateColumns: "160px 1fr", fontSize: "12px" }}>
-                    <div style={{ color: "#666" }}>Contact</div>
-                    <div style={{ color: "#111" }}>{company.contactFirst} {company.contactLast} · {company.email} · {company.mobile}</div>
-                  </div>
-                  <div style={{ display: "grid", gridTemplateColumns: "160px 1fr", fontSize: "12px" }}>
-                    <div style={{ color: "#666" }}>Active on</div>
-                    <div style={{ color: "#111" }}>{selectedSites.join(", ")}</div>
-                  </div>
+                  {[
+                    ["Company name", company.name],
+                    ["Entity type", entityType === "sole_trader" ? "Sole trader / Working director" : "Company / Partnership"],
+                    ["Trade", company.trade || "Not specified"],
+                    ["Contact", `${company.contactFirst} ${company.contactLast} · ${company.email} · ${company.mobile}`],
+                    ["Active on", selectedSites.join(", ")],
+                  ].map(([label, value]) => (
+                    <div key={label} style={{ display: "grid", gridTemplateColumns: "160px 1fr", fontSize: "12px" }}>
+                      <div style={{ color: "#666" }}>{label}</div>
+                      <div style={{ color: "#111", fontWeight: label === "Company name" ? 500 : 400 }}>{value}</div>
+                    </div>
+                  ))}
                 </div>
               </div>
 
               <div style={{ border: "1px solid #d0d0d0", borderRadius: "2px", overflow: "hidden", marginBottom: "12px" }}>
-                <div style={{ padding: "10px 14px", background: "#fafafa", borderBottom: "1px solid #d0d0d0", fontSize: "10px", fontWeight: 500, color: "#666", textTransform: "uppercase", letterSpacing: ".07em" }}>Documents</div>
+                <div style={{ padding: "10px 14px", background: "#fafafa", borderBottom: "1px solid #d0d0d0", fontSize: "10px", fontWeight: 700, color: "#111", textTransform: "uppercase", letterSpacing: ".07em" }}>Documents</div>
                 <div style={{ padding: "12px 14px", display: "flex", flexDirection: "column", gap: "6px" }}>
                   {companyDocs.map((doc) => (
                     <div key={doc.name} style={{ display: "flex", justifyContent: "space-between", fontSize: "12px" }}>
@@ -619,7 +707,7 @@ export default function AddContractorManually() {
               </div>
 
               <div style={{ border: "1px solid #d0d0d0", borderRadius: "2px", overflow: "hidden", marginBottom: "24px" }}>
-                <div style={{ padding: "10px 14px", background: "#fafafa", borderBottom: "1px solid #d0d0d0", fontSize: "10px", fontWeight: 500, color: "#666", textTransform: "uppercase", letterSpacing: ".07em" }}>Workers</div>
+                <div style={{ padding: "10px 14px", background: "#fafafa", borderBottom: "1px solid #d0d0d0", fontSize: "10px", fontWeight: 700, color: "#111", textTransform: "uppercase", letterSpacing: ".07em" }}>Workers</div>
                 <div style={{ padding: "12px 14px" }}>
                   {workers.length === 0 ? (
                     <div style={{ fontSize: "12px", color: "#666" }}>No workers added</div>
@@ -636,9 +724,7 @@ export default function AddContractorManually() {
 
             <div style={{ display: "flex", justifyContent: "space-between" }}>
               <button onClick={() => setStep(2)} style={btnOutline}>← Back</button>
-              <button onClick={() => setDone(true)} style={{ ...btnPrimary(false), background: "#3a7d44" }}>
-                Save contractor →
-              </button>
+              <button onClick={() => setDone(true)} style={{ ...btnPrimary(false), background: "#3a7d44" }}>Save contractor →</button>
             </div>
           </div>
         )}
