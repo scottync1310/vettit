@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 type TeamMember = {
   id: number;
@@ -66,6 +66,12 @@ export default function Settings() {
     reminderCount: "3",
   });
 
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.location.hash === "#notifications") {
+      setActiveTab("Notifications");
+    }
+  }, []);
+
   const addMember = () => {
     if (!newMember.firstName || !newMember.email) return;
     setTeam((prev) => [...prev, { ...newMember, id: Date.now(), alerts: ["Weekly digest"] }]);
@@ -112,7 +118,7 @@ export default function Settings() {
     <div style={{ fontFamily: "Montserrat, sans-serif" }}>
       <div style={{ padding: "14px 32px", borderBottom: "1px solid #d0d0d0", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <div>
-          <div style={{ fontSize: "14px", fontWeight: 600, color: "#111" }}>SETTINGS</div>
+          <div style={{ fontSize: "14px", fontWeight: 700, color: "#111" }}>SETTINGS</div>
           <div style={{ fontSize: "12px", color: "#555", marginTop: "2px" }}>Manage your company profile, team and notification preferences</div>
         </div>
         {activeTab !== "Billing" && (
@@ -124,7 +130,7 @@ export default function Settings() {
 
       <div style={{ display: "flex", borderBottom: "1px solid #d0d0d0", padding: "0 32px" }}>
         {tabs.map((tab) => (
-          <div key={tab} onClick={() => setActiveTab(tab)} style={{ fontSize: "12px", color: activeTab === tab ? "#111" : "#555", padding: "12px 14px", borderBottom: activeTab === tab ? "2px solid #111" : "2px solid transparent", fontWeight: activeTab === tab ? 600 : 400, cursor: "pointer", whiteSpace: "nowrap" }}>
+          <div key={tab} onClick={() => setActiveTab(tab)} style={{ fontSize: "12px", color: activeTab === tab ? "#111" : "#555", padding: "12px 14px", borderBottom: activeTab === tab ? "2px solid #111" : "2px solid transparent", fontWeight: activeTab === tab ? 700 : 400, cursor: "pointer", whiteSpace: "nowrap" }}>
             {tab}
           </div>
         ))}
@@ -290,7 +296,7 @@ export default function Settings() {
         )}
 
         {activeTab === "Notifications" && (
-          <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+          <div id="notifications" style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
             <div style={{ border: "1px solid #d0d0d0", borderRadius: "2px", overflow: "hidden" }}>
               <SectionHead text="Weekly digest" />
               <div style={{ padding: "16px", display: "flex", flexDirection: "column", gap: "14px" }}>
@@ -357,7 +363,7 @@ export default function Settings() {
                   </select>
                 </div>
                 <div style={{ border: "1px solid #d0d0d0", borderRadius: "2px", overflow: "hidden" }}>
-                  <div style={{ padding: "8px 14px", background: "#fafafa", borderBottom: "1px solid #d0d0d0", fontSize: "11px", fontWeight: 600, color: "#111" }}>Reminder sequence</div>
+                  <div style={{ padding: "8px 14px", background: "#fafafa", borderBottom: "1px solid #d0d0d0", fontSize: "11px", fontWeight: 700, color: "#111" }}>Reminder sequence</div>
                   {currentSequence.map((step, i) => (
                     <div key={i} style={{ display: "flex", alignItems: "center", gap: "10px", padding: "9px 14px", borderBottom: i < currentSequence.length - 1 ? "1px solid #ebebeb" : "none", background: step.startsWith("→") ? "#fff8f8" : "#fff" }}>
                       <div style={{ width: "20px", height: "20px", borderRadius: "50%", background: step.startsWith("→") ? "#c0392b" : "#111", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "10px", fontWeight: 600, flexShrink: 0 }}>
@@ -391,7 +397,6 @@ export default function Settings() {
 
         {activeTab === "Billing" && (
           <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-
             <div style={{ border: "1px solid #d0d0d0", borderRadius: "2px", overflow: "hidden" }}>
               <SectionHead text="Current plan" />
               <div style={{ padding: "16px" }}>
@@ -435,10 +440,10 @@ export default function Settings() {
               <SectionHead text="Usage this month" />
               <div style={{ padding: "16px", display: "flex", flexDirection: "column", gap: "12px" }}>
                 {[
-                  { label: "Active contractors", value: "24", limit: null },
-                  { label: "Active sites", value: "3 / 5", limit: null },
-                  { label: "Invites sent this month", value: "12", limit: null },
-                  { label: "Documents processed", value: "89", limit: null },
+                  { label: "Active contractors", value: "24" },
+                  { label: "Active sites", value: "3 / 5" },
+                  { label: "Invites sent this month", value: "12" },
+                  { label: "Documents processed", value: "89" },
                 ].map((item) => (
                   <div key={item.label} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0", borderBottom: "1px solid #f5f5f5" }}>
                     <div style={{ fontSize: "13px", color: "#555" }}>{item.label}</div>
@@ -485,7 +490,6 @@ export default function Settings() {
                 Need to cancel or change plans? Contact us at <span style={{ color: "#111", fontWeight: 500 }}>support@vettit.com.au</span>.
               </div>
             </div>
-
           </div>
         )}
 
