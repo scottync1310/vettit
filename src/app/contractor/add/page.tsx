@@ -80,6 +80,13 @@ const tradeConditionalDocs: Record<string, string[]> = {
 
 type ParseState = "idle" | "reading" | "verified" | "error" | "expired";
 
+type LicenceFile = {
+  fileName: string;
+  parseState: ParseState;
+  parsedExpiry?: string;
+  errorMsg?: string;
+};
+
 type DocState = {
   name: string;
   fileName: string;
@@ -101,6 +108,7 @@ type Worker = {
   citizen: boolean;
   heights: boolean;
   licences: string[];
+  licenceFiles: Record<string, LicenceFile>;
 };
 
 const sites = ["Paddington Townhouses", "Bulimba Apartments", "Newstead Commercial"];
@@ -139,7 +147,7 @@ const buildDocs = (trade: string, entityType: string): DocState[] => {
 
 const emptyWorker: Omit<Worker, "id"> = {
   firstName: "", lastName: "", role: "", whiteCardFile: "",
-  whiteCardState: "idle", citizen: true, heights: false, licences: [],
+  whiteCardState: "idle", citizen: true, heights: false, licences: [], licenceFiles: {},
 };
 
 export default function AddContractorManually() {
@@ -200,8 +208,29 @@ export default function AddContractorManually() {
     mockParse(file.name, (state) => { setNewWorker((prev) => ({ ...prev, whiteCardState: state })); });
   };
 
+  const handleLicenceFile = (lic: string, e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setNewWorker((prev) => ({
+      ...prev,
+      licenceFiles: { ...prev.licenceFiles, [lic]: { fileName: file.name, parseState: "reading" } },
+    }));
+    mockParse(file.name, (state, _insurer, expiry, error) => {
+      setNewWorker((prev) => ({
+        ...prev,
+        licenceFiles: { ...prev.licenceFiles, [lic]: { fileName: file.name, parseState: state, parsedExpiry: expiry, errorMsg: error } },
+      }));
+    });
+  };
+
   const toggleLicence = (lic: string) => {
-    setNewWorker((prev) => ({ ...prev, licences: prev.licences.includes(lic) ? prev.licences.filter((l) => l !== lic) : [...prev.licences, lic] }));
+    setNewWorker((prev) => {
+      const has = prev.licences.includes(lic);
+      const newLicences = has ? prev.licences.filter((l) => l !== lic) : [...prev.licences, lic];
+      const newFiles = { ...prev.licenceFiles };
+      if (has) delete newFiles[lic];
+      return { ...prev, licences: newLicences, licenceFiles: newFiles };
+    });
   };
 
   const addWorker = () => {
@@ -214,12 +243,12 @@ export default function AddContractorManually() {
   const requiredDocsVerified = companyDocs.filter((d) => d.required).every((d) => d.parseState === "verified");
   const canProceed = requiredDocsVerified && contractorStatement;
 
-  const ParseStatus = ({ state, insurer, expiry, error }: { state: ParseState; insurer?: string; expiry?: string; error?: string }) => {
+  const ParseStatus = ({ state, expiry, error }: { state: ParseState; expiry?: string; error?: string }) => {
     if (state === "idle") return null;
-    if (state === "reading") return <div style={{ fontSize: "11px", color: "#888", marginTop: "6px", display: "flex", alignItems: "center", gap: "6px" }}><span style={{ display: "inline-block", width: "10px", height: "10px", border: "2px solid #d0d0d0", borderTopColor: "#111", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />Reading document...</div>;
-    if (state === "verified") return <div style={{ fontSize: "11px", color: "#3a7d44", marginTop: "6px", fontWeight: 500 }}>✓ Verified — {insurer}{expiry ? ` · expires ${expiry}` : ""}</div>;
-    if (state === "expired") return <div style={{ fontSize: "11px", color: "#c0392b", marginTop: "6px", fontWeight: 500 }}>✗ {error}</div>;
-    if (state === "error") return <div style={{ fontSize: "11px", color: "#c0392b", marginTop: "6px" }}>✗ {error}</div>;
+    if (state === "reading") return <div style={{ fontSize: "11px", color: "#888", marginTop: "4px", display: "flex", alignItems: "center", gap: "6px" }}><span style={{ display: "inline-block", width: "10px", height: "10px", border: "2px solid #d0d0d0", borderTopColor: "#111", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />Reading...</div>;
+    if (state === "verified") return <div style={{ fontSize: "11px", color: "#3a7d44", marginTop: "4px", fontWeight: 500 }}>✓ Verified{expiry ? ` · expires ${expiry}` : ""}</div>;
+    if (state === "expired") return <div style={{ fontSize: "11px", color: "#c0392b", marginTop: "4px" }}>✗ {error}</div>;
+    if (state === "error") return <div style={{ fontSize: "11px", color: "#c0392b", marginTop: "4px" }}>✗ {error}</div>;
     return null;
   };
 
@@ -235,7 +264,9 @@ export default function AddContractorManually() {
             }
           </div>
           {doc.note && <div style={{ fontSize: "11px", color: "#666", marginBottom: "2px" }}>{doc.note}</div>}
-          <ParseStatus state={doc.parseState} insurer={doc.parsedInsurer} expiry={doc.parsedExpiry} error={doc.errorMsg} />
+          {doc.parseState === "reading" && <div style={{ fontSize: "11px", color: "#888", display: "flex", alignItems: "center", gap: "6px" }}><span style={{ display: "inline-block", width: "10px", height: "10px", border: "2px solid #d0d0d0", borderTopColor: "#111", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />Reading document...</div>}
+          {doc.parseState === "verified" && <div style={{ fontSize: "11px", color: "#3a7d44", fontWeight: 500 }}>✓ Verified — {doc.parsedInsurer}{doc.parsedExpiry ? ` · expires ${doc.parsedExpiry}` : ""}</div>}
+          {(doc.parseState === "expired" || doc.parseState === "error") && <div style={{ fontSize: "11px", color: "#c0392b" }}>✗ {doc.errorMsg}</div>}
         </div>
         {doc.parseState === "verified" ? (
           <span style={{ fontSize: "11px", padding: "3px 8px", background: "#e8f5e9", color: "#1b5e20", border: "1px solid #a5d6a7", borderRadius: "2px", fontWeight: 500, flexShrink: 0, marginLeft: "12px" }}>Done</span>
@@ -499,9 +530,7 @@ export default function AddContractorManually() {
 
             <div style={{ display: "flex", justifyContent: "space-between", marginTop: "20px" }}>
               <button onClick={() => setStep(0)} style={btnOutline}>← Back</button>
-              <button onClick={() => setStep(2)} disabled={!canProceed} style={btnPrimary(!canProceed)}>
-                Next — add workers →
-              </button>
+              <button onClick={() => setStep(2)} disabled={!canProceed} style={btnPrimary(!canProceed)}>Next — add workers →</button>
             </div>
             {!canProceed && (
               <div style={{ fontSize: "11px", color: "#c0392b", textAlign: "right", marginTop: "6px" }}>
@@ -515,7 +544,7 @@ export default function AddContractorManually() {
           <div>
             <div style={{ marginBottom: "14px" }}>
               <div style={{ fontSize: "10px", fontWeight: 700, color: "#111", textTransform: "uppercase", letterSpacing: ".08em" }}>Workers on site</div>
-              <div style={{ fontSize: "11px", color: "#666", marginTop: "3px" }}>Add each worker and upload their White Card and licences</div>
+              <div style={{ fontSize: "11px", color: "#666", marginTop: "3px" }}>Add each worker — tick the licences on the card in front of you and upload each one</div>
             </div>
 
             <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginBottom: "12px" }}>
@@ -549,9 +578,10 @@ export default function AddContractorManually() {
                       <input value={newWorker.lastName} onChange={(e) => setNewWorker({ ...newWorker, lastName: e.target.value })} placeholder="Smith" style={inputStyle} />
                     </div>
                   </div>
+
                   <div>
                     {lbl("Role on site")}
-                    <select value={newWorker.role} onChange={(e) => setNewWorker({ ...newWorker, role: e.target.value, licences: [] })} style={{ ...inputStyle, background: "#fff" }}>
+                    <select value={newWorker.role} onChange={(e) => setNewWorker({ ...newWorker, role: e.target.value, licences: [], licenceFiles: {} })} style={{ ...inputStyle, background: "#fff" }}>
                       <option value="">Select role...</option>
                       <option value="supervisor">Supervisor / Manager</option>
                       <option value="boilermaker">Boilermaker</option>
@@ -598,6 +628,7 @@ export default function AddContractorManually() {
                       <option value="welder">Welder</option>
                     </select>
                   </div>
+
                   <div style={{ border: "1px solid #d0d0d0", borderRadius: "2px", overflow: "hidden" }}>
                     <label style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 12px", borderBottom: "1px solid #ebebeb", cursor: "pointer" }}>
                       <div>
@@ -614,38 +645,65 @@ export default function AddContractorManually() {
                       <input type="checkbox" checked={newWorker.heights} onChange={(e) => setNewWorker({ ...newWorker, heights: e.target.checked })} style={{ accentColor: "#111", width: "14px", height: "14px" }} />
                     </label>
                   </div>
+
                   <div>
-                    {lbl("White Card")}
+                    {lbl("White Card — Construction Induction Training")}
                     <div style={{ border: newWorker.whiteCardState === "verified" ? "1px solid #a5d6a7" : "1px solid #d0d0d0", borderRadius: "2px", padding: "10px 12px", background: newWorker.whiteCardState === "verified" ? "#f9fdf9" : "#fff", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                      <div style={{ fontSize: "12px", color: "#555" }}>{newWorker.whiteCardFile || "No file selected"}</div>
+                      <div>
+                        <div style={{ fontSize: "12px", color: "#555" }}>{newWorker.whiteCardFile || "No file selected"}</div>
+                        {newWorker.whiteCardState === "reading" && <div style={{ fontSize: "11px", color: "#888", marginTop: "4px", display: "flex", alignItems: "center", gap: "6px" }}><span style={{ display: "inline-block", width: "10px", height: "10px", border: "2px solid #d0d0d0", borderTopColor: "#111", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />Reading...</div>}
+                        {newWorker.whiteCardState === "verified" && <div style={{ fontSize: "11px", color: "#3a7d44", marginTop: "4px", fontWeight: 500 }}>✓ Verified</div>}
+                      </div>
                       {newWorker.whiteCardState !== "verified" && newWorker.whiteCardState !== "reading" && (
-                        <label style={{ padding: "4px 10px", background: "#111", color: "#fff", border: "none", borderRadius: "2px", fontSize: "11px", cursor: "pointer", fontFamily: "Montserrat, sans-serif" }}>
+                        <label style={{ padding: "4px 10px", background: "#111", color: "#fff", border: "none", borderRadius: "2px", fontSize: "11px", cursor: "pointer", fontFamily: "Montserrat, sans-serif", flexShrink: 0, marginLeft: "10px" }}>
                           Upload
                           <input type="file" accept=".pdf,.jpg,.jpeg,.png" style={{ display: "none" }} onChange={handleWhiteCardFile} />
                         </label>
                       )}
-                      {newWorker.whiteCardState === "verified" && <span style={{ fontSize: "11px", padding: "3px 8px", background: "#e8f5e9", color: "#1b5e20", border: "1px solid #a5d6a7", borderRadius: "2px", fontWeight: 500 }}>Verified</span>}
+                      {newWorker.whiteCardState === "verified" && <span style={{ fontSize: "11px", padding: "3px 8px", background: "#e8f5e9", color: "#1b5e20", border: "1px solid #a5d6a7", borderRadius: "2px", fontWeight: 500, flexShrink: 0, marginLeft: "10px" }}>Done</span>}
                     </div>
                   </div>
+
                   {licenceOptions[newWorker.role] && (
                     <div>
-                      {lbl("Licences held")}
-                      <div style={{ border: "1px solid #d0d0d0", borderRadius: "2px", overflow: "hidden" }}>
-                        {licenceOptions[newWorker.role].map((lic, i) => {
+                      {lbl("Licences held", "Tick the licence shown on the card — upload each one")}
+                      <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                        {licenceOptions[newWorker.role].map((lic) => {
                           const coveredBy = isLicenceCovered(lic, newWorker.licences);
+                          const isTicked = newWorker.licences.includes(lic) || !!coveredBy;
+                          const licFile = newWorker.licenceFiles[lic];
+
                           return (
-                            <div key={lic} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "8px 12px", borderBottom: i < licenceOptions[newWorker.role].length - 1 ? "1px solid #f0f0f0" : "none", background: coveredBy ? "#f9fdf9" : "#fff" }}>
-                              <label style={{ display: "flex", alignItems: "center", gap: "8px", cursor: coveredBy ? "default" : "pointer", flex: 1, fontSize: "12px", color: coveredBy ? "#3a7d44" : "#111" }}>
-                                <input type="checkbox" checked={newWorker.licences.includes(lic) || !!coveredBy} disabled={!!coveredBy} onChange={() => !coveredBy && toggleLicence(lic)} style={{ accentColor: "#3a7d44", width: "13px", height: "13px" }} />
-                                {lic}
-                              </label>
-                              {coveredBy && <span style={{ fontSize: "10px", padding: "1px 6px", background: "#e8f5e9", color: "#3a7d44", border: "1px solid #a5d6a7", borderRadius: "2px" }}>Covered by {coveredBy.split(" ").slice(-1)[0]}</span>}
+                            <div key={lic} style={{ border: licFile?.parseState === "verified" ? "1px solid #a5d6a7" : "1px solid #d0d0d0", borderRadius: "2px", overflow: "hidden", background: licFile?.parseState === "verified" ? "#f9fdf9" : coveredBy ? "#f9fdf9" : "#fff" }}>
+                              <div style={{ padding: "10px 12px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                                <label style={{ display: "flex", alignItems: "center", gap: "8px", cursor: coveredBy ? "default" : "pointer", flex: 1 }}>
+                                  <input type="checkbox" checked={isTicked} disabled={!!coveredBy} onChange={() => !coveredBy && toggleLicence(lic)} style={{ accentColor: "#3a7d44", width: "14px", height: "14px", flexShrink: 0 }} />
+                                  <div>
+                                    <div style={{ fontSize: "12px", color: coveredBy ? "#3a7d44" : "#111", fontWeight: isTicked ? 500 : 400 }}>{lic}</div>
+                                    {coveredBy && <div style={{ fontSize: "11px", color: "#3a7d44", marginTop: "2px" }}>Covered by higher class — no upload needed</div>}
+                                    {licFile && <ParseStatus state={licFile.parseState} expiry={licFile.parsedExpiry} error={licFile.errorMsg} />}
+                                  </div>
+                                </label>
+                                {!coveredBy && newWorker.licences.includes(lic) && (
+                                  licFile?.parseState === "verified" ? (
+                                    <span style={{ fontSize: "11px", padding: "3px 8px", background: "#e8f5e9", color: "#1b5e20", border: "1px solid #a5d6a7", borderRadius: "2px", fontWeight: 500, flexShrink: 0, marginLeft: "10px" }}>Done</span>
+                                  ) : licFile?.parseState === "reading" ? (
+                                    <span style={{ fontSize: "11px", color: "#888", flexShrink: 0, marginLeft: "10px" }}>Checking...</span>
+                                  ) : (
+                                    <label style={{ padding: "4px 10px", background: "#111", color: "#fff", border: "none", borderRadius: "2px", fontSize: "11px", cursor: "pointer", fontFamily: "Montserrat, sans-serif", flexShrink: 0, marginLeft: "10px" }}>
+                                      Upload
+                                      <input type="file" accept=".pdf,.jpg,.jpeg,.png" style={{ display: "none" }} onChange={(e) => handleLicenceFile(lic, e)} />
+                                    </label>
+                                  )
+                                )}
+                              </div>
                             </div>
                           );
                         })}
                       </div>
                     </div>
                   )}
+
                   <div style={{ display: "flex", gap: "8px", justifyContent: "flex-end" }}>
                     <button onClick={() => setShowAddWorker(false)} style={btnOutline}>Cancel</button>
                     <button onClick={addWorker} disabled={!newWorker.firstName || !newWorker.role} style={btnPrimary(!newWorker.firstName || !newWorker.role)}>Add worker</button>
@@ -714,7 +772,7 @@ export default function AddContractorManually() {
                   ) : (
                     workers.map((w) => (
                       <div key={w.id} style={{ fontSize: "12px", color: "#111", padding: "4px 0", borderBottom: "1px solid #f5f5f5" }}>
-                        {w.firstName} {w.lastName} — {w.role}
+                        {w.firstName} {w.lastName} — {w.role}{w.licences.length > 0 ? ` · ${w.licences.length} licence${w.licences.length > 1 ? "s" : ""} uploaded` : ""}
                       </div>
                     ))
                   )}
