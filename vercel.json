@@ -1,0 +1,15 @@
+{
+  "redirects": [
+    {
+      "source": "/",
+      "destination": "/coming-soon",
+      "permanent": false,
+      "has": [
+        {
+          "type": "host",
+          "value": "app.vettit.com.au"
+        }
+      ]
+    }
+  ]
+}

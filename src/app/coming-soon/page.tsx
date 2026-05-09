@@ -1,12 +1,10 @@
 "use client";
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 
 const LAUNCH_DATE = new Date("2027-01-01T00:00:00");
 const PASSCODE = "gizmo";
 
 export default function ComingSoon() {
-  const router = useRouter();
   const [code, setCode] = useState("");
   const [error, setError] = useState(false);
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
@@ -30,7 +28,7 @@ export default function ComingSoon() {
 
   const handleSubmit = () => {
     if (code.toLowerCase().trim() === PASSCODE) {
-      window.location.href = "/";
+      window.location.href = "/sites";
     } else {
       setError(true);
       setCode("");
