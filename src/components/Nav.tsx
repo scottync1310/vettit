@@ -17,7 +17,7 @@ export default function Nav() {
     return () => document.removeEventListener("mousedown", handleClick);
   }, []);
 
-  if (pathname === "/upload" || pathname === "/onboarding") return null;
+  if (pathname === "/upload" || pathname === "/onboarding" || pathname === "/coming-soon") return null;
 
   const linkStyle = (href: string): React.CSSProperties => ({
     fontSize: "12px",
