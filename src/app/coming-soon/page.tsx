@@ -30,7 +30,7 @@ export default function ComingSoon() {
 
   const handleSubmit = () => {
     if (code.toLowerCase().trim() === PASSCODE) {
-      router.push("/");
+      window.location.href = "/";
     } else {
       setError(true);
       setCode("");
@@ -87,10 +87,6 @@ export default function ComingSoon() {
           </button>
         </div>
         {error && <div style={{ fontSize: "12px", color: "#c0392b", marginTop: "10px" }}>Incorrect passcode — try again</div>}
-      </div>
-
-      <div style={{ marginTop: "48px", fontSize: "11px", color: "#aaa" }}>
-      
       </div>
     </div>
   );
