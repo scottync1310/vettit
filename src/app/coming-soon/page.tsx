@@ -90,7 +90,7 @@ export default function ComingSoon() {
       </div>
 
       <div style={{ marginTop: "48px", fontSize: "11px", color: "#aaa" }}>
-        Contractor compliance — automated.
+      
       </div>
     </div>
   );
