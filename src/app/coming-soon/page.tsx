@@ -28,7 +28,7 @@ export default function ComingSoon() {
 
   const handleSubmit = () => {
     if (code.toLowerCase().trim() === PASSCODE) {
-      window.location.href = "/sites";
+      window.location.href = "https://vettit-git-master-scottync1310s-projects.vercel.app/";
     } else {
       setError(true);
       setCode("");
