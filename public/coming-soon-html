@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vettit — Coming Soon</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { min-height: 100vh; background: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: Montserrat, sans-serif; padding: 40px 24px; }
+    .logo { height: 44px; margin-bottom: 40px; }
+    .label { font-size: 13px; font-weight: 500; color: #555; text-transform: uppercase; letter-spacing: .12em; margin-bottom: 12px; }
+    .countdown { display: flex; align-items: flex-start; justify-content: center; gap: 12px; margin-bottom: 48px; }
+    .unit { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+    .num { font-size: 52px; font-weight: 700; color: #111; line-height: 1; letter-spacing: -2px; }
+    .unit-label { font-size: 10px; font-weight: 500; color: #888; text-transform: uppercase; letter-spacing: .12em; }
+    .divider { font-size: 40px; font-weight: 300; color: #d0d0d0; line-height: 1; margin-top: 6px; }
+    .gate { border-top: 1px solid #ebebeb; padding-top: 40px; text-align: center; }
+    .gate p { font-size: 13px; color: #555; margin-bottom: 16px; }
+    .gate-row { display: flex; gap: 8px; justify-content: center; }
+    input { padding: 10px 14px; border: 1px solid #d0d0d0; font-size: 14px; color: #111; border-radius: 2px; font-family: Montserrat, sans-serif; width: 200px; letter-spacing: .1em; outline: none; }
+    input.error { border-color: #c0392b; background: #fff8f8; }
+    button { padding: 10px 20px; border: 1px solid #111; background: #111; color: #fff; font-size: 13px; font-weight: 500; border-radius: 2px; cursor: pointer; font-family: Montserrat, sans-serif; }
+    .error-msg { font-size: 12px; color: #c0392b; margin-top: 10px; display: none; }
+    .tagline { margin-top: 48px; font-size: 11px; color: #aaa; }
+  </style>
+</head>
+<body>
+  <img src="/logo.png" alt="Vettit" class="logo" />
+  <div class="label">Launching in</div>
+  <div class="countdown">
+    <div class="unit"><div class="num" id="days">0</div><div class="unit-label">Days</div></div>
+    <div class="divider">:</div>
+    <div class="unit"><div class="num" id="hours">00</div><div class="unit-label">Hours</div></div>
+    <div class="divider">:</div>
+    <div class="unit"><div class="num" id="minutes">00</div><div class="unit-label">Mins</div></div>
+    <div class="divider">:</div>
+    <div class="unit"><div class="num" id="seconds">00</div><div class="unit-label">Secs</div></div>
+  </div>
+  <div class="gate">
+    <p>Have early access? Enter your passcode below.</p>
+    <div class="gate-row">
+      <input type="password" id="code" placeholder="Passcode" />
+      <button onclick="check()">Enter</button>
+    </div>
+    <div class="error-msg" id="err">Incorrect passcode — try again</div>
+  </div>
+  <div class="tagline">Contractor compliance — automated.</div>
+
+  <script>
+    const LAUNCH = new Date("2027-01-01T00:00:00");
+    const PASSCODE = "gizmo";
+
+    function pad(n) { return String(n).padStart(2, "0"); }
+
+    function tick() {
+      const diff = LAUNCH - new Date();
+      if (diff <= 0) return;
+      document.getElementById("days").textContent = Math.floor(diff / 864e5);
+      document.getElementById("hours").textContent = pad(Math.floor(diff / 36e5) % 24);
+      document.getElementById("minutes").textContent = pad(Math.floor(diff / 6e4) % 60);
+      document.getElementById("seconds").textContent = pad(Math.floor(diff / 1e3) % 60);
+    }
+
+    tick();
+    setInterval(tick, 1000);
+
+    function check() {
+      const input = document.getElementById("code");
+      const err = document.getElementById("err");
+      if (input.value.toLowerCase().trim() === PASSCODE) {
+        window.location.href = "/";
+      } else {
+        input.classList.add("error");
+        err.style.display = "block";
+        input.value = "";
+        setTimeout(() => { input.classList.remove("error"); err.style.display = "none"; }, 2000);
+      }
+    }
+
+    document.getElementById("code").addEventListener("keydown", (e) => {
+      if (e.key === "Enter") check();
+    });
+  </script>
+</body>
+</html>
